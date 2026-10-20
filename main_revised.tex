@@ -1,0 +1,1791 @@
+% !TeX program = xelatex
+% !TeX encoding = UTF-8
+% 建议使用 XeLaTeX 编译；交叉引用需编译两次。
+% 复习笔记：按章、节组织，保留统一的定理环境与概率论符号。
+
+\documentclass[UTF8,11pt,a4paper,oneside,fontset=fandol]{ctexrep}
+
+% ==================== 页面与文字 ====================
+% Fandol 字体随常见 TeX 发行版提供，无需依赖系统中文字体。
+\usepackage[margin=2.5cm,headheight=14pt]{geometry}
+\usepackage{microtype}
+\usepackage{enumitem}
+\setlist{itemsep=0.25em,topsep=0.5em}
+% 全文编号列表统一使用 (1)、(2)、…
+\setlist[enumerate]{label=(\arabic*)}
+\linespread{1.15}
+\setlength{\parskip}{0.25em}
+\setlength{\emergencystretch}{2em}
+
+\ctexset{
+  section = {format=\Large\bfseries,aftername=\quad},
+  subsection = {format=\large\bfseries,aftername=\quad},
+  subsubsection = {format=\normalsize\bfseries,aftername=\quad}
+}
+
+% ==================== 数学排版 ====================
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage{bm}
+\numberwithin{equation}{section}
+\allowdisplaybreaks[2]
+
+% 参考文献列入目录（需在 hyperref 之前加载）。
+\usepackage[nottoc]{tocbibind}
+% 在定义定理环境前加载 cleveref，以识别共享计数器的不同环境。
+\usepackage[unicode,hidelinks]{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+% ==================== 定理类环境 ====================
+% 共享“节号.序号”计数器，便于按依赖关系重排内容与交叉引用。
+% 按中文排版习惯：标题加粗，正文直立（避免正文中的西文单词变为斜体），
+% 括注使用全角括号，标题后不加句点。
+\newtheoremstyle{zhthm}
+  {\topsep}{\topsep}
+  {\normalfont}{}
+  {\bfseries}{}
+  {1em}
+  {\thmname{#1}\thmnumber{\nobreak\hspace{0.3em}#2}\thmnote{\mdseries（#3）}}
+\theoremstyle{zhthm}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{example}[theorem]{例}
+\newtheorem{exercise}[theorem]{练习}
+\newtheorem{remark}[theorem]{注记}
+
+% 证明环境：标题加粗，后接一个汉字宽的空白，不加句点。
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont\topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item[\hskip\labelsep\bfseries#1\hspace{0.5em}]\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+\makeatother
+\renewcommand{\proofname}{证明}
+% 练习解答可写作 \begin{proof}[解答] ... \end{proof}。
+% 对照原材料编号可写作 \begin{theorem}[原定理 2.3] ...。
+
+% ==================== 概率论与分析符号 ====================
+% 数集。
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+
+% 常见 sigma 代数与集合族。
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\Hcal}{\mathcal{H}}
+
+% 概率、期望、方差、协方差、分布及本质上确界。
+% 不重定义 LaTeX 原有命令 \P 和 \H。
+\DeclareMathOperator{\Prob}{\mathbb{P}}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Law}{Law}
+\DeclareMathOperator*{\esssup}{ess\,sup}
+\DeclareMathOperator*{\essinf}{ess\,inf}
+
+% 线性代数与测度论中的算子名。
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\diag}{diag}
+
+% 勒贝格测度、正态分布、虚数单位与同分布记号。
+% 勒贝格测度记作 \Leb，以免与特征值、尺度参数等常用的 \lambda 冲突。
+\newcommand{\Leb}{\mathrm{Leb}}
+\newcommand{\Normal}{\mathcal{N}}
+\newcommand{\iu}{\mathrm{i}}
+\newcommand{\deq}{\overset{\mathrm{d}}{=}}
+
+% 指示函数与微分符号：\ind{A}、\dd t、\dd B_t。
+\newcommand{\ind}[1]{\mathbf{1}_{#1}}
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}
+
+% 条件期望、条件概率：\Econd{X}{\F_t}、\Pcond{A}{\F_t}。
+\newcommand{\Econd}[2]{%
+  \E\!\left[#1\,\middle|\,#2\right]}
+\newcommand{\Pcond}[2]{%
+  \Prob\!\left(#1\,\middle|\,#2\right)}
+
+% 定界符默认保持常规大小；加星号自动伸缩，如 \norm*{X}。
+% 也可显式指定大小，如 \norm[\big]{X}。
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiterX{\inner}[2]{\langle}{\rangle}{#1,#2}
+
+% 二次变差/协变差与可预测二次变差/协变差的记号。
+% 用法：\qv{M}、\qv{M,N}、\pqv{M}、\pqv{M,N}。
+\DeclarePairedDelimiter{\qv}{[}{]}
+\DeclarePairedDelimiter{\pqv}{\langle}{\rangle}
+
+% 收敛箭头；具体假设与指标范围应在正文中说明。
+\newcommand{\asto}{\xrightarrow{\mathrm{a.s.}}}
+\newcommand{\pto}{\xrightarrow{\mathbb{P}}}
+\newcommand{\dto}{\xrightarrow{\mathrm{d}}}
+\newcommand{\Lpto}[1]{\xrightarrow{L^{#1}}}
+\newcommand{\ucpto}{\xrightarrow{\mathrm{ucp}}}
+
+% ==================== 链接与交叉引用 ====================
+% 黑白排版；链接可点击但不显示彩色边框。
+\hypersetup{
+  pdftitle={布朗运动、鞅与随机分析：复习笔记},
+  pdfauthor={},
+  bookmarksnumbered=true
+}
+\crefname{chapter}{章}{章}
+\crefname{section}{节}{节}
+\crefname{subsection}{小节}{小节}
+\crefname{subsubsection}{小节}{小节}
+\crefname{equation}{式}{式}
+\crefname{theorem}{定理}{定理}
+\crefname{proposition}{命题}{命题}
+\crefname{lemma}{引理}{引理}
+\crefname{corollary}{推论}{推论}
+\crefname{definition}{定义}{定义}
+\crefname{example}{例}{例}
+\crefname{exercise}{练习}{练习}
+\crefname{remark}{注记}{注记}
+\Crefname{chapter}{章}{章}
+\Crefname{section}{节}{节}
+\Crefname{subsection}{小节}{小节}
+\Crefname{subsubsection}{小节}{小节}
+\Crefname{equation}{式}{式}
+\Crefname{theorem}{定理}{定理}
+\Crefname{proposition}{命题}{命题}
+\Crefname{lemma}{引理}{引理}
+\Crefname{corollary}{推论}{推论}
+\Crefname{definition}{定义}{定义}
+\Crefname{example}{例}{例}
+\Crefname{exercise}{练习}{练习}
+\Crefname{remark}{注记}{注记}
+
+% ==================== 文档信息 ====================
+\title{布朗运动、鞅与随机分析\\复习笔记}
+\author{}
+\date{}
+
+% ==================== 正文 ====================
+\begin{document}
+
+\maketitle
+
+% 目录使用罗马页码，正文从第 1 页开始。
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+\chapter{高斯变量与高斯过程}
+\label{chap:gaussian}
+命题标题中的“原命题 1.1”“原定理 1.3(i)”等标注给出该结果在原材料中的编号，便于对照。
+
+\section{概率空间与标准高斯变量}
+\label{sec:standard-gaussian}
+
+除特别说明外，本章的随机变量都定义在概率空间 $(\Omega,\F,\Prob)$ 上。
+实随机变量是可测映射 $X:(\Omega,\F)\to(\R,\B(\R))$，其分布
+$\Law(X):=\Prob\circ X^{-1}$ 是 $(\R,\B(\R))$ 上的概率测度。
+记 $\Leb$ 为 $\R$ 上的勒贝格测度（限制在 $\B(\R)$ 上）；
+说一个实随机变量“具有密度”，总是指它的分布相对于 $\Leb$ 绝对连续。
+
+\begin{definition}[$L^p$ 空间]
+\label{def:lp}
+设 $p\in[1,\infty)$。满足
+\[
+  \E[\abs{X}^p]=\int_\Omega\abs{X(\omega)}^p\,\Prob(\dd\omega)<\infty
+\]
+的实随机变量 $X$ 按几乎处处相等划分等价类，全体等价类组成的空间记为
+$L^p(\Omega,\F,\Prob)$，不致混淆时简记为 $L^p$ 或 $L^p(\Prob)$。其上的范数
+\[
+  \norm{X}_p:=\bigl(\E[\abs{X}^p]\bigr)^{1/p}
+\]
+与代表元的选取无关；需要与其他 $L^p$ 空间区分时，也写作 $\norm{X}_{L^p(\Prob)}$。
+\end{definition}
+
+\begin{definition}[标准高斯变量]
+\label{def:standard-gaussian}
+若实随机变量 $X$ 具有密度
+\[
+  \varphi(x):=\frac{1}{\sqrt{2\pi}}\exp\!\left(-\frac{x^2}{2}\right),
+  \qquad x\in\R,
+\]
+即对每个 $A\in\B(\R)$ 都有 $\Prob(X\in A)=\int_A\varphi(x)\,\dd x$，
+则称 $X$ 为标准高斯变量，记为 $X\sim\Normal(0,1)$；以 $\varphi$ 为密度的概率测度也记作 $\Normal(0,1)$。
+本笔记中 $\varphi$ 始终表示这一标准高斯密度。
+\end{definition}
+
+\begin{proposition}[高斯密度的加权可积性]
+\label{prop:gaussian-integrability}
+对每个实数 $p\ge0$ 和每个 $a\in\R$，都有
+\[
+  \int_{\R}\abs{x}^{p}e^{a\abs{x}}\varphi(x)\,\dd x<\infty,
+\]
+其中约定 $\abs{x}^0\equiv1$。
+\end{proposition}
+
+\begin{proof}
+由均值不等式，$a\abs{x}\le x^2/4+a^2$，故
+\[
+  \abs{x}^{p}e^{a\abs{x}}\varphi(x)
+  \le\frac{e^{a^2}}{\sqrt{2\pi}}\,\abs{x}^{p}e^{-x^2/4}
+  =\frac{e^{a^2}}{\sqrt{2\pi}}\,h_p(x)\,e^{-x^2/8},
+  \qquad h_p(x):=\abs{x}^{p}e^{-x^2/8}.
+\]
+函数 $h_p$ 在 $\R$ 上连续，且当 $\abs{x}\to\infty$ 时趋于 $0$，因而有界；
+而作换元 $x=2y$ 可得 $\int_{\R}e^{-x^2/8}\,\dd x=2\sqrt{2\pi}<\infty$。
+所以命题中的被积函数可积。
+\end{proof}
+
+\begin{corollary}[标准高斯变量的各阶矩]
+\label{cor:gaussian-lp}
+若 $X$ 是标准高斯变量，则对每个 $p\in[1,\infty)$ 都有 $X\in L^p$。
+\end{corollary}
+
+\begin{proof}
+按分布计算期望，并在\cref{prop:gaussian-integrability} 中取 $a=0$，得
+$\E[\abs{X}^{p}]=\int_{\R}\abs{x}^{p}\varphi(x)\,\dd x<\infty$。
+\end{proof}
+
+\begin{proposition}[标准高斯变量的复拉普拉斯变换]
+\label{prop:gaussian-laplace}
+设 $X$ 是标准高斯变量。对每个 $z\in\C$，随机变量 $e^{zX}$ 绝对可积，且
+\begin{equation}
+  \label{eq:gaussian-laplace}
+  L_X(z):=\E\bigl[e^{zX}\bigr]=e^{z^2/2},
+  \qquad z\in\C.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+由 $\abs{e^{zX}}=e^{(\operatorname{Re}z)X}\le e^{\abs{z}\abs{X}}$ 及%
+\cref{prop:gaussian-integrability}（取 $p=0$、$a=\abs{z}$），$e^{zX}$ 绝对可积。
+下面先计算实参数的情形，再证明 $L_X$ 是整函数，最后用恒等定理推广到复参数。
+
+\textbf{第一步：实参数。}
+任取 $u\in\R$，配方得
+\[
+  \E\bigl[e^{uX}\bigr]
+  =\frac{1}{\sqrt{2\pi}}\int_{\R}e^{ux-x^2/2}\,\dd x
+  =e^{u^2/2}\cdot\frac{1}{\sqrt{2\pi}}\int_{\R}e^{-(x-u)^2/2}\,\dd x
+  =e^{u^2/2}.
+\]
+
+\textbf{第二步：全纯性。}
+固定 $z_0\in\C$。当 $h\in\C$、$0<\abs{h}\le1$ 时，对每个 $x\in\R$，
+\[
+  \frac{e^{(z_0+h)x}-e^{z_0x}}{h}=x\int_0^1e^{(z_0+th)x}\,\dd t,
+\]
+由此得到与 $h$ 无关的估计
+\[
+  \abs*{\frac{e^{(z_0+h)x}-e^{z_0x}}{h}}
+  \le\abs{x}\,e^{(\abs{\operatorname{Re}z_0}+1)\abs{x}}.
+\]
+由\cref{prop:gaussian-integrability}（取 $p=1$、$a=\abs{\operatorname{Re}z_0}+1$），
+以 $X$ 代入 $x$ 后右端可积，因而是差商的控制函数。又差商在 $h\to0$ 时逐点收敛到 $xe^{z_0x}$，
+故由控制收敛定理，
+\[
+  L_X'(z_0)=\lim_{h\to0}\frac{L_X(z_0+h)-L_X(z_0)}{h}=\E\bigl[Xe^{z_0X}\bigr].
+\]
+由 $z_0$ 的任意性，$L_X$ 是整函数。
+
+\textbf{第三步：恒等定理。}
+整函数 $L_X$ 与 $z\mapsto e^{z^2/2}$ 在实轴上相等，而实轴在 $\C$ 中有聚点，
+由恒等定理，二者在 $\C$ 上处处相等，即\cref{eq:gaussian-laplace} 成立。
+\end{proof}
+
+\begin{definition}[特征函数]
+\label{def:characteristic-function}
+实随机变量 $X$ 的特征函数是
+\[
+  \chi_X(\xi):=\E\bigl[e^{\iu\xi X}\bigr],\qquad \xi\in\R;
+\]
+由于 $\abs{e^{\iu\xi X}}=1$，上述期望总有定义。
+更一般地，$\R^d$ 上 Borel 概率测度 $\mu$ 的特征函数定义为
+$\widehat\mu(t):=\int_{\R^d}e^{\iu\inner{t}{x}}\,\mu(\dd x)$（$t\in\R^d$），
+其中 $\inner{\cdot}{\cdot}$ 是 $\R^d$ 上的标准内积；
+$\R^d$ 值随机向量的特征函数就是它的分布的特征函数。
+\end{definition}
+
+下面的唯一性定理是反演公式的推论，此处不予证明，见%
+\cite[定理 3.3.11（$d=1$，第 128 页）与定理 3.10.4（一般的 $d$，第 199--200 页）]{Durrett2019}。
+它是本章判定分布相等的基本工具。
+
+\begin{theorem}[特征函数的唯一性]
+\label{thm:characteristic-uniqueness}
+设 $\mu,\nu$ 是 $\R^d$ 上的 Borel 概率测度。若 $\widehat\mu=\widehat\nu$，则 $\mu=\nu$。
+特别地，两个 $\R^d$ 值随机向量同分布，当且仅当它们的特征函数相同。
+\end{theorem}
+
+\begin{proposition}[标准高斯变量的特征函数]
+\label{prop:gaussian-characteristic}
+若 $X$ 是标准高斯变量，则
+\begin{equation}
+  \label{eq:gaussian-characteristic}
+  \chi_X(\xi)=e^{-\xi^2/2},\qquad \xi\in\R.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+在\cref{prop:gaussian-laplace} 中取 $z=\iu\xi$，得
+$\chi_X(\xi)=L_X(\iu\xi)=e^{(\iu\xi)^2/2}=e^{-\xi^2/2}$。
+\end{proof}
+
+\begin{proposition}[标准高斯变量特征函数的泰勒展开]
+\label{prop:gaussian-taylor}
+设 $X$ 是标准高斯变量，$n\ge1$ 是整数。则对所有 $\xi\in\R$，
+\begin{equation}
+  \label{eq:gaussian-taylor}
+  \abs*{\chi_X(\xi)-\sum_{k=0}^{n}\frac{(\iu\xi)^k}{k!}\E[X^k]}
+  \le\frac{\abs{\xi}^{n+1}}{(n+1)!}\,\E\bigl[\abs{X}^{n+1}\bigr],
+\end{equation}
+其中约定 $X^0=1$。特别地，当 $\xi\to0$ 时，
+\[
+  \chi_X(\xi)=\sum_{k=0}^{n}\frac{(\iu\xi)^k}{k!}\E[X^k]+O\bigl(\abs{\xi}^{n+1}\bigr),
+\]
+且大 $O$ 中的常数只依赖于 $n$。
+\end{proposition}
+
+\begin{proof}
+对实数 $t$，带积分余项的泰勒公式给出
+\[
+  e^{\iu t}=\sum_{k=0}^{n}\frac{(\iu t)^k}{k!}
+  +\frac{(\iu t)^{n+1}}{n!}\int_0^1(1-s)^ne^{\iu st}\,\dd s.
+\]
+由于 $\abs{e^{\iu st}}=1$ 且 $\int_0^1(1-s)^n\,\dd s=1/(n+1)$，有
+\[
+  \abs*{e^{\iu t}-\sum_{k=0}^{n}\frac{(\iu t)^k}{k!}}\le\frac{\abs{t}^{n+1}}{(n+1)!}.
+\]
+代入 $t=\xi X$ 并取期望（由\cref{cor:gaussian-lp}，各项均可积），即得\cref{eq:gaussian-taylor}。
+右端的期望是与 $\xi$ 无关的有限常数，故有所述渐近展开。
+\end{proof}
+
+\begin{corollary}[标准高斯变量的矩]
+\label{cor:gaussian-moments}
+若 $X$ 是标准高斯变量，则对每个整数 $m\ge0$，
+\begin{equation}
+  \label{eq:gaussian-moments}
+  \E[X^{2m}]=\frac{(2m)!}{2^m m!}=(2m-1)!!,
+  \qquad
+  \E[X^{2m+1}]=0,
+\end{equation}
+其中约定 $(-1)!!:=1$。特别地，$\E[X]=0$，$\Var(X)=\E[X^2]=1$，$\E[X^4]=3$。
+\end{corollary}
+
+\begin{proof}
+固定整数 $m\ge0$。在\cref{prop:gaussian-taylor} 中取 $n=2m+1$，并由\cref{prop:gaussian-characteristic}
+及指数函数的泰勒展开，得到 $\chi_X$ 在 $\xi\to0$ 时的两个展开式：
+\[
+  \chi_X(\xi)=\sum_{k=0}^{2m+1}\frac{\iu^k\E[X^k]}{k!}\,\xi^k+O\bigl(\abs{\xi}^{2m+2}\bigr),
+  \qquad
+  \chi_X(\xi)=e^{-\xi^2/2}=\sum_{j=0}^{m}\frac{(-1)^j}{2^jj!}\,\xi^{2j}+O\bigl(\abs{\xi}^{2m+2}\bigr).
+\]
+两个展开式中多项式之差 $Q$ 的次数不超过 $2m+1$，且 $Q(\xi)=O(\abs{\xi}^{2m+2})$，故 $Q\equiv0$：
+否则设 $c_r\xi^r$ 是 $Q$ 的最低次非零项，则 $Q(\xi)/\xi^r\to c_r\ne0$，
+与 $Q(\xi)/\xi^r=O(\abs{\xi}^{2m+2-r})\to0$ 矛盾。比较 $\xi^{2m}$ 与 $\xi^{2m+1}$ 的系数，得
+\[
+  \frac{\iu^{2m}}{(2m)!}\E[X^{2m}]=\frac{(-1)^m}{2^mm!},\qquad
+  \frac{\iu^{2m+1}}{(2m+1)!}\E[X^{2m+1}]=0.
+\]
+由 $\iu^{2m}=(-1)^m$ 即得\cref{eq:gaussian-moments}。
+\end{proof}
+
+\begin{definition}[高斯变量的仿射定义]
+\label{def:gaussian-affine}
+设 $m\in\R$、$\sigma\ge0$，$Y$ 是实随机变量。若
+\begin{itemize}
+  \item $\sigma>0$，且存在同一概率空间上的标准高斯变量 $Z$，使得 $Y=m+\sigma Z$ 几乎处处；或
+  \item $\sigma=0$，且 $Y=m$ 几乎处处，
+\end{itemize}
+则称 $Y$ 为服从 $\Normal(m,\sigma^2)$ 分布的高斯变量，记为 $Y\sim\Normal(m,\sigma^2)$。
+$\sigma=0$ 的情形称为退化情形；$m=0$ 时称 $Y$ 为中心高斯变量。
+\end{definition}
+
+\begin{proposition}[非退化高斯变量的三个等价刻画]
+\label{prop:gaussian-equivalent}
+设 $m\in\R$、$\sigma>0$，$Y$ 是实随机变量。以下三个条件等价：
+\begin{enumerate}
+  \item $Y\sim\Normal(m,\sigma^2)$；
+  \item $Y$ 具有密度
+    \begin{equation}
+      \label{eq:gaussian-density-general}
+      p_Y(y)=\frac1\sigma\,\varphi\!\left(\frac{y-m}{\sigma}\right)
+      =\frac{1}{\sigma\sqrt{2\pi}}\exp\!\left(-\frac{(y-m)^2}{2\sigma^2}\right),
+      \qquad y\in\R;
+    \end{equation}
+  \item $Y$ 的特征函数为
+    \begin{equation}
+      \label{eq:gaussian-characteristic-general}
+      \chi_Y(\xi)=\exp\!\left(\iu m\xi-\frac{\sigma^2\xi^2}{2}\right),
+      \qquad \xi\in\R.
+    \end{equation}
+\end{enumerate}
+此时 $\E[Y]=m$，$\Var(Y)=\sigma^2$。
+\end{proposition}
+
+\begin{proof}
+按 $(1)\Rightarrow(2)\Rightarrow(3)\Rightarrow(1)$ 的顺序证明。
+
+\textbf{\boldmath$(1)\Rightarrow(2)$。}
+设 $Y=m+\sigma Z$ 几乎处处，其中 $Z$ 是标准高斯变量。任取 $A\in\B(\R)$，
+按 $Z$ 的分布计算期望，再作换元 $y=m+\sigma x$（$\dd x=\dd y/\sigma$），得
+\[
+  \Prob(Y\in A)=\E\bigl[\ind{A}(m+\sigma Z)\bigr]
+  =\int_{\R}\ind{A}(m+\sigma x)\varphi(x)\,\dd x
+  =\int_A\frac1\sigma\,\varphi\!\left(\frac{y-m}{\sigma}\right)\dd y.
+\]
+因此 $Y$ 具有\cref{eq:gaussian-density-general} 给出的密度。
+
+\textbf{\boldmath$(2)\Rightarrow(3)$。}
+固定 $\xi\in\R$，作换元 $y=m+\sigma x$，并利用\cref{prop:gaussian-characteristic}，
+\[
+  \chi_Y(\xi)
+  =\int_{\R}e^{\iu\xi y}\,\frac1\sigma\,\varphi\!\left(\frac{y-m}{\sigma}\right)\dd y
+  =e^{\iu m\xi}\int_{\R}e^{\iu(\sigma\xi)x}\varphi(x)\,\dd x
+  =e^{\iu m\xi}e^{-\sigma^2\xi^2/2}.
+\]
+
+\textbf{\boldmath$(3)\Rightarrow(1)$。}
+令 $Z:=(Y-m)/\sigma$，它是同一概率空间上的实随机变量。对每个 $t\in\R$，
+\[
+  \chi_Z(t)=e^{-\iu mt/\sigma}\chi_Y(t/\sigma)
+  =e^{-\iu mt/\sigma}\exp\!\left(\frac{\iu mt}{\sigma}-\frac{t^2}{2}\right)
+  =e^{-t^2/2}.
+\]
+由\cref{prop:gaussian-characteristic} 与\cref{thm:characteristic-uniqueness}，$Z$ 是标准高斯变量；
+又 $Y=m+\sigma Z$，故 (1) 成立。
+
+最后，由 (1) 与\cref{cor:gaussian-moments}，
+$\E[Y]=m+\sigma\E[Z]=m$，$\Var(Y)=\sigma^2\E[Z^2]=\sigma^2$。
+\end{proof}
+
+\begin{proposition}[高斯变量的特征函数刻画]
+\label{prop:gaussian-characteristic-criterion}
+设 $m\in\R$、$\sigma\ge0$，$Y$ 是实随机变量。则
+\begin{equation}
+  \label{eq:gaussian-characteristic-unified}
+  Y\sim\Normal(m,\sigma^2)
+  \quad\Longleftrightarrow\quad
+  \chi_Y(\xi)=\exp\!\left(\iu m\xi-\frac{\sigma^2\xi^2}{2}\right)
+  \quad\forall\,\xi\in\R.
+\end{equation}
+特别地，$Y$ 是否服从 $\Normal(m,\sigma^2)$ 只取决于 $Y$ 的分布。
+\end{proposition}
+
+\begin{proof}
+$\sigma>0$ 的情形即\cref{prop:gaussian-equivalent} 中的 $(1)\Leftrightarrow(3)$。
+设 $\sigma=0$。若 $Y=m$ 几乎处处，显然 $\chi_Y(\xi)=e^{\iu m\xi}$。
+反之，若 $\chi_Y(\xi)=e^{\iu m\xi}$ 对所有 $\xi$ 成立，则 $\Law(Y)$ 与点质量 $\delta_m$ 有相同的特征函数，
+由\cref{thm:characteristic-uniqueness}，$\Law(Y)=\delta_m$，即 $Y=m$ 几乎处处。
+\end{proof}
+
+\begin{proposition}[高斯变量的各阶可积性与参数]
+\label{prop:gaussian-all-lp}
+设 $Y\sim\Normal(m,\sigma^2)$。则对每个 $p\in[1,\infty)$ 都有 $Y\in L^p$，
+且 $\E[Y]=m$，$\Var(Y)=\sigma^2$，即两个参数恰为 $Y$ 的均值与方差。
+\end{proposition}
+
+\begin{proof}
+若 $\sigma=0$，则 $Y=m$ 几乎处处，结论显然。若 $\sigma>0$，则 $Y=m+\sigma Z$，
+其中 $Z\sim\Normal(0,1)$；由\cref{cor:gaussian-lp}，$Z\in L^p$，而常数属于 $L^p$，故 $Y\in L^p$。
+均值与方差已在\cref{prop:gaussian-equivalent} 中算出。
+\end{proof}
+
+\begin{proposition}[独立高斯变量的线性组合]
+\label{prop:independent-gaussian-combination}
+设 $d\ge1$，$Y_1,\ldots,Y_d$ 是相互独立的实随机变量，
+$Y_j\sim\Normal(m_j,\sigma_j^2)$（$1\le j\le d$）。则对任意 $a_1,\ldots,a_d\in\R$，
+\begin{equation}
+  \label{eq:independent-gaussian-combination}
+  \sum_{j=1}^{d}a_jY_j\sim\Normal\!\left(\sum_{j=1}^{d}a_jm_j,\ \sum_{j=1}^{d}a_j^2\sigma_j^2\right).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+记 $\mu_j:=\Law(Y_j)$，$S:=\sum_{j=1}^{d}a_jY_j$。由独立性，
+$\Law(Y_1,\ldots,Y_d)=\mu_1\otimes\cdots\otimes\mu_d$。
+固定 $\xi\in\R$，由 Fubini 定理及\cref{prop:gaussian-characteristic-criterion}，
+\begin{align*}
+  \chi_S(\xi)
+  &=\int_{\R^d}\prod_{j=1}^{d}e^{\iu\xi a_jy_j}\,(\mu_1\otimes\cdots\otimes\mu_d)(\dd y)
+   =\prod_{j=1}^{d}\chi_{Y_j}(a_j\xi)\\
+  &=\prod_{j=1}^{d}\exp\!\left(\iu a_jm_j\xi-\frac{a_j^2\sigma_j^2\xi^2}{2}\right)
+   =\exp\!\left(\iu\xi\sum_{j=1}^{d}a_jm_j-\frac{\xi^2}{2}\sum_{j=1}^{d}a_j^2\sigma_j^2\right).
+\end{align*}
+再由\cref{prop:gaussian-characteristic-criterion} 即得\cref{eq:independent-gaussian-combination}。
+\end{proof}
+
+\begin{proposition}[高斯变量的 $L^2$ 极限；原命题 1.1]
+\label{prop:gaussian-l2-limit}
+设 $X_n\sim\Normal(m_n,\sigma_n^2)$（$m_n\in\R$，$\sigma_n\ge0$，$n\ge1$）是一列高斯变量，$X\in L^2$，且
+$\norm{X_n-X}_2\to0$。记 $m:=\E[X]$，$\sigma:=\sqrt{\Var(X)}$。则：
+\begin{enumerate}
+  \item $m_n\to m$，$\sigma_n\to\sigma$，且 $X\sim\Normal(m,\sigma^2)$；
+  \item 对每个 $p\in[1,\infty)$，都有 $\norm{X_n-X}_p\to0$。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+记 $D_n:=X_n-X$。
+
+\textbf{第一步：均值与方差收敛。}
+由\cref{prop:gaussian-all-lp}，$m_n=\E[X_n]$，$\sigma_n^2=\Var(X_n)$。
+由 Cauchy--Schwarz 不等式，$\abs{m_n-m}\le\E[\abs{D_n}]\le\norm{D_n}_2\to0$。
+由三角不等式，$\abs{\norm{X_n}_2-\norm{X}_2}\le\norm{D_n}_2\to0$，故 $\E[X_n^2]\to\E[X^2]$，从而
+\[
+  \sigma_n^2=\E[X_n^2]-m_n^2\longrightarrow\E[X^2]-m^2=\sigma^2,
+\]
+再由平方根函数的连续性得 $\sigma_n\to\sigma$。
+
+\textbf{\boldmath 第二步：$X$ 是高斯变量。}
+对实数 $a,b$ 有 $\abs{e^{\iu a}-e^{\iu b}}\le\abs{a-b}$，故对每个 $\xi\in\R$，
+\[
+  \abs{\chi_{X_n}(\xi)-\chi_X(\xi)}
+  \le\E\bigl[\abs{e^{\iu\xi X_n}-e^{\iu\xi X}}\bigr]
+  \le\abs{\xi}\,\E[\abs{D_n}]\longrightarrow0.
+\]
+结合第一步与\cref{prop:gaussian-characteristic-criterion}，
+\[
+  \chi_X(\xi)=\lim_{n\to\infty}\exp\!\left(\iu m_n\xi-\frac{\sigma_n^2\xi^2}{2}\right)
+  =\exp\!\left(\iu m\xi-\frac{\sigma^2\xi^2}{2}\right),
+\]
+再由\cref{prop:gaussian-characteristic-criterion} 得 $X\sim\Normal(m,\sigma^2)$。
+
+\textbf{\boldmath 第三步：$L^p$ 收敛。}
+当 $1\le p\le2$ 时，由 Jensen 不等式，$\norm{D_n}_p\le\norm{D_n}_2\to0$。
+设 $p>2$，令 $q:=2p-2>2$。由 Cauchy--Schwarz 不等式，
+\begin{equation}
+  \label{eq:gaussian-lp-interpolation}
+  \E[\abs{D_n}^p]=\E\bigl[\abs{D_n}\cdot\abs{D_n}^{p-1}\bigr]
+  \le\norm{D_n}_2\bigl(\E[\abs{D_n}^q]\bigr)^{1/2},
+\end{equation}
+故只需证明 $\sup_{n}\E[\abs{D_n}^q]<\infty$。由 $r\mapsto r^q$ 在 $[0,\infty)$ 上的凸性，
+$\abs{a+b}^q\le2^{q-1}(\abs{a}^q+\abs{b}^q)$（$a,b\in\R$），从而
+\[
+  \E[\abs{D_n}^q]\le2^{q-1}\bigl(\E[\abs{X_n}^q]+\E[\abs{X}^q]\bigr),\qquad
+  \E[\abs{X_n}^q]\le2^{q-1}\bigl(\abs{m_n}^q+\sigma_n^q\,c_q\bigr),
+\]
+其中 $c_q:=\int_{\R}\abs{x}^q\varphi(x)\,\dd x<\infty$（\cref{cor:gaussian-lp}）；
+第二个不等式在 $\sigma_n=0$ 时显然，在 $\sigma_n>0$ 时由 $X_n=m_n+\sigma_nZ_n$（$Z_n\sim\Normal(0,1)$）得到。
+由第二步与\cref{prop:gaussian-all-lp}，$\E[\abs{X}^q]<\infty$；又收敛数列 $(m_n)$、$(\sigma_n)$ 有界，
+所以 $\sup_n\E[\abs{D_n}^q]<\infty$。代入\cref{eq:gaussian-lp-interpolation} 即得 $\norm{D_n}_p\to0$。
+\end{proof}
+
+\section{高斯向量}
+\label{sec:gaussian-vectors}
+
+本节把取值空间推广到有限维实欧氏空间。设 $E$ 是 $d$ 维实欧氏空间（$d\ge1$），
+内积记为 $\inner{u}{v}$，范数记为 $\norm{u}_E:=\sqrt{\inner{u}{u}}$，
+$\B(E)$ 为 $E$ 的 Borel $\sigma$ 代数；$E$ 值随机变量指可测映射 $X:(\Omega,\F)\to(E,\B(E))$。
+最常见的情形是 $E=\R^d$ 并配备标准内积，但本节的定义与结论大多不依赖于坐标的选取。
+
+对 $E$ 的正交规范基 $\mathbf e=(e_1,\ldots,e_d)$，向量 $u\in E$ 的坐标为 $u_j:=\inner{e_j}{u}$，
+即 $u=\sum_{j=1}^{d}u_je_j$，坐标列记为 $[u]_{\mathbf e}:=(u_1,\ldots,u_d)^{\mathsf T}$；
+线性算子 $A:E\to E$ 在 $\mathbf e$ 下的矩阵记为
+$[A]_{\mathbf e}:=\bigl(\inner{e_i}{A(e_j)}\bigr)_{1\le i,j\le d}$。
+
+\begin{definition}[高斯向量]
+\label{def:gaussian-vector}
+设 $X$ 是 $E$ 值随机变量。若对每个 $u\in E$，实随机变量 $\inner{u}{X}$ 都是高斯变量，
+则称 $X$ 为 $E$ 中的高斯向量。
+\end{definition}
+
+\begin{proposition}[高斯向量的坐标刻画]
+\label{prop:gaussian-vector-coordinates}
+设 $X$ 是 $E$ 值随机变量，$\mathbf e=(e_1,\ldots,e_d)$ 是 $E$ 的一组正交规范基，$X_j:=\inner{e_j}{X}$。
+则 $X$ 是高斯向量，当且仅当 $(X_1,\ldots,X_d)$ 是 $\R^d$（配备标准内积）中的高斯向量，
+即任意线性组合 $\sum_{j=1}^{d}a_jX_j$（$a_j\in\R$）都是高斯变量。
+特别地，后一条件对某一组正交规范基成立，当且仅当它对每一组正交规范基都成立。
+\end{proposition}
+
+\begin{proof}
+对 $a=(a_1,\ldots,a_d)\in\R^d$，令 $u:=\sum_{j=1}^{d}a_je_j$。由内积的线性，
+\[
+  \sum_{j=1}^{d}a_jX_j=\inner*{\sum_{j=1}^{d}a_je_j}{X}=\inner{u}{X}.
+\]
+当 $a$ 取遍 $\R^d$ 时，$u$ 取遍 $E$，故“每个 $\inner{u}{X}$ 都是高斯变量”与
+“每个 $\sum_ja_jX_j$ 都是高斯变量”是同一个条件。前者与基无关，因此最后一句也成立。
+\end{proof}
+
+\begin{definition}[非负二次型及其矩阵]
+\label{def:nonnegative-quadratic-form}
+若存在对称双线性形式 $b:E\times E\to\R$，使得 $q(u)=b(u,u)$ 对所有 $u\in E$ 成立，
+则称 $q:E\to\R$ 为二次型；若还有 $q\ge0$，则称 $q$ 为非负二次型。由双线性展开得到的极化公式
+\begin{equation}
+  \label{eq:polarization}
+  b(u,v)=\frac12\bigl(q(u+v)-q(u)-q(v)\bigr),\qquad u,v\in E,
+\end{equation}
+表明 $b$ 由 $q$ 唯一确定。$q$ 在正交规范基 $\mathbf e$ 下的矩阵是对称矩阵
+$[q]_{\mathbf e}:=\bigl(b(e_i,e_j)\bigr)_{1\le i,j\le d}$，且对 $u=\sum_ju_je_j$ 有
+$q(u)=\sum_{i,j=1}^{d}u_iu_j\,b(e_i,e_j)$；因此 $q$ 非负当且仅当 $[q]_{\mathbf e}$ 半正定。
+\end{definition}
+
+\begin{proposition}[高斯向量的均值与方差参数]
+\label{prop:gaussian-vector-parameters}
+设 $X$ 是 $E$ 值高斯向量。则存在唯一的向量 $m_X\in E$ 和唯一的非负二次型 $q_X$，
+使得对每个 $u\in E$，
+\begin{equation}
+  \label{eq:gaussian-vector-projection-law}
+  \inner{u}{X}\sim\Normal\bigl(\inner{u}{m_X},\,q_X(u)\bigr).
+\end{equation}
+具体地，$q_X(u)=\Var(\inner{u}{X})$，对应的对称双线性形式为
+$b_X(u,v)=\Cov(\inner{u}{X},\inner{v}{X})$。此外 $\E[\norm{X}_E^2]<\infty$，且 $m_X=\E[X]$，
+其中 $E$ 值随机变量的期望按坐标定义：$\E[X]:=\sum_{j}\E[\inner{e_j}{X}]\,e_j$（与正交规范基的选取无关）。
+\end{proposition}
+
+\begin{proof}
+由\cref{prop:gaussian-all-lp}，每个 $\inner{u}{X}$ 都属于 $L^2$，故以下期望与协方差都有定义；
+特别地，$\E[\norm{X}_E^2]=\sum_{j}\E[\inner{e_j}{X}^2]<\infty$。
+
+\textbf{存在性。}
+取正交规范基 $\mathbf e$，记 $X_j:=\inner{e_j}{X}$，令 $m_X:=\sum_{j=1}^{d}\E[X_j]\,e_j=\E[X]$。
+对 $u=\sum_ju_je_j$，由期望的线性，$\E[\inner{u}{X}]=\sum_ju_j\E[X_j]=\inner{u}{m_X}$。
+再令 $b_X(u,v):=\Cov(\inner{u}{X},\inner{v}{X})$。由内积与协方差的双线性，
+$b_X$ 是对称双线性形式，且 $q_X(u):=b_X(u,u)=\Var(\inner{u}{X})\ge0$，故 $q_X$ 是非负二次型。
+又 $\inner{u}{X}$ 是高斯变量，按\cref{prop:gaussian-all-lp}，它服从以其均值与方差为参数的高斯分布，
+这就是\cref{eq:gaussian-vector-projection-law}。
+
+\textbf{唯一性。}
+若 $(\widetilde m,\widetilde q)$ 也满足\cref{eq:gaussian-vector-projection-law}，比较均值与方差得
+$\inner{u}{\widetilde m}=\inner{u}{m_X}$、$\widetilde q(u)=q_X(u)$ 对所有 $u\in E$ 成立。
+后者即 $\widetilde q=q_X$；在前者中取 $u=\widetilde m-m_X$，得 $\norm{\widetilde m-m_X}_E^2=0$。
+\end{proof}
+
+\begin{proposition}[均值向量与方差二次型的坐标表示]
+\label{prop:gaussian-vector-covariance-coordinates}
+设 $X$ 是 $E$ 值高斯向量，$\mathbf e$ 是 $E$ 的任一正交规范基，$X_j:=\inner{e_j}{X}$。则
+\[
+  [m_X]_{\mathbf e}=\bigl(\E[X_1],\ldots,\E[X_d]\bigr)^{\mathsf T},
+  \qquad
+  [q_X]_{\mathbf e}=\bigl(\Cov(X_i,X_j)\bigr)_{1\le i,j\le d}.
+\]
+换言之，对任意 $u=\sum_{j=1}^{d}u_je_j\in E$，
+\begin{equation}
+  \label{eq:gaussian-vector-covariance-form}
+  \inner{u}{m_X}=\sum_{j=1}^{d}u_j\E[X_j],\qquad
+  q_X(u)=\sum_{i,j=1}^{d}u_iu_j\Cov(X_i,X_j).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+由\cref{eq:gaussian-vector-projection-law}，$\inner{e_j}{m_X}=\E[\inner{e_j}{X}]=\E[X_j]$；
+由\cref{prop:gaussian-vector-parameters} 中 $b_X$ 的表达式，$b_X(e_i,e_j)=\Cov(X_i,X_j)$。
+再由\cref{def:nonnegative-quadratic-form} 即得\cref{eq:gaussian-vector-covariance-form}。
+\end{proof}
+
+\begin{proposition}[高斯向量的特征函数]
+\label{prop:gaussian-vector-characteristic}
+设 $X$ 是 $E$ 值高斯向量。对每个 $u\in E$ 和每个 $\xi\in\R$，
+\begin{equation}
+  \label{eq:gaussian-vector-projection-characteristic}
+  \E\bigl[e^{\iu\xi\inner{u}{X}}\bigr]
+  =\exp\!\left(\iu\xi\inner{u}{m_X}-\frac{\xi^2}{2}\,q_X(u)\right).
+\end{equation}
+特别地，$X$ 的特征函数 $\chi_X(u):=\E\bigl[e^{\iu\inner{u}{X}}\bigr]$（$u\in E$）为
+\begin{equation}
+  \label{eq:gaussian-vector-characteristic}
+  \chi_X(u)=\exp\!\left(\iu\inner{u}{m_X}-\frac12\,q_X(u)\right),\qquad u\in E.
+\end{equation}
+因此，高斯向量的分布由 $m_X$ 与 $q_X$ 唯一确定：若 $X,Y$ 都是 $E$ 中的高斯向量，
+且 $m_X=m_Y$、$q_X=q_Y$，则 $X\deq Y$。
+\end{proposition}
+
+\begin{proof}
+由\cref{eq:gaussian-vector-projection-law} 与\cref{prop:gaussian-characteristic-criterion} 即得%
+\cref{eq:gaussian-vector-projection-characteristic}；取 $\xi=1$ 得\cref{eq:gaussian-vector-characteristic}。
+借助正交规范基把 $E$ 等同于 $\R^d$，最后一句由\cref{thm:characteristic-uniqueness} 得到。
+\end{proof}
+
+\begin{proposition}[高斯向量的分块独立性]
+\label{prop:gaussian-diagonal-independence}
+设 $X$ 是 $E$ 中的高斯向量，$\mathbf e=(e_1,\ldots,e_d)$ 是正交规范基，
+$X_j:=\inner{e_j}{X}$，$C_{ij}:=\Cov(X_i,X_j)$。设 $\{1,\ldots,d\}=I_1\sqcup\cdots\sqcup I_m$
+是指标集的一个划分（各块非空），并记子向量 $X_{I_k}:=(X_j)_{j\in I_k}$。
+则 $X_{I_1},\ldots,X_{I_m}$ 相互独立，当且仅当对属于不同块的任意 $i,j$ 都有 $C_{ij}=0$。
+特别地（每块只含一个指标），坐标 $X_1,\ldots,X_d$ 相互独立，当且仅当协方差矩阵
+$C=(C_{ij})_{1\le i,j\le d}$ 是对角矩阵。
+\end{proposition}
+
+\begin{proof}
+不妨设每个 $I_k$ 由连续的指标组成（否则重排坐标），于是 $\R^d=\R^{I_1}\times\cdots\times\R^{I_m}$。
+对 $t\in\R^d$，记 $t_{I_k}:=(t_j)_{j\in I_k}$，令 $u:=\sum_{j=1}^{d}t_je_j$。
+由\cref{prop:gaussian-vector-characteristic} 与\cref{prop:gaussian-vector-covariance-coordinates}，
+$\mu:=\Law(X_1,\ldots,X_d)$ 的特征函数为
+\[
+  \widehat\mu(t)=\E\bigl[e^{\iu\inner{u}{X}}\bigr]
+  =\exp\!\left(\iu\sum_{j=1}^{d}t_j\E[X_j]-\frac12\sum_{i,j=1}^{d}C_{ij}t_it_j\right).
+\]
+取只在 $I_k$ 上非零的 $t$，即得子向量 $X_{I_k}$ 的特征函数
+\[
+  \psi_k(t_{I_k})=\exp\!\left(\iu\sum_{j\in I_k}t_j\E[X_j]-\frac12\sum_{i,j\in I_k}C_{ij}t_it_j\right).
+\]
+
+设跨块的 $C_{ij}$ 全为零。则 $\widehat\mu(t)$ 中的二重和只剩块内的项，故
+$\widehat\mu(t)=\prod_{k=1}^{m}\psi_k(t_{I_k})$。另一方面，由 Fubini 定理，乘积测度
+$\nu:=\bigotimes_{k=1}^{m}\Law(X_{I_k})$ 的特征函数也是 $\prod_{k=1}^{m}\psi_k(t_{I_k})$。
+由\cref{thm:characteristic-uniqueness}，$\mu=\nu$，即 $X_{I_1},\ldots,X_{I_m}$ 相互独立。
+
+反之，设 $X_{I_1},\ldots,X_{I_m}$ 相互独立。若 $i\in I_k$、$j\in I_l$ 且 $k\ne l$，
+则 $X_i$ 与 $X_j$ 独立，故 $C_{ij}=\E\bigl[X_i-\E[X_i]\bigr]\,\E\bigl[X_j-\E[X_j]\bigr]=0$。
+\end{proof}
+
+\begin{proposition}[协方差算子]
+\label{prop:gaussian-covariance-operator}
+设 $X$ 是 $E$ 中的高斯向量。存在唯一的对称线性算子 $\gamma_X:E\to E$，使得
+\begin{equation}
+  \label{eq:gaussian-covariance-operator}
+  q_X(u)=\inner{u}{\gamma_X(u)},\qquad u\in E,
+\end{equation}
+称为 $X$ 的协方差算子。在任一正交规范基 $\mathbf e$ 下，
+$[\gamma_X]_{\mathbf e}=\bigl(\Cov(X_i,X_j)\bigr)_{1\le i,j\le d}$，其中 $X_j:=\inner{e_j}{X}$。
+此外，$\gamma_X$ 是半正定的，即 $\inner{u}{\gamma_X(u)}\ge0$ 对所有 $u\in E$ 成立；等价地，它的特征值都非负。
+\end{proposition}
+
+\begin{proof}
+记 $b_X$ 为 $q_X$ 对应的对称双线性形式（\cref{prop:gaussian-vector-parameters}）。
+
+\textbf{存在性。}
+取正交规范基 $\mathbf e$，令 $\gamma_X(v):=\sum_{i=1}^{d}b_X(e_i,v)\,e_i$。$\gamma_X$ 显然线性，
+且 $\inner{u}{\gamma_X(v)}=\sum_iu_i\,b_X(e_i,v)=b_X(u,v)$。由 $b_X$ 的对称性，$\gamma_X$ 是对称算子；
+取 $v=u$ 即得\cref{eq:gaussian-covariance-operator}。它的矩阵为
+$[\gamma_X]_{\mathbf e}=\bigl(b_X(e_i,e_j)\bigr)=\bigl(\Cov(X_i,X_j)\bigr)$
+（\cref{prop:gaussian-vector-covariance-coordinates}）。
+
+\textbf{唯一性。}
+若对称算子 $A$ 也满足 $q_X(u)=\inner{u}{A(u)}$，则 $(u,v)\mapsto\inner{u}{A(v)}$ 是以 $q_X$ 为二次型的对称双线性形式。
+由极化公式\cref{eq:polarization}，$\inner{u}{A(v)}=b_X(u,v)=\inner{u}{\gamma_X(v)}$ 对所有 $u,v$ 成立，故 $A=\gamma_X$。
+
+\textbf{半正定性。}
+$\inner{u}{\gamma_X(u)}=q_X(u)\ge0$。特别地，若 $\gamma_X(v)=\lambda v$ 且 $v\ne0$，则 $\lambda\norm{v}_E^2=q_X(v)\ge0$，故 $\lambda\ge0$；
+反之，由实谱定理，特征值都非负的对称算子 $A$ 满足 $\inner{u}{A(u)}\ge0$，故两种说法等价。
+\end{proof}
+
+\begin{remark}[中心化约定]
+\label{rem:centered-gaussian-convention}
+若 $X$ 是高斯向量，则 $X-m_X$ 是均值为零的高斯向量，且方差二次型与协方差算子都不变。
+因此在本章余下部分，我们只讨论中心高斯向量，即 $m_X=0$ 的高斯向量；
+相应地，以下的高斯变量、高斯过程与高斯空间都是中心的，“中心”二字有时省略。
+\end{remark}
+
+\begin{proposition}[给定协方差算子的高斯向量；原定理 1.3(i)]
+\label{prop:gaussian-covariance-existence}
+设 $\gamma:E\to E$ 是半正定的对称线性算子。则在适当选取的概率空间上，
+存在 $E$ 值中心高斯向量 $X$，使得 $\gamma_X=\gamma$。
+\end{proposition}
+
+\begin{proof}
+由实谱定理\cite[定理 7.29，第 245 页]{Axler2024}，存在 $E$ 的正交规范基 $(e_1,\ldots,e_d)$，
+使得 $\gamma(e_j)=\lambda_je_j$（$1\le j\le d$），且由半正定性，$\lambda_j=\inner{e_j}{\gamma(e_j)}\ge0$。
+在某个概率空间上取相互独立的标准高斯变量 $Z_1,\ldots,Z_d$
+（例如在 $(\R^d,\B(\R^d),\Normal(0,1)^{\otimes d})$ 上取坐标函数），令
+\[
+  X:=\sum_{j=1}^{d}\sqrt{\lambda_j}\,Z_j\,e_j.
+\]
+对 $u=\sum_ju_je_j\in E$，由\cref{prop:independent-gaussian-combination}，
+\[
+  \inner{u}{X}=\sum_{j=1}^{d}u_j\sqrt{\lambda_j}\,Z_j
+  \sim\Normal\!\left(0,\sum_{j=1}^{d}\lambda_ju_j^2\right)
+  =\Normal\bigl(0,\inner{u}{\gamma(u)}\bigr).
+\]
+因此 $X$ 是中心高斯向量；由\cref{prop:gaussian-vector-parameters} 中的唯一性，$q_X(u)=\inner{u}{\gamma(u)}$，
+再由\cref{prop:gaussian-covariance-operator} 中的唯一性，$\gamma_X=\gamma$。
+\end{proof}
+
+\begin{definition}[拓扑支撑与 $E$ 上的勒贝格测度]
+\label{def:support-euclidean-lebesgue}
+$E$ 上 Borel 概率测度 $\mu$ 的拓扑支撑定义为
+\[
+  \supp\mu:=\bigl\{x\in E:\text{对每个包含 $x$ 的开集 $U$，都有 $\mu(U)>0$}\bigr\}.
+\]
+记 $\Leb_d$ 为 $\R^d$ 上（限制在 $\B(\R^d)$ 上）的勒贝格测度。取 $E$ 的正交规范基
+$\mathbf e=(e_1,\ldots,e_d)$，令坐标同构 $\iota:\R^d\to E$，$\iota(y):=\sum_{j=1}^{d}y_je_j$，
+并定义 $E$ 上的勒贝格测度为推前测度
+\[
+  \Leb_E:=\iota_*\Leb_d,\qquad\text{即}\quad
+  \Leb_E(A):=\Leb_d\bigl(\iota^{-1}(A)\bigr),\quad A\in\B(E).
+\]
+两组正交规范基对应的坐标同构相差 $\R^d$ 上的一个正交变换，而勒贝格测度在正交变换下不变%
+\cite[练习 1.2.20--1.2.21，第 41 页]{Tao2011}，故 $\Leb_E$ 与基的选取无关。
+以下也把 $\Leb_E(\dd x)$ 记作 $\dd x$。
+\end{definition}
+
+\begin{proposition}[中心高斯向量的谱分解、支撑与密度；原定理 1.3(ii)]
+\label{prop:gaussian-spectral-support-density}
+设 $X$ 是 $E$ 中的中心高斯向量，$r:=\rank\gamma_X$。取 $E$ 的正交规范基
+$\mathbf e=(e_1,\ldots,e_d)$，使得
+\[
+  \gamma_X(e_j)=\lambda_je_j\quad(1\le j\le d),\qquad
+  \lambda_1\ge\cdots\ge\lambda_r>0=\lambda_{r+1}=\cdots=\lambda_d
+\]
+（由实谱定理及 $\gamma_X$ 的半正定性，这样的基存在）。令 $Y_j:=\inner{e_j}{X}$，$P_X:=\Law(X)$。则：
+\begin{enumerate}
+  \item $Y_1,\ldots,Y_d$ 相互独立，$Y_j\sim\Normal(0,\lambda_j)$，且 $X=\sum_{j=1}^{r}Y_je_j$ 几乎处处；
+  \item $\supp P_X=S:=\Span(e_1,\ldots,e_r)$，其中 $r=0$ 时约定 $S=\{0\}$；
+  \item $P_X\ll\Leb_E$ 当且仅当 $r=d$，即 $\gamma_X$ 可逆；此时 $P_X$ 的密度为
+    \begin{equation}
+      \label{eq:gaussian-vector-density}
+      p_X(x)=\frac{1}{(2\pi)^{d/2}\sqrt{\det\gamma_X}}
+        \exp\!\left(-\frac12\inner{x}{\gamma_X^{-1}(x)}\right),\qquad x\in E.
+    \end{equation}
+    当 $r<d$ 时，$P_X$ 与 $\Leb_E$ 相互奇异。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+记 $\iota$ 为这组基对应的坐标同构（\cref{def:support-euclidean-lebesgue}），$Y:=(Y_1,\ldots,Y_d)$，
+则 $X=\iota(Y)$。
+
+\textbf{第一步：坐标分解。}
+由\cref{prop:gaussian-vector-covariance-coordinates} 与\cref{prop:gaussian-covariance-operator}，
+$\E[Y_j]=\inner{e_j}{m_X}=0$，且 $\Cov(Y_i,Y_j)=\inner{e_i}{\gamma_X(e_j)}$，它在 $i=j$ 时等于 $\lambda_j$，在 $i\ne j$ 时等于 $0$。
+每个 $Y_j$ 是高斯变量，故 $Y_j\sim\Normal(0,\lambda_j)$；协方差矩阵是对角的，由%
+\cref{prop:gaussian-diagonal-independence}，$Y_1,\ldots,Y_d$ 相互独立。
+当 $j>r$ 时，$Y_j\sim\Normal(0,0)$，即 $Y_j=0$ 几乎处处，因此 $X=\sum_{j\le r}Y_je_j$ 几乎处处。
+
+\textbf{第二步：拓扑支撑。}
+$S$ 是闭集，且由第一步，$P_X(S)=1$。若 $x\notin S$，则 $x$ 有与 $S$ 不交的开邻域，
+其 $P_X$ 测度为零，故 $\supp P_X\subseteq S$。反之，设 $x=\sum_{j\le r}x_je_j\in S$
+（并令 $x_j:=0$，$j>r$），$U$ 是 $x$ 的开邻域。因为 $\iota$ 是同胚，存在 $\delta>0$，使得
+$R_\delta:=\iota\bigl(\prod_{j=1}^{d}(x_j-\delta,x_j+\delta)\bigr)\subseteq U$。由坐标的独立性，
+\[
+  P_X(U)\ge P_X(R_\delta)=\prod_{j=1}^{d}\Prob\bigl(\abs{Y_j-x_j}<\delta\bigr)>0,
+\]
+这是因为 $j\le r$ 时 $Y_j$ 的密度处处为正，而 $j>r$ 时 $Y_j=0=x_j$ 几乎处处，相应的因子为 $1$
+（$r=0$ 时上式即 $P_X(U)=1$）。故 $S\subseteq\supp P_X$。
+
+\textbf{\boldmath 第三步：$r<d$ 时的奇异性。}
+此时 $\iota^{-1}(S)=\R^r\times\{0\}^{d-r}$ 包含于超平面 $\{y\in\R^d:y_d=0\}$，
+后者是可数个 $\Leb_d$ 零测集 $[-k,k]^{d-1}\times\{0\}$（$k\ge1$）的并，因而 $\Leb_d$ 测度为零。
+故 $\Leb_E(S)=0$，而 $P_X(S)=1$，所以 $P_X\perp\Leb_E$，特别地 $P_X\not\ll\Leb_E$。
+
+\textbf{\boldmath 第四步：$r=d$ 时的密度。}
+此时 $\gamma_X$ 可逆，$\det\gamma_X=\prod_{j}\lambda_j$，且
+$\inner{\iota(y)}{\gamma_X^{-1}(\iota(y))}=\sum_jy_j^2/\lambda_j$。由第一步，$Y$ 具有乘积密度
+$\prod_{j=1}^{d}(2\pi\lambda_j)^{-1/2}e^{-y_j^2/(2\lambda_j)}$。
+对任意非负 Borel 函数 $g:E\to[0,\infty]$，利用推前测度的积分公式%
+\cite[练习 1.4.38(ii)，第 103 页]{Tao2011}，
+\[
+  \E[g(X)]=\int_{\R^d}g(\iota(y))\,
+    \frac{\exp\bigl(-\frac12\inner{\iota(y)}{\gamma_X^{-1}(\iota(y))}\bigr)}{(2\pi)^{d/2}\sqrt{\det\gamma_X}}\,\dd y
+  =\int_Eg(x)\,p_X(x)\,\dd x.
+\]
+取 $g=\ind{A}$（$A\in\B(E)$），得 $P_X(A)=\int_Ap_X(x)\,\dd x$，故 $P_X\ll\Leb_E$。结合第三步即得 (3)。
+\end{proof}
+
+\section{高斯过程与高斯空间}
+\label{sec:gaussian-processes-spaces}
+
+按\cref{rem:centered-gaussian-convention}，本节与下一节的高斯变量、高斯向量都是中心的。
+对 $\F$ 的子 $\sigma$ 代数 $\G$，记 $L^2(\G):=L^2(\Omega,\G,\Prob|_{\G})$，
+并把它视为 $L^2(\Omega,\F,\Prob)$ 中具有 $\G$ 可测代表元的元素组成的子空间。
+
+\begin{definition}[高斯空间]
+\label{def:gaussian-space}
+若 $\Hcal$ 是 $L^2(\Omega,\F,\Prob)$ 的闭线性子空间（闭性相对于 $L^2$ 范数），
+且 $\Hcal$ 的每个元素都是中心高斯变量，则称 $\Hcal$ 为（中心）高斯空间。
+\end{definition}
+
+\begin{example}[高斯向量的坐标张成的空间]
+\label{ex:gaussian-coordinate-span}
+设 $X=(X_1,\ldots,X_d)$ 是 $\R^d$ 值中心高斯向量，则 $\Hcal:=\Span\{X_1,\ldots,X_d\}$ 是高斯空间。
+\end{example}
+
+\begin{proof}
+由\cref{prop:gaussian-all-lp}，各 $X_j$ 属于 $L^2$，故 $\Hcal$ 是 $L^2$ 的有限维线性子空间，因而是闭的。
+由高斯向量的定义，任意 $\sum_ja_jX_j$ 都是高斯变量，且期望为 $\sum_ja_j\E[X_j]=0$。
+\end{proof}
+
+\begin{example}[中心的 $\G$ 可测平方可积变量未必构成高斯空间]
+\label{ex:centered-measurable-not-gaussian-space}
+在概率空间
+\[
+  (\Omega,\F,\Prob):=\bigl(\R^d,\B(\R^d),\Normal(0,1)^{\otimes d}\bigr)
+\]
+上取恒同映射 $X=(X_1,\ldots,X_d)$。由\cref{prop:independent-gaussian-combination}，$X$ 是中心高斯向量。
+令 $\G:=\sigma(X_1,\ldots,X_d)$，则
+\[
+  L^2_0(\G):=\{Y\in L^2(\G):\E[Y]=0\}
+\]
+是 $L^2(\Omega,\F,\Prob)$ 的闭线性子空间，但不是高斯空间。
+\end{example}
+
+\begin{proof}
+$L^2(\G)$ 本身是 Hilbert 空间，作为 $L^2(\Omega,\F,\Prob)$ 的完备子空间是闭的；
+又 $Y\mapsto\E[Y]$ 是 $L^2$ 上的连续线性泛函（$\abs{\E[Y]}\le\norm{Y}_2$），其零空间是闭的。
+$L^2_0(\G)$ 是这两个闭子空间之交，故为闭线性子空间。
+
+令 $W:=X_1^2-1$，它是 $\G$ 可测的。由\cref{cor:gaussian-moments}，$\E[W]=0$，
+$\E[W^2]=\E[X_1^4]-2\E[X_1^2]+1=2$，故 $W\in L^2_0(\G)$。若 $W$ 是高斯变量，
+则由\cref{prop:gaussian-all-lp}，$W\sim\Normal(0,2)$，其密度处处为正，于是 $\Prob(W<-1)>0$；
+但 $W\ge-1$，矛盾。所以 $L^2_0(\G)$ 不是高斯空间。
+\end{proof}
+
+\begin{definition}[随机过程]
+\label{def:stochastic-process}
+设 $(E,\mathcal{E})$ 是可测空间，$T$ 是指标集。以 $T$ 为指标的 $E$ 值随机过程是指一族可测映射
+$X_t:(\Omega,\F)\to(E,\mathcal{E})$（$t\in T$），记为 $X=(X_t)_{t\in T}$。
+若无特别说明，取 $E=\R$、$\mathcal{E}=\B(\R)$，即实值随机过程。
+最常见的指标集是 $\R_+:=[0,\infty)$ 或 $\R$ 中其他（可以无界的）区间。
+\end{definition}
+
+\begin{definition}[高斯过程]
+\label{def:gaussian-process}
+实值随机过程 $X=(X_t)_{t\in T}$ 称为（中心）高斯过程，如果对任意整数 $n\ge1$、
+任意 $t_1,\ldots,t_n\in T$ 及 $a_1,\ldots,a_n\in\R$，$\sum_{j=1}^{n}a_jX_{t_j}$ 都是中心高斯变量；
+等价地，每个有限维向量 $(X_{t_1},\ldots,X_{t_n})$ 都是中心高斯向量。
+\end{definition}
+
+\begin{proposition}[高斯过程生成的高斯空间]
+\label{prop:gaussian-process-generated-space}
+设 $X=(X_t)_{t\in T}$ 是中心高斯过程。则
+\[
+  \Hcal_X:=\overline{\Span\{X_t:t\in T\}}^{\,L^2}
+\]
+是高斯空间，称为由 $X$ 生成的高斯空间。
+\end{proposition}
+
+\begin{proof}
+由\cref{prop:gaussian-all-lp}，每个 $X_t$ 都属于 $L^2$；而线性子空间的闭包仍是闭线性子空间，
+故只需证明 $\Hcal_X$ 的每个元素 $Y$ 都是中心高斯变量。
+取 $Y_n\in\Span\{X_t:t\in T\}$ 使 $Y_n\Lpto{2}Y$。由高斯过程的定义，每个 $Y_n$ 都是中心高斯变量；
+由\cref{prop:gaussian-l2-limit}，$Y$ 是高斯变量，且 $\E[Y]=\lim_n\E[Y_n]=0$。
+\end{proof}
+
+\begin{definition}[生成的 $\sigma$ 代数]
+\label{def:sigma-algebra-generated-by-sets}
+\label{def:sigma-algebra-generated-by-variables}
+设 $\mathcal C$ 是 $\Omega$ 的子集族。包含 $\mathcal C$ 的最小 $\sigma$ 代数
+\[
+  \sigma(\mathcal C):=\bigcap\bigl\{\A:\A\text{ 是 $\Omega$ 上的 $\sigma$ 代数，且 }\mathcal C\subseteq\A\bigr\}
+\]
+称为 $\mathcal C$ 生成的 $\sigma$ 代数。设 $H$ 是一族实随机变量（或其几乎处处等价类），令
+\[
+  \sigma(H):=\sigma\bigl(\bigl\{Y^{-1}(B):\ Y\text{ 是 $H$ 中某个元素的 $\F$ 可测代表元},\ B\in\B(\R)\bigr\}\bigr),
+\]
+也就是使 $H$ 中所有元素的所有代表元都可测的最小 $\sigma$ 代数，称为 $H$ 生成的 $\sigma$ 代数；
+它是 $\F$ 的子 $\sigma$ 代数。若 $H$ 非空，$\sigma(H)$ 恰由任意取定的一组代表元生成的通常 $\sigma$ 代数
+与 $\F$ 中全体零测集共同生成。对一族取定的随机变量，$\sigma(X_1,X_2)$、$\F_s^X$ 等仍按通常意义理解；
+它们与相应的 $\sigma(H)$ 只相差零测集，因此对应的 $L^2$ 空间相同，条件期望几乎处处相等。
+\end{definition}
+
+下面的定理推广了\cref{prop:gaussian-diagonal-independence}：把有限个高斯坐标换成同一个高斯空间中的一族线性子空间，
+正交性仍然等价于所生成的 $\sigma$ 代数相互独立。
+
+\begin{theorem}[高斯子空间的正交性与独立性]
+\label{thm:gaussian-subspaces-orthogonality-independence}
+设 $\Hcal$ 是高斯空间，$(H_i)_{i\in I}$ 是 $\Hcal$ 的一族线性子空间（不要求闭）。
+则 $(H_i)_{i\in I}$ 两两正交，即
+\[
+  \E[UV]=0,\qquad U\in H_i,\ V\in H_j,\ i\ne j,
+\]
+当且仅当 $\sigma$ 代数族 $(\sigma(H_i))_{i\in I}$ 相互独立，即对任意整数 $m\ge1$、
+互异的 $i_1,\ldots,i_m\in I$ 及任意 $A_k\in\sigma(H_{i_k})$，
+\begin{equation}
+  \label{eq:gaussian-subspace-sigma-independence}
+  \Prob\!\left(\bigcap_{k=1}^{m}A_k\right)=\prod_{k=1}^{m}\Prob(A_k).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+\textbf{独立性推出正交性。}
+若 $i\ne j$、$U\in H_i$、$V\in H_j$，则 $U$ 与 $V$ 独立且可积，故
+$\E[UV]=\E[U]\E[V]=0$，最后一步是因为 $\Hcal$ 中的变量都是中心的。
+
+\textbf{正交性推出独立性。}
+设 $(H_i)_{i\in I}$ 两两正交。按定义只需考虑有限个互异指标，不妨记为 $1,\ldots,m$（$m\ge2$）。
+对每个 $k$，令 $\mathcal C_k$ 为所有形如
+\[
+  \bigcap_{j=1}^{n}U_j^{-1}(B_j),\qquad
+  n\ge1,\quad U_j\text{ 是 $H_k$ 中元素的代表元},\quad B_j\in\B(\R)
+\]
+的集合组成的族。$\mathcal C_k$ 对有限交封闭且含 $\Omega$，因而是 $\pi$ 系统，且 $\sigma(\mathcal C_k)=\sigma(H_k)$。
+
+\textbf{\boldmath 第一步：$\pi$ 系统上的乘积公式。}
+任取 $C_k\in\mathcal C_k$（$1\le k\le m$），将其写成 $C_k=\{Z_k\in R_k\}$，其中
+$Z_k:=(U^{(k)}_1,\ldots,U^{(k)}_{n_k})$ 由 $H_k$ 中元素的代表元组成，$R_k$ 是 $\R^{n_k}$ 中的 Borel 矩形。
+所有坐标都属于 $\Hcal$，其任意线性组合仍属于 $\Hcal$，故拼接得到的向量 $Z:=(Z_1,\ldots,Z_m)$ 是中心高斯向量；
+由正交性，不同块的坐标之间协方差为零。由\cref{prop:gaussian-diagonal-independence}，$Z_1,\ldots,Z_m$ 相互独立，从而
+\begin{equation}
+  \label{eq:gaussian-subspace-cylinder-independence}
+  \Prob\!\left(\bigcap_{k=1}^{m}C_k\right)=\prod_{k=1}^{m}\Prob(C_k),
+  \qquad C_k\in\mathcal C_k.
+\end{equation}
+
+\textbf{\boldmath 第二步：扩张到生成的 $\sigma$ 代数。}
+这是标准的 $\pi$--$\lambda$ 论证\cite[\S2.1]{Durrett2019}，对指标逐个进行。
+设对某个 $k$，乘积公式已对所有 $A_l\in\sigma(H_l)$（$l<k$）与 $A_l\in\mathcal C_l$（$l\ge k$）成立
+（$k=1$ 时这正是\cref{eq:gaussian-subspace-cylinder-independence}）。固定这样的 $A_l$（$l\ne k$），令
+$F:=\bigcap_{l\ne k}A_l$，$c:=\prod_{l\ne k}\Prob(A_l)$，并令
+\[
+  \mathcal D:=\{A\in\sigma(H_k):\Prob(A\cap F)=\Prob(A)\,c\}.
+\]
+由假设，$\mathcal C_k\subseteq\mathcal D$，特别地 $\Omega\in\mathcal D$。由概率的可加性与连续性，
+$\mathcal D$ 对差集（$A\subseteq B$ 时的 $B\setminus A$）和单调递增序列的并封闭，故 $\mathcal D$ 是 $\lambda$ 系统。
+由 $\pi$--$\lambda$ 定理\cite[定理 2.1.6，第 46 页；证明见定理 A.1.4，第 456--457 页]{Durrett2019}，
+$\sigma(H_k)=\sigma(\mathcal C_k)\subseteq\mathcal D$，即乘积公式对任意 $A_k\in\sigma(H_k)$ 也成立。
+依次对 $k=1,\ldots,m$ 进行，便得到\cref{eq:gaussian-subspace-sigma-independence}。
+\end{proof}
+
+\begin{corollary}[高斯空间中的条件期望与正交投影]
+\label{cor:gaussian-conditional-projection}
+设 $\Hcal$ 是高斯空间，$K\subseteq\Hcal$ 是闭线性子空间，$p_K$ 为 $L^2$ 中到 $K$ 的正交投影，
+$\G:=\sigma(K)$。对 $X\in\Hcal$，记 $\sigma^2:=\E\bigl[(X-p_K(X))^2\bigr]$（$\sigma\ge0$）。则：
+\begin{enumerate}
+  \item 记 $p_{L^2(\G)}$ 为到 $L^2(\G)$ 的正交投影，则
+    \begin{equation}
+      \label{eq:gaussian-conditional-projection}
+      p_{L^2(\G)}(X)=\Econd{X}{\G}=p_K(X).
+    \end{equation}
+  \item 设 $f:\R\to\R$ 是 Borel 函数，且 $\E[\abs{f(X)}]<\infty$。当 $\sigma>0$ 时，
+    \begin{equation}
+      \label{eq:gaussian-conditional-integral}
+      \Econd{f(X)}{\G}
+      =\int_{\R}f\bigl(y+p_K(X)\bigr)\,\frac1\sigma\,\varphi\!\left(\frac y\sigma\right)\dd y
+      =\int_{\R}f(y)\,\frac1\sigma\,\varphi\!\left(\frac{y-p_K(X)}{\sigma}\right)\dd y;
+    \end{equation}
+    当 $\sigma=0$ 时，$\Econd{f(X)}{\G}=f(p_K(X))$。
+    对任意非负 Borel 函数 $f$（允许取值 $+\infty$），同样的公式成立。
+\end{enumerate}
+以上条件期望的等式均在几乎处处意义下理解。
+\end{corollary}
+
+\begin{proof}
+记 $M:=p_K(X)\in K$，$R:=X-M$。由于 $X,M\in\Hcal$，有 $R\in\Hcal$，且 $R\perp K$。
+
+\textbf{(1)} 第一个等号是条件期望的 $L^2$ 投影刻画\cite[定理 4.1.15，第 213 页]{Durrett2019}。
+对线性子空间 $\Span\{R\}$ 与 $K$ 应用\cref{thm:gaussian-subspaces-orthogonality-independence}，
+$R$ 与 $\G$ 独立；而 $M$ 是 $\G$ 可测的，故
+\[
+  \Econd{X}{\G}=\Econd{R}{\G}+\Econd{M}{\G}=\E[R]+M=M.
+\]
+
+\textbf{(2)} 我们使用独立变量的条件积分公式：若 $U$ 是 $\G$ 可测的，$V$ 与 $\G$ 独立且 $\Law(V)=\mu$，
+则对使 $h(U,V)$ 可积的 Borel 函数 $h$，或任意非负 Borel 函数 $h$，
+\[
+  \Econd{h(U,V)}{\G}=\int_{\R}h(U,v)\,\mu(\dd v),
+\]
+即把 $U$ 视为常数，只对独立变量 $V$ 积分。\footnote{%
+  $\G=\sigma(U)$ 的情形见\cite[例 4.1.7，第 209--210 页]{Durrett2019}；
+  一般的 $\G$ 可由同书例 4.1.4（第 208 页）与定理 4.1.14（第 212 页）先对矩形的示性函数验证，
+  再用单调类方法推广得到。}
+取 $U=M$、$V=R$、$h(u,v)=f(u+v)$。由于 $R\in\Hcal$ 且 $\E[R^2]=\sigma^2$，有 $R\sim\Normal(0,\sigma^2)$。
+当 $\sigma>0$ 时，代入 $R$ 的密度即得\cref{eq:gaussian-conditional-integral} 中的第一个积分，
+再作平移换元得到第二个积分；当 $\sigma=0$ 时，$R=0$ 几乎处处，结论显然。
+\end{proof}
+
+\begin{example}[用两个高斯变量最佳逼近第三个]
+\label{ex:gaussian-best-l2-approximation}
+设 $(X_1,X_2,X_3)$ 是中心高斯向量，记
+\[
+  c_{ij}:=\Cov(X_i,X_j)=\E[X_iX_j]\quad(1\le i,j\le3),\qquad \G:=\sigma(X_1,X_2).
+\]
+在 $L^2(\G)$ 中寻找 $X_3$ 的最佳逼近，即求 $\widehat X_3\in L^2(\G)$，使得
+\[
+  \E\bigl[(X_3-\widehat X_3)^2\bigr]=\inf_{Y\in L^2(\G)}\E\bigl[(X_3-Y)^2\bigr].
+\]
+这样的 $\widehat X_3$ 几乎处处唯一，且可取为 $\widehat X_3=aX_1+bX_2$，其中 $(a,b)$ 是正规方程组
+\begin{equation}
+  \label{eq:gaussian-regression-normal-equations}
+  \begin{pmatrix}c_{11}&c_{12}\\c_{12}&c_{22}\end{pmatrix}
+  \begin{pmatrix}a\\b\end{pmatrix}
+  =\begin{pmatrix}c_{13}\\c_{23}\end{pmatrix}
+\end{equation}
+的任一解。特别地，当 $D:=c_{11}c_{22}-c_{12}^2>0$ 时，
+\begin{equation}
+  \label{eq:gaussian-regression-coefficients}
+  a=\frac{c_{22}c_{13}-c_{12}c_{23}}{D},\qquad
+  b=\frac{c_{11}c_{23}-c_{12}c_{13}}{D}.
+\end{equation}
+最小均方误差为 $\E\bigl[(X_3-\widehat X_3)^2\bigr]=c_{33}-ac_{13}-bc_{23}$。
+\end{example}
+
+\begin{proof}
+令 $\Hcal:=\Span\{X_1,X_2,X_3\}$，$K:=\Span\{X_1,X_2\}$。由\cref{ex:gaussian-coordinate-span}，
+$\Hcal$ 是高斯空间；$K$ 是有限维的，因而是闭的。按\cref{def:sigma-algebra-generated-by-sets}，
+$\sigma(K)$ 由 $X_1,X_2$ 的线性组合的所有代表元生成，这些代表元与 $\G$ 可测函数只在零测集上不同，
+故 $L^2(\sigma(K))=L^2(\G)$。于是 $L^2(\G)$ 中的最佳逼近就是正交投影 $p_{L^2(\G)}(X_3)$（几乎处处唯一），
+由\cref{cor:gaussian-conditional-projection}，它等于 $p_K(X_3)$。
+
+由于 $K=\Span\{X_1,X_2\}$，$p_K(X_3)$ 可写成 $aX_1+bX_2$ 的形式；而 $aX_1+bX_2=p_K(X_3)$ 当且仅当
+$X_3-aX_1-bX_2$ 与 $X_1,X_2$ 都正交，展开即为\cref{eq:gaussian-regression-normal-equations}。
+因此正规方程组总有解，且任一解都给出同一个 $\widehat X_3$（$D=0$ 时系数不唯一，但 $aX_1+bX_2$ 作为 $L^2$ 元素唯一）。
+当 $D>0$ 时系数矩阵可逆，解出即得\cref{eq:gaussian-regression-coefficients}。
+最后，由 $X_3-\widehat X_3\perp\widehat X_3$，
+\[
+  \E\bigl[(X_3-\widehat X_3)^2\bigr]=\E\bigl[(X_3-\widehat X_3)X_3\bigr]=c_{33}-ac_{13}-bc_{23}.\qedhere
+\]
+\end{proof}
+
+\begin{definition}[高斯过程的协方差函数]
+\label{def:gaussian-process-covariance}
+设 $X=(X_t)_{t\in T}$ 是中心高斯过程。称函数
+\[
+  \Gamma(s,t):=\Cov(X_s,X_t)=\E[X_sX_t],\qquad s,t\in T,
+\]
+为 $X$ 的协方差函数。
+\end{definition}
+
+\begin{definition}[对称半正定核]
+\label{def:symmetric-positive-kernel}
+设 $T$ 是指标集。称函数 $\Gamma:T\times T\to\R$ 为对称半正定核（也称对称非负定核），
+如果 $\Gamma(s,t)=\Gamma(t,s)$ 对所有 $s,t\in T$ 成立，并且对任意整数 $n\ge1$、
+任意 $t_1,\ldots,t_n\in T$ 及 $c_1,\ldots,c_n\in\R$，都有
+\[
+  \sum_{i,j=1}^{n}c_ic_j\Gamma(t_i,t_j)\ge0.
+\]
+\end{definition}
+
+\begin{proposition}[协方差函数是对称半正定核]
+\label{prop:gaussian-process-finite-covariance}
+设中心高斯过程 $X=(X_t)_{t\in T}$ 的协方差函数为 $\Gamma$。则对任意 $t_1,\ldots,t_n\in T$，
+高斯向量 $(X_{t_1},\ldots,X_{t_n})$ 的协方差矩阵为 $\bigl(\Gamma(t_i,t_j)\bigr)_{1\le i,j\le n}$，
+且 $\Gamma$ 是对称半正定核。
+\end{proposition}
+
+\begin{proof}
+第一个结论就是协方差函数的定义。$\Gamma$ 显然对称，且
+$\sum_{i,j}c_ic_j\Gamma(t_i,t_j)=\E\bigl[\bigl(\sum_ic_iX_{t_i}\bigr)^2\bigr]\ge0$。
+\end{proof}
+
+\begin{proposition}[给定协方差函数的高斯过程；原定理 1.11]
+\label{prop:gaussian-process-covariance-existence}
+设 $T$ 是任意指标集，$\Gamma:T\times T\to\R$ 是对称半正定核。则在适当选取的概率空间上，
+存在中心高斯过程 $X=(X_t)_{t\in T}$，使得 $\E[X_sX_t]=\Gamma(s,t)$ 对所有 $s,t\in T$ 成立。
+\end{proposition}
+
+这一结论的证明基于 Kolmogorov 延拓定理，此处从略，见\cite[定理 1.11]{LeGall2016}。
+
+\begin{definition}[平稳过程]
+\label{def:stationary-process}
+实值随机过程 $X=(X_t)_{t\in\R}$ 称为平稳的（stationary），如果对任意整数 $n\ge1$、
+任意 $t_1,\ldots,t_n\in\R$ 及 $h\in\R$，都有
+\[
+  (X_{t_1+h},\ldots,X_{t_n+h})\deq(X_{t_1},\ldots,X_{t_n}).
+\]
+这是有限维分布意义下的平稳性，也称严格平稳性。
+\end{definition}
+
+\begin{example}[有限对称测度给出的平稳高斯过程]
+\label{ex:stationary-gaussian-spectral-measure}
+设 $\mu$ 是 $\R$ 上的有限 Borel 测度，且关于原点对称，即 $\mu(A)=\mu(-A)$ 对每个 $A\in\B(\R)$ 成立。令
+\begin{equation}
+  \label{eq:stationary-gaussian-spectral-kernel}
+  \Gamma(s,t):=\int_{\R}e^{\iu\xi(t-s)}\,\mu(\dd\xi),\qquad s,t\in\R.
+\end{equation}
+则 $\Gamma$ 是实值的对称半正定核，因而是某个中心高斯过程 $X=(X_t)_{t\in\R}$ 的协方差函数；
+这个过程是平稳的，且 $r(h):=\E[X_0X_h]$ 是 $\R$ 上的连续函数。
+\end{example}
+
+\begin{proof}
+记 $\rho(\xi):=-\xi$，则 $\mu$ 的对称性即 $\rho_*\mu=\mu$。由推前测度的积分公式%
+\cite[练习 1.4.38(ii)，第 103 页]{Tao2011}，
+\[
+  \Gamma(s,t)=\int_{\R}e^{\iu\xi(t-s)}\,\mu(\dd\xi)
+  =\int_{\R}e^{\iu\xi(s-t)}\,\mu(\dd\xi)=\Gamma(t,s).
+\]
+又 $\Gamma(t,s)=\overline{\Gamma(s,t)}$，所以 $\Gamma$ 实值且对称。对 $t_1,\ldots,t_n\in\R$ 与 $c_1,\ldots,c_n\in\R$，
+\[
+  \sum_{j,k=1}^{n}c_jc_k\Gamma(t_j,t_k)
+  =\int_{\R}\sum_{j,k=1}^{n}c_jc_k\,e^{\iu\xi(t_k-t_j)}\,\mu(\dd\xi)
+  =\int_{\R}\abs*{\sum_{j=1}^{n}c_je^{\iu\xi t_j}}^2\mu(\dd\xi)\ge0.
+\]
+由\cref{prop:gaussian-process-covariance-existence}，存在以 $\Gamma$ 为协方差函数的中心高斯过程 $X$。
+
+由于 $\Gamma(s+h,t+h)=\Gamma(s,t)$，对任意 $t_1,\ldots,t_n,h\in\R$，中心高斯向量
+$(X_{t_1+h},\ldots,X_{t_n+h})$ 与 $(X_{t_1},\ldots,X_{t_n})$ 有相同的协方差矩阵，
+由\cref{prop:gaussian-vector-characteristic}，二者同分布，即 $X$ 平稳。
+
+最后，若 $h_n\to h$，则 $e^{\iu\xi h_n}\to e^{\iu\xi h}$ 且模恒为 $1$，而 $\mu(\R)<\infty$，
+由控制收敛定理，$r(h_n)=\Gamma(0,h_n)\to\Gamma(0,h)=r(h)$。
+\end{proof}
+
+\begin{proposition}[平稳高斯过程的谱表示]
+\label{prop:stationary-gaussian-bochner}
+设 $X=(X_t)_{t\in\R}$ 是中心平稳高斯过程，且 $r(h):=\E[X_0X_h]$ 在 $h=0$ 处连续。
+则存在唯一的有限对称 Borel 测度 $\mu$，使得
+\[
+  \Gamma(s,t)=r(t-s)=\int_{\R}e^{\iu\xi(t-s)}\,\mu(\dd\xi),\qquad s,t\in\R.
+\]
+称 $\mu$ 为该过程的谱测度，其总质量为 $\mu(\R)=r(0)=\E[X_0^2]$。
+\end{proposition}
+
+\begin{proof}
+由平稳性，$\Gamma(s,t)=\E[X_sX_t]=\E[X_0X_{t-s}]=r(t-s)$；由协方差的对称性，$r(-h)=r(h)$。
+由 Cauchy--Schwarz 不等式及平稳性，
+\[
+  \abs{r(t+h)-r(t)}=\abs{\E[X_0(X_{t+h}-X_t)]}
+  \le\sqrt{r(0)}\,\sqrt{2\bigl(r(0)-r(h)\bigr)},
+\]
+所以 $r$ 在原点的连续性蕴含它在整个 $\R$ 上连续。由\cref{prop:gaussian-process-finite-covariance}，
+核 $(s,t)\mapsto r(t-s)$ 半正定。又 $r$ 实值且为偶函数，对复系数 $c_j=a_j+\iu b_j$（$a_j,b_j\in\R$），
+\[
+  \sum_{j,k=1}^{n}c_j\overline{c_k}\,r(t_j-t_k)=\sum_{j,k=1}^{n}(a_ja_k+b_jb_k)\,r(t_j-t_k)\ge0,
+\]
+其中虚部 $\sum_{j,k}(b_ja_k-a_jb_k)\,r(t_j-t_k)$ 因 $r$ 为偶函数而抵消为零；即 $r$ 是 Bochner 意义下的正定函数。
+由 Bochner 定理\cite[定理 1.12.14，第 205 页]{Tao2010}（原书使用 $e^{2\pi\iu\xi h}$ 的约定，改换频率变量即为此处的形式），
+连续正定函数恰是有限测度的 Fourier 变换，故存在有限测度 $\mu$ 使
+$r(h)=\int_{\R}e^{\iu\xi h}\,\mu(\dd\xi)$；取 $h=0$ 得 $\mu(\R)=r(0)$。
+若 $r(0)=0$，则 $\mu=0$；否则对总质量归一化后应用\cref{thm:characteristic-uniqueness}，可知 $\mu$ 唯一。
+又 $r$ 是偶函数，$\rho_*\mu$（$\rho(\xi):=-\xi$）与 $\mu$ 有相同的 Fourier 变换，
+故 $\rho_*\mu=\mu$，即 $\mu$ 对称。
+\end{proof}
+
+\begin{remark}[谱表示中的连续性条件]
+\label{rem:bochner-continuity-needed}
+\cref{prop:stationary-gaussian-bochner} 中的连续性假设不能去掉。例如，以 $\R$ 为指标、相互独立的一族标准高斯变量
+构成平稳高斯过程，其协方差为 $\Gamma(s,t)=\ind{\{s=t\}}$，即 $r(h)=\ind{\{h=0\}}$。
+这个函数在原点不连续；而由控制收敛定理，有限测度的 Fourier 变换必连续，
+故 $r$ 不具有\cref{eq:stationary-gaussian-spectral-kernel} 形式的表示。
+\end{remark}
+
+\section{高斯白噪声}
+\label{sec:gaussian-white-noise}
+
+\begin{definition}[高斯白噪声]
+\label{def:gaussian-white-noise}
+设 $(E,\mathcal{E},\mu)$ 是 $\sigma$ 有限测度空间，记 $L^2(\mu):=L^2(E,\mathcal{E},\mu)$，
+其内积为 $\inner{f}{g}_{L^2(\mu)}:=\int_Efg\,\dd\mu$。设 $\Hcal\subseteq L^2(\Omega,\F,\Prob)$ 是高斯空间。
+称线性等距映射
+\[
+  G:L^2(\mu)\to\Hcal,\qquad \norm{G(f)}_{L^2(\Prob)}=\norm{f}_{L^2(\mu)}\quad\bigl(f\in L^2(\mu)\bigr)
+\]
+为强度为 $\mu$ 的高斯白噪声。
+\end{definition}
+
+\begin{proposition}[高斯白噪声的分布与协方差]
+\label{prop:gaussian-white-noise-covariance}
+设 $G$ 是强度为 $\mu$ 的高斯白噪声。对任意 $f,g\in L^2(\mu)$，
+\[
+  G(f)\sim\Normal\bigl(0,\norm{f}_{L^2(\mu)}^2\bigr),\qquad
+  \Cov\bigl(G(f),G(g)\bigr)=\inner{f}{g}_{L^2(\mu)}=\int_Efg\,\dd\mu.
+\]
+特别地，对 $A\in\mathcal{E}$ 且 $\mu(A)<\infty$，记 $G(A):=G(\ind{A})$，则 $G(A)\sim\Normal(0,\mu(A))$。
+\end{proposition}
+
+\begin{proof}
+$G(f)\in\Hcal$ 是中心高斯变量，由等距性，$\Var(G(f))=\norm{G(f)}_{L^2(\Prob)}^2=\norm{f}_{L^2(\mu)}^2$，
+这给出了 $G(f)$ 的分布。在两个 $L^2$ 空间中分别使用极化恒等式，并利用 $G$ 的线性与等距性，
+\begin{align*}
+  \Cov\bigl(G(f),G(g)\bigr)=\E[G(f)G(g)]
+  &=\frac12\Bigl(\norm{G(f+g)}_{L^2(\Prob)}^2-\norm{G(f)}_{L^2(\Prob)}^2-\norm{G(g)}_{L^2(\Prob)}^2\Bigr)\\
+  &=\frac12\Bigl(\norm{f+g}_{L^2(\mu)}^2-\norm{f}_{L^2(\mu)}^2-\norm{g}_{L^2(\mu)}^2\Bigr)
+   =\inner{f}{g}_{L^2(\mu)}.
+\end{align*}
+最后注意 $\norm{\ind{A}}_{L^2(\mu)}^2=\mu(A)$。
+\end{proof}
+
+\begin{proposition}[不交集上的白噪声相互独立]
+\label{prop:gaussian-white-noise-disjoint-independence}
+设 $G$ 是强度为 $\mu$ 的高斯白噪声，$A_1,\ldots,A_n\in\mathcal{E}$ 两两不交，且 $\mu(A_j)<\infty$。
+则 $\bigl(G(A_1),\ldots,G(A_n)\bigr)$ 是中心高斯向量，其协方差矩阵为
+$\diag\bigl(\mu(A_1),\ldots,\mu(A_n)\bigr)$，从而 $G(A_1),\ldots,G(A_n)$ 相互独立。
+\end{proposition}
+
+\begin{proof}
+各 $G(A_j)$ 属于同一个高斯空间 $\Hcal$，其线性组合仍属于 $\Hcal$，故它们组成中心高斯向量。
+由\cref{prop:gaussian-white-noise-covariance}，
+$\Cov\bigl(G(A_i),G(A_j)\bigr)=\int_E\ind{A_i}\ind{A_j}\,\dd\mu=\mu(A_i\cap A_j)$，当 $i\ne j$ 时为 $0$。
+再由\cref{prop:gaussian-diagonal-independence} 即得独立性。
+\end{proof}
+
+\begin{proposition}[高斯白噪声的可列可加性]
+\label{prop:gaussian-white-noise-countable-additivity}
+设 $G$ 是强度为 $\mu$ 的高斯白噪声，$A\in\mathcal{E}$，$\mu(A)<\infty$。
+若 $A=\bigsqcup_{j=1}^{\infty}A_j$，其中 $A_j\in\mathcal{E}$ 两两不交，则
+\[
+  G(A)=\sum_{j=1}^{\infty}G(A_j),
+\]
+级数在 $L^2(\Prob)$ 中收敛。
+\end{proposition}
+
+\begin{proof}
+令 $R_n:=A\setminus\bigcup_{j=1}^{n}A_j$。由两两不交性，$\ind{A}-\sum_{j=1}^{n}\ind{A_j}=\ind{R_n}$，故
+$\norm{\ind{A}-\sum_{j=1}^{n}\ind{A_j}}_{L^2(\mu)}^2=\mu(R_n)$。
+因为 $R_n\downarrow\varnothing$ 且 $\mu(R_1)\le\mu(A)<\infty$，由测度的上连续性，$\mu(R_n)\to0$。
+再由 $G$ 的线性与等距性，
+\[
+  \norm*{G(A)-\sum_{j=1}^{n}G(A_j)}_{L^2(\Prob)}
+  =\norm*{\ind{A}-\sum_{j=1}^{n}\ind{A_j}}_{L^2(\mu)}\longrightarrow0.\qedhere
+\]
+\end{proof}
+
+\begin{proposition}[高斯白噪声的存在性]
+\label{prop:gaussian-white-noise-existence}
+设 $(E,\mathcal{E},\mu)$ 是 $\sigma$ 有限测度空间。则在适当选取的概率空间上，存在强度为 $\mu$ 的高斯白噪声。
+\end{proposition}
+
+\begin{proof}[证明{\mdseries（正交规范基构造）}]
+我们使用 Hilbert 空间的如下基本事实\cite[\S1.4.3，练习 1.4.18、1.4.19 与命题 1.4.18，第 54--56 页]{Tao2010}：$L^2(\mu)$ 有正交规范基
+$(f_i)_{i\in I}$，每个 $f\in L^2(\mu)$ 都等于其 Fourier 展开，且 Parseval 恒等式成立：
+\[
+  f=\sum_{i\in I}\alpha_if_i,\qquad \alpha_i:=\inner{f}{f_i}_{L^2(\mu)},\qquad
+  \sum_{i\in I}\alpha_i^2=\norm{f}_{L^2(\mu)}^2.
+\]
+这里 $I$ 不必可数，但对固定的 $f$，只有至多可数个 $\alpha_i$ 非零，上述和按范数无条件收敛；
+下文关于 $I$ 的级数均按此理解。
+
+在适当选取的概率空间上取一族相互独立的标准高斯变量 $(X_i)_{i\in I}$，例如
+\[
+  (\Omega,\F,\Prob)=\Bigl(\R^I,\ \bigotimes_{i\in I}\B(\R),\ \Normal(0,1)^{\otimes I}\Bigr),
+  \qquad X_i(\omega):=\omega_i
+\]
+（任意指标集上的乘积概率测度都存在\cite[定理 2.4.4 及例 2.4.8，第 240--241 页]{Tao2011}）。
+由独立性，$\E[X_iX_j]=\ind{\{i=j\}}$，故 $(X_i)_{i\in I}$ 是 $L^2(\Prob)$ 中的正交规范族；
+由\cref{prop:independent-gaussian-combination}，它是中心高斯过程，记 $\Hcal_X$ 为它生成的高斯空间
+（\cref{prop:gaussian-process-generated-space}）。
+
+对 $f\in L^2(\mu)$，令 $G(f):=\sum_{i\in I}\alpha_iX_i$。由于 $(X_i)$ 正交规范且 $\sum_i\alpha_i^2<\infty$，
+右端在 $L^2(\Prob)$ 中无条件收敛，极限属于 $\Hcal_X$。若 $g\in L^2(\mu)$ 的展开系数为 $\beta_i$，$a,b\in\R$，
+则在 $f,g$ 的非零系数指标的可数并上求和可知
+$G(af+bg)=\sum_i(a\alpha_i+b\beta_i)X_i=aG(f)+bG(g)$。
+最后，由 Parseval 恒等式，$\norm{G(f)}_{L^2(\Prob)}^2=\sum_i\alpha_i^2=\norm{f}_{L^2(\mu)}^2$。
+所以 $G:L^2(\mu)\to\Hcal_X$ 是线性等距映射，即强度为 $\mu$ 的高斯白噪声。
+\end{proof}
+
+\begin{proof}[另证{\mdseries（协方差函数构造）}]
+取指标集 $T:=L^2(\mu)$，令 $\Gamma(f,g):=\inner{f}{g}_{L^2(\mu)}$。$\Gamma$ 显然对称，且对 $u_1,\ldots,u_n\in T$ 与 $c_1,\ldots,c_n\in\R$，
+\[
+  \sum_{j,k=1}^{n}c_jc_k\Gamma(u_j,u_k)=\norm*{\sum_{j=1}^{n}c_ju_j}_{L^2(\mu)}^2\ge0,
+\]
+故 $\Gamma$ 是对称半正定核。由\cref{prop:gaussian-process-covariance-existence}，存在中心高斯过程
+$(X_f)_{f\in T}$，使 $\E[X_fX_g]=\inner{f}{g}_{L^2(\mu)}$。令 $\Hcal_X$ 为它生成的高斯空间，$G(f):=X_f$。
+
+线性：任取 $a,b\in\R$、$f,g\in T$，令 $h:=af+bg$。将 $\E\bigl[(X_h-aX_f-bX_g)^2\bigr]$ 展开，
+各项期望由协方差公式给出，与 $\norm{h-af-bg}_{L^2(\mu)}^2$ 的展开逐项相同，故
+\[
+  \E\bigl[(X_h-aX_f-bX_g)^2\bigr]=\norm{h-af-bg}_{L^2(\mu)}^2=0,
+\]
+即 $G(af+bg)=aG(f)+bG(g)$。等距：$\norm{G(f)}_{L^2(\Prob)}^2=\E[X_f^2]=\norm{f}_{L^2(\mu)}^2$。
+所以 $G$ 是强度为 $\mu$ 的高斯白噪声。
+\end{proof}
+
+\begin{remark}[可分性约定]
+\label{rem:white-noise-separable-convention}
+以下只考虑 $L^2(\mu)$ 可分的情形。例如，$\R_+$ 上的勒贝格测度空间 $(\R_+,\B(\R_+),\Leb)$
+对应的 $L^2$ 空间是可分的：$\sigma$ 有限且 $\sigma$ 代数可数生成时，$L^p$（$1\le p<\infty$）可分%
+\cite[练习 1.3.9，第 37 页]{Tao2010}。可分 Hilbert 空间的正交规范基至多可数%
+\cite[练习 1.4.23，第 56 页]{Tao2010}，因此在无限维情形，可把上述构造中的基记为 $(f_k)_{k\ge1}$，并写成
+\[
+  G(f)=\sum_{k=1}^{\infty}\inner{f}{f_k}_{L^2(\mu)}X_k,\qquad f\in L^2(\mu),
+\]
+其中级数在 $L^2(\Prob)$ 中收敛；有限维情形则为有限和。
+\end{remark}
+
+\begin{proposition}[细分割下白噪声的平方和]
+\label{prop:gaussian-white-noise-quadratic-sums}
+设 $G$ 是强度为 $\mu$ 的高斯白噪声，$A\in\mathcal{E}$，$\mu(A)<\infty$。对每个 $n\ge1$，设
+$A=\bigsqcup_{j=1}^{k_n}A_j^n$ 是 $A$ 的有限可测分割。若分割的粒度
+$\delta_n:=\max_{1\le j\le k_n}\mu(A_j^n)\to0$，则
+\[
+  \sum_{j=1}^{k_n}G(A_j^n)^2\Lpto{2}\mu(A)\qquad(n\to\infty).
+\]
+\end{proposition}
+
+\begin{proof}
+固定 $n$。由\cref{prop:gaussian-white-noise-disjoint-independence}，$G(A_1^n),\ldots,G(A_{k_n}^n)$ 相互独立，
+且 $G(A_j^n)\sim\Normal(0,\mu(A_j^n))$；由\cref{cor:gaussian-moments} 经尺度变换，
+\[
+  \E\bigl[G(A_j^n)^2\bigr]=\mu(A_j^n),\qquad
+  \E\bigl[G(A_j^n)^4\bigr]=3\mu(A_j^n)^2,\qquad
+  \Var\bigl(G(A_j^n)^2\bigr)=2\mu(A_j^n)^2
+\]
+（$\mu(A_j^n)=0$ 时同样成立）。令 $S_n:=\sum_{j=1}^{k_n}G(A_j^n)^2$，则 $\E[S_n]=\mu(A)$。
+由于 $G(A_j^n)^2$（$1\le j\le k_n$）也相互独立，
+\[
+  \norm{S_n-\mu(A)}_{L^2(\Prob)}^2=\Var(S_n)=2\sum_{j=1}^{k_n}\mu(A_j^n)^2
+  \le2\delta_n\sum_{j=1}^{k_n}\mu(A_j^n)=2\delta_n\,\mu(A)\longrightarrow0.\qedhere
+\]
+\end{proof}
+
+\chapter{布朗运动}
+\label{chap:brownian-motion}
+\section{预布朗运动}
+\label{sec:pre-brownian-motion}
+
+本节从高斯白噪声出发定义预布朗运动，并讨论它的独立增量与有限维分布。
+仍记 $\R_+:=[0,\infty)$，以 $\dd t$ 表示 $\Leb$ 在 $\B(\R_+)$ 上的限制，
+并简记 $L^2(\R_+):=L^2(\R_+,\B(\R_+),\dd t)$。
+
+\begin{definition}[预布朗运动]
+\label{def:pre-brownian-motion}
+设 $G$ 是 $(\R_+,\B(\R_+))$ 上强度为 $\dd t$ 的高斯白噪声。称由
+\[
+  B_t:=G([0,t])=G(\ind{[0,t]}),\qquad t\ge0,
+\]
+定义的实值过程 $B=(B_t)_{t\ge0}$ 为预布朗运动。一般地，若实值过程 $X=(X_t)_{t\ge0}$
+所在的概率空间上存在强度为 $\dd t$ 的高斯白噪声 $G$，使得对每个 $t\ge0$，$X_t=G([0,t])$ 几乎处处，
+则也称 $X$ 为预布朗运动。
+\end{definition}
+
+\begin{proposition}[预布朗运动的等价刻画]
+\label{prop:pre-brownian-equivalences}
+设 $X=(X_t)_{t\ge0}$ 是实值随机过程，记 $\F_s^X:=\sigma(X_r:0\le r\le s)$（$s\ge0$）。下列条件等价：
+\begin{enumerate}
+  \item $X$ 是预布朗运动；
+  \item $X$ 是中心高斯过程，且协方差函数为 $\Gamma(s,t)=s\wedge t:=\min\{s,t\}$；
+  \item $X_0=0$ 几乎处处，且对任意 $0\le s<t$，$X_t-X_s$ 与 $\F_s^X$ 独立，并且 $X_t-X_s\sim\Normal(0,t-s)$；
+  \item $X_0=0$ 几乎处处，且对任意整数 $n\ge1$ 及任意 $0\le t_0<t_1<\cdots<t_n$，
+    增量 $X_{t_i}-X_{t_{i-1}}$（$1\le i\le n$）相互独立，且 $X_{t_i}-X_{t_{i-1}}\sim\Normal(0,t_i-t_{i-1})$。
+\end{enumerate}
+条件 (4) 允许 $t_0=0$，从而包含从初始时刻开始的增量。\footnote{%
+  若只要求 $t_0>0$，则 $X_0:=0$、$X_t:=B_t+1$（$t>0$，$B$ 为预布朗运动）
+  也满足所有正时刻之间的增量条件，却不是预布朗运动。}
+\end{proposition}
+
+\begin{proof}
+\textbf{\boldmath$(1)\Rightarrow(2)$。}
+设 $X_t=G(\ind{[0,t]})$ 几乎处处，$G$ 取值于高斯空间 $\Hcal$。$X$ 的有限线性组合几乎处处等于 $\Hcal$ 中的元素，
+故 $X$ 是中心高斯过程。由\cref{prop:gaussian-white-noise-covariance}，
+\[
+  \E[X_sX_t]=\int_0^\infty\ind{[0,s]}(r)\ind{[0,t]}(r)\,\dd r=s\wedge t.
+\]
+
+\textbf{\boldmath$(2)\Rightarrow(3)$。}
+$X_0\sim\Normal(0,\Gamma(0,0))=\Normal(0,0)$，故 $X_0=0$ 几乎处处。固定 $0\le s<t$，令
+$K_s:=\Span\{X_r:0\le r\le s\}$，它是 $X$ 生成的高斯空间 $\Hcal_X$ 的线性子空间。对 $0\le r\le s$，
+\[
+  \E[(X_t-X_s)X_r]=\Gamma(t,r)-\Gamma(s,r)=r-r=0,
+\]
+即 $X_t-X_s$ 与 $K_s$ 正交。对线性子空间 $\Span\{X_t-X_s\}$ 与 $K_s$ 应用%
+\cref{thm:gaussian-subspaces-orthogonality-independence}，$X_t-X_s$ 与 $\sigma(K_s)$ 独立，
+而 $\F_s^X\subseteq\sigma(K_s)$。此外，$X_t-X_s$ 是中心高斯变量，方差为
+$\Gamma(t,t)+\Gamma(s,s)-2\Gamma(s,t)=t-s$。
+
+\textbf{\boldmath$(3)\Rightarrow(4)$。}
+由 (3)，各增量服从所要求的分布，下面对 $n$ 归纳证明独立性，$n=1$ 时无需证明。设 $n\ge2$，
+任取 Borel 集 $C_1,\ldots,C_n\subseteq\R$。事件 $\bigcap_{i<n}\{X_{t_i}-X_{t_{i-1}}\in C_i\}$ 属于
+$\F_{t_{n-1}}^X$，而 $X_{t_n}-X_{t_{n-1}}$ 与 $\F_{t_{n-1}}^X$ 独立，故
+\[
+  \Prob\!\left(\bigcap_{i=1}^{n}\{X_{t_i}-X_{t_{i-1}}\in C_i\}\right)
+  =\Prob\!\left(\bigcap_{i=1}^{n-1}\{X_{t_i}-X_{t_{i-1}}\in C_i\}\right)
+   \Prob\bigl(X_{t_n}-X_{t_{n-1}}\in C_n\bigr),
+\]
+由归纳假设，右端第一个因子等于 $\prod_{i<n}\Prob(X_{t_i}-X_{t_{i-1}}\in C_i)$。
+
+\textbf{\boldmath$(4)\Rightarrow(1)$。}
+先证 $X$ 是中心高斯过程。任意有限线性组合都可以先合并相同的时刻、去掉时刻 $0$ 的项（$X_0=0$ 几乎处处），
+再将时刻严格排序，因此只需考虑 $0=t_0<t_1<\cdots<t_n$ 及 $a_1,\ldots,a_n\in\R$。
+由 $X_{t_i}=\sum_{j\le i}(X_{t_j}-X_{t_{j-1}})$（望远镜求和）并交换求和次序，
+\[
+  \sum_{i=1}^{n}a_iX_{t_i}=\sum_{j=1}^{n}\Bigl(\sum_{i=j}^{n}a_i\Bigr)(X_{t_j}-X_{t_{j-1}})
+  \quad\text{几乎处处。}
+\]
+右端是独立中心高斯变量的线性组合，由\cref{prop:independent-gaussian-combination} 是中心高斯变量。
+记 $\Hcal_X$ 为 $X$ 生成的高斯空间。
+
+令 $\mathcal D$ 为 $\R_+$ 上有限区间阶梯函数组成的线性空间（按 $\dd t$-几乎处处相等识别）。
+每个 $f\in\mathcal D$ 可写成
+\[
+  f=\sum_{i=1}^{n}\alpha_i\ind{(t_{i-1},t_i]},\qquad 0=t_0<t_1<\cdots<t_n,
+\]
+据此定义
+\[
+  G_0(f):=\sum_{i=1}^{n}\alpha_i(X_{t_i}-X_{t_{i-1}})\in\Hcal_X.
+\]
+这一定义与表示的选取无关：在区间 $(t_{i-1},t_i]$ 内插入分点 $u$ 时，新的两个区间上的系数都是 $\alpha_i$，而
+$\alpha_i(X_{t_i}-X_u)+\alpha_i(X_u-X_{t_{i-1}})=\alpha_i(X_{t_i}-X_{t_{i-1}})$；对两种表示
+（必要时以零系数补足到同一右端点）取共同加细，几乎处处相等的阶梯函数在每个正长度区间上系数相同，
+故给出同一个 $G_0(f)$。
+
+$G_0$ 显然是线性的。对 $f,g\in\mathcal D$，取共同的分划，写成
+$f=\sum_i\alpha_i\ind{(t_{i-1},t_i]}$、$g=\sum_i\beta_i\ind{(t_{i-1},t_i]}$。
+由 (4) 中增量的独立性、零均值与方差，
+\[
+  \E[G_0(f)G_0(g)]=\sum_{i=1}^{n}\alpha_i\beta_i\,\E\bigl[(X_{t_i}-X_{t_{i-1}})^2\bigr]
+  =\sum_{i=1}^{n}\alpha_i\beta_i(t_i-t_{i-1})=\int_0^\infty f(r)g(r)\,\dd r,
+\]
+故 $G_0:\mathcal D\to\Hcal_X$ 是线性等距映射。有限区间阶梯函数在 $L^2(\R_+)$ 中稠密，
+而 $\Hcal_X$ 是完备的，故 $G_0$ 唯一地延拓为线性等距映射 $G:L^2(\R_+)\to\Hcal_X$
+\cite[\S1.3，第 7--8 页]{Nualart2018}，它是强度为 $\dd t$ 的高斯白噪声。
+对 $t>0$，$\ind{[0,t]}=\ind{(0,t]}$ 作为 $L^2(\R_+)$ 的元素成立，故
+\[
+  G([0,t])=G_0(\ind{(0,t]})=X_t-X_0=X_t\quad\text{几乎处处；}
+\]
+$t=0$ 时两边也都几乎处处为 $0$。因此 $X$ 是预布朗运动。
+\end{proof}
+
+\begin{proposition}[预布朗运动的有限维密度]
+\label{prop:pre-brownian-finite-dimensional-density}
+设 $B$ 是预布朗运动，$n\ge1$，$0=t_0<t_1<\cdots<t_n$。则 $(B_{t_1},\ldots,B_{t_n})$ 相对于 $\Leb_n$ 的密度为
+\begin{equation}
+  \label{eq:pre-brownian-finite-dimensional-density}
+  p_{t_1,\ldots,t_n}(x_1,\ldots,x_n)
+  =\frac{1}{(2\pi)^{n/2}\sqrt{\prod_{i=1}^{n}(t_i-t_{i-1})}}
+    \exp\!\left(-\sum_{i=1}^{n}\frac{(x_i-x_{i-1})^2}{2(t_i-t_{i-1})}\right),
+\end{equation}
+其中 $x_0:=0$。
+\end{proposition}
+
+\begin{proof}
+令 $Y_i:=B_{t_i}-B_{t_{i-1}}$（$1\le i\le n$）。由\cref{prop:pre-brownian-equivalences}，$Y_1,\ldots,Y_n$ 相互独立，
+且 $Y_i\sim\Normal(0,t_i-t_{i-1})$，故 $Y:=(Y_1,\ldots,Y_n)$ 的密度为各分量密度之积
+\[
+  q(y)=\frac{1}{(2\pi)^{n/2}\sqrt{\prod_{i=1}^{n}(t_i-t_{i-1})}}
+    \exp\!\left(-\sum_{i=1}^{n}\frac{y_i^2}{2(t_i-t_{i-1})}\right).
+\]
+令线性映射 $\Phi:\R^n\to\R^n$，$(Ty)_i:=\sum_{j\le i}y_j$。由 $B_0=0$ 几乎处处，
+$(B_{t_1},\ldots,B_{t_n})=TY$ 几乎处处。$\Phi$ 的矩阵是对角元全为 $1$ 的下三角矩阵，故 $\det \Phi=1$，
+且 $(\Phi^{-1}x)_i=x_i-x_{i-1}$。由线性换元公式\cite[练习 1.3.16，第 66 页]{Tao2011}，对 $A\in\B(\R^n)$，
+\[
+  \Prob\bigl((B_{t_1},\ldots,B_{t_n})\in A\bigr)=\int_{\Phi^{-1}(A)}q(y)\,\dd y=\int_Aq(\Phi^{-1}x)\,\dd x,
+\]
+代入 $\Phi^{-1}x$ 即得\cref{eq:pre-brownian-finite-dimensional-density}。
+\end{proof}
+
+\begin{proposition}[有限维分布相同的过程]
+\label{prop:pre-brownian-same-finite-dimensional-laws}
+设 $B$ 是预布朗运动，$X=(X_t)_{t\ge0}$ 是实值随机过程，二者可以定义在不同的概率空间上。
+若对任意整数 $n\ge1$ 及任意 $t_1,\ldots,t_n\ge0$，都有
+$(X_{t_1},\ldots,X_{t_n})\deq(B_{t_1},\ldots,B_{t_n})$，则 $X$ 也是预布朗运动。
+\end{proposition}
+
+\begin{proof}
+对任意 $t_1,\ldots,t_n\ge0$ 及 $a_1,\ldots,a_n\in\R$，$\sum_ia_iX_{t_i}$ 与 $\sum_ia_iB_{t_i}$
+是同分布向量在同一线性映射下的像，因而同分布；由\cref{prop:pre-brownian-equivalences}，$B$ 是中心高斯过程，
+故后者是中心高斯变量，而由%
+\cref{prop:gaussian-characteristic-criterion}，这一性质只取决于分布，故 $X$ 是中心高斯过程。
+又由二维分布相同，$\E[X_sX_t]=\E[B_sB_t]=s\wedge t$。由\cref{prop:pre-brownian-equivalences} 中的
+$(2)\Rightarrow(1)$，$X$ 是预布朗运动。
+\end{proof}
+
+\begin{proposition}[预布朗运动的不变性]
+\label{prop:pre-brownian-invariances}
+设 $B=(B_t)_{t\ge0}$ 是预布朗运动，则：
+\begin{enumerate}
+  \item （对称性）过程 $(-B_t)_{t\ge0}$ 是预布朗运动；
+  \item （尺度不变性）对任意 $\lambda>0$，由 $B_t^\lambda:=\lambda^{-1}B_{\lambda^2t}$（$t\ge0$）
+    定义的过程 $B^\lambda$ 是预布朗运动；
+  \item （简单马尔可夫性）对任意 $s\ge0$，由 $B_t^{(s)}:=B_{s+t}-B_s$（$t\ge0$）定义的过程 $B^{(s)}$
+    是预布朗运动，且与 $\F_s^B:=\sigma(B_r:0\le r\le s)$ 独立，即
+    $\sigma(B_t^{(s)}:t\ge0)$ 与 $\F_s^B$ 相互独立。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+由\cref{prop:pre-brownian-equivalences}，$B$ 是协方差函数为 $s\wedge t$ 的中心高斯过程；
+三个过程的有限线性组合都是 $B$ 的有限线性组合，故它们都是中心高斯过程。
+由\cref{prop:pre-brownian-equivalences} 的条件 (2)，只需计算协方差：对 $u,v\ge0$，
+\begin{align*}
+  \Cov(-B_u,-B_v)&=\Cov(B_u,B_v)=u\wedge v,\\
+  \Cov(B_u^\lambda,B_v^\lambda)&=\lambda^{-2}\bigl(\lambda^2u\wedge\lambda^2v\bigr)=u\wedge v,\\
+  \Cov(B_u^{(s)},B_v^{(s)})&=(s+u)\wedge(s+v)-s-s+s=u\wedge v.
+\end{align*}
+所以三个过程都是预布朗运动。
+
+再证 (3) 中的独立性。对 $t\ge0$ 及 $0\le r\le s$，
+\[
+  \E\bigl[B_t^{(s)}B_r\bigr]=(s+t)\wedge r-s\wedge r=r-r=0,
+\]
+故在 $B$ 生成的高斯空间中，线性子空间 $\Span\{B_t^{(s)}:t\ge0\}$ 与 $\Span\{B_r:0\le r\le s\}$ 正交。
+由\cref{thm:gaussian-subspaces-orthogonality-independence}，二者生成的 $\sigma$ 代数相互独立，
+而它们分别包含 $\sigma(B_t^{(s)}:t\ge0)$ 与 $\F_s^B$。
+\end{proof}
+
+\begin{proposition}[生成预布朗运动的白噪声的唯一性]
+\label{prop:pre-brownian-white-noise-uniqueness}
+设 $B$ 是预布朗运动。若 $G_1,G_2$ 都是强度为 $\dd t$ 的高斯白噪声，且对每个 $t\ge0$ 有
+$G_1(\ind{[0,t]})=B_t=G_2(\ind{[0,t]})$，则对每个 $f\in L^2(\R_+)$ 都有 $G_1(f)=G_2(f)$。
+\end{proposition}
+
+\begin{proof}
+对有限区间阶梯函数 $f=\sum_{i=1}^{n}\alpha_i\ind{(t_{i-1},t_i]}$（$0=t_0<t_1<\cdots<t_n$），由线性性，对 $k=1,2$，
+\[
+  G_k(f)=\sum_{i=1}^{n}\alpha_i\bigl(G_k(\ind{[0,t_i]})-G_k(\ind{[0,t_{i-1}]})\bigr)
+  =\sum_{i=1}^{n}\alpha_i(B_{t_i}-B_{t_{i-1}}),
+\]
+故 $G_1(f)=G_2(f)$。对一般的 $f\in L^2(\R_+)$，由稠密性取阶梯函数 $f_m\to f$，再由等距性，
+\[
+  \norm{G_1(f)-G_2(f)}_{L^2(\Prob)}
+  \le\norm{G_1(f-f_m)}_{L^2(\Prob)}+\norm{G_2(f_m-f)}_{L^2(\Prob)}
+  =2\norm{f-f_m}_{L^2(\R_+)}\longrightarrow0.\qedhere
+\]
+\end{proof}
+
+\begin{definition}[Wiener 积分]
+\label{def:wiener-integral}
+设 $B$ 是预布朗运动，$G$ 是生成它的（唯一的）高斯白噪声。对 $f\in L^2(\R_+)$，
+定义 $f$ 关于 $B$ 的 Wiener 积分为
+\[
+  \int_0^\infty f(r)\,\dd B_r:=G(f);
+\]
+对 $0\le s\le t<\infty$，记
+\[
+  \int_0^t f(r)\,\dd B_r:=G(f\ind{[0,t]}),\qquad
+  \int_s^t f(r)\,\dd B_r:=G(f\ind{(s,t]}).
+\]
+由于单点集上的白噪声几乎处处为 $0$，端点的取舍不影响这些作为 $L^2(\Prob)$ 元素的随机变量；
+特别地，$s=t$ 时积分为 $0$。
+\end{definition}
+
+\begin{proposition}[Wiener 积分的区间可加性与分布]
+\label{prop:wiener-integral-additivity-law}
+设 $B$ 是预布朗运动，$f\in L^2(\R_+)$，$0\le s\le u\le t<\infty$。则：
+\begin{enumerate}
+  \item $\displaystyle\int_s^t f(r)\,\dd B_r=\int_s^u f(r)\,\dd B_r+\int_u^t f(r)\,\dd B_r$；
+  \item Wiener 积分是中心高斯变量，且
+    \[
+      \int_0^\infty f(r)\,\dd B_r\sim\Normal\!\left(0,\int_0^\infty f(r)^2\,\dd r\right),\qquad
+      \int_s^t f(r)\,\dd B_r\sim\Normal\!\left(0,\int_s^t f(r)^2\,\dd r\right).
+    \]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+\textbf{(1)} 由 $f\ind{(s,t]}=f\ind{(s,u]}+f\ind{(u,t]}$ 及 $G$ 的线性即得。
+
+\textbf{(2)} 由\cref{prop:gaussian-white-noise-covariance}，$G(f)\sim\Normal\bigl(0,\norm{f}_{L^2(\R_+)}^2\bigr)$；
+将 $f$ 换成 $f\ind{(s,t]}$，并注意 $\norm{f\ind{(s,t]}}_{L^2(\R_+)}^2=\int_s^tf(r)^2\,\dd r$ 即可。
+\end{proof}
+
+\section{样本路径的连续性}
+\label{sec:sample-path-continuity}
+
+本节中，$(E,d)$ 是度量空间，装备 Borel $\sigma$ 代数 $\B(E)$；$T$ 是指标集。
+需要比较的过程都定义在同一概率空间 $(\Omega,\F,\Prob)$ 上，且有相同的指标集与取值空间；
+讨论样本路径时，每个 $X_t$ 都取定一个可测代表元。满足 $N\in\F$、$\Prob(N)=0$ 的集合 $N$ 称为零测集。
+
+\begin{definition}[样本路径]
+\label{def:sample-path}
+设 $X=(X_t)_{t\in T}$ 是 $E$ 值随机过程。对每个 $\omega\in\Omega$，称映射
+\[
+  X_\bullet(\omega):T\to E,\qquad t\mapsto X_t(\omega)
+\]
+为 $X$ 在 $\omega$ 处的样本路径，也称轨道。
+\end{definition}
+
+\begin{definition}[随机过程的修正]
+\label{def:process-modification}
+设 $X=(X_t)_{t\in T}$ 与 $\widetilde X=(\widetilde X_t)_{t\in T}$ 是 $E$ 值随机过程。
+若对每个 $t\in T$，$X_t=\widetilde X_t$ 几乎处处，即存在零测集 $N_t$，使得
+$X_t(\omega)=\widetilde X_t(\omega)$ 对所有 $\omega\notin N_t$ 成立，则称 $\widetilde X$ 是 $X$ 的修正。
+注意例外集 $N_t$ 可以依赖于 $t$。
+\end{definition}
+
+\begin{proposition}[修正与有限维分布]
+\label{prop:modification-finite-dimensional-laws}
+设 $\widetilde X$ 是 $E$ 值过程 $X$ 的修正，则：
+\begin{enumerate}
+  \item $X$ 与 $\widetilde X$ 有相同的有限维分布：对任意 $n\ge1$ 及 $t_1,\ldots,t_n\in T$，
+    $(X_{t_1},\ldots,X_{t_n})\deq(\widetilde X_{t_1},\ldots,\widetilde X_{t_n})$，
+    其中分布取在乘积可测空间 $(E^n,\B(E)^{\otimes n})$ 上；
+  \item 若 $T=\R_+$、$E=\R$，且 $X$ 是预布朗运动，则 $\widetilde X$ 也是预布朗运动。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+\textbf{(1)} 对每个 $i$，取零测集 $N_i$，使 $X_{t_i}=\widetilde X_{t_i}$ 在 $N_i$ 之外成立。
+在 $\Omega\setminus\bigcup_{i=1}^{n}N_i$ 上两个向量相等，故它们几乎处处相等，从而同分布。
+
+\textbf{(2)} 由 (1) 及\cref{prop:pre-brownian-same-finite-dimensional-laws} 即得。
+\end{proof}
+
+\begin{example}[连续修正与不连续的样本路径]
+\label{ex:modification-spike-paths}
+取 $T=\R_+$、$E=\R$，在概率空间 $\bigl([0,1],\B([0,1]),\Leb\bigr)$ 上令
+\[
+  \widetilde X_t(\omega):=0,\qquad X_t(\omega):=\ind{\{\omega=t\}},\qquad t\ge0,\ \omega\in[0,1].
+\]
+则 $\widetilde X$ 是 $X$ 的修正；$\widetilde X$ 的每条样本路径都连续，而 $X$ 的每条样本路径都有不连续点。
+\end{example}
+
+\begin{proof}
+对固定的 $t\ge0$，集合 $\{X_t\ne\widetilde X_t\}$ 在 $t\le1$ 时为 $\{t\}$，在 $t>1$ 时为空集，
+其勒贝格测度均为 $0$，故 $\widetilde X$ 是 $X$ 的修正。$\widetilde X$ 的样本路径恒为 $0$，自然连续。
+对固定的 $\omega\in[0,1]$，$X_\omega(\omega)=1$，而当 $t_n:=\omega+1/n\to\omega$ 时 $X_{t_n}(\omega)=0$，
+故 $X_\bullet(\omega)$ 在 $t=\omega$ 处不连续（$\omega=0$ 时按 $\R_+$ 的相对拓扑理解）。
+\end{proof}
+
+\begin{definition}[不可区分的随机过程]
+\label{def:indistinguishable-processes}
+称两个 $E$ 值过程 $X=(X_t)_{t\in T}$ 与 $\widetilde X=(\widetilde X_t)_{t\in T}$ 不可区分，
+如果存在包含于某个零测集的集合 $N\subseteq\Omega$（$N$ 本身不必属于 $\F$），使得
+\[
+  X_t(\omega)=\widetilde X_t(\omega),\qquad \forall\,\omega\in\Omega\setminus N,\ \forall\,t\in T.
+\]
+等价地，存在零测集 $M$（取 $M\supseteq N$ 即可），使得对每个 $\omega\notin M$，
+样本路径 $X_\bullet(\omega)$ 与 $\widetilde X_\bullet(\omega)$ 是同一个映射；
+也就是说，两个过程的样本路径几乎处处相同。
+\end{definition}
+
+\begin{proposition}[不可区分蕴含互为修正]
+\label{prop:indistinguishable-implies-modification}
+若 $X$ 与 $\widetilde X$ 不可区分，则 $\widetilde X$ 是 $X$ 的修正。
+\end{proposition}
+
+\begin{proof}
+取\cref{def:indistinguishable-processes} 中的零测集 $M$。对每个 $t\in T$，在 $\Omega\setminus M$ 上都有
+$X_t=\widetilde X_t$，故 $X_t=\widetilde X_t$ 几乎处处。
+\end{proof}
+
+\begin{remark}[随机过程唯一性的约定]
+\label{rem:process-uniqueness-convention}
+今后说给定概率空间上满足某些条件的随机过程“唯一”，均指在不可区分的意义下唯一，
+即任意两个满足这些条件的过程都不可区分；即使未明确说明，也采用这一约定。
+\end{remark}
+
+\begin{proposition}[连续过程的修正与不可区分性]
+\label{prop:continuous-modifications-indistinguishable}
+设 $I\subseteq\R$ 是区间（可以无界），$X=(X_t)_{t\in I}$ 与 $\widetilde X=(\widetilde X_t)_{t\in I}$
+是两个 $E$ 值过程，且二者的样本路径都几乎处处连续：存在零测集 $N_X,N_{\widetilde X}$，
+使得 $\omega\notin N_X$ 时 $X_\bullet(\omega)$ 连续，$\omega\notin N_{\widetilde X}$ 时 $\widetilde X_\bullet(\omega)$ 连续
+（连续性相对于 $I$ 的子空间拓扑）。则 $\widetilde X$ 是 $X$ 的修正，当且仅当 $X$ 与 $\widetilde X$ 不可区分。
+\end{proposition}
+
+\begin{proof}
+由\cref{prop:indistinguishable-implies-modification}，只需证明修正蕴含不可区分。
+取 $I$ 的一个可数稠密子集 $D$（$I$ 非退化时取 $D:=I\cap\Q$，$I$ 为单点时取 $D:=I$）。对每个 $q\in D$，取零测集 $N_q$，使 $X_q=\widetilde X_q$ 在 $N_q$ 之外成立。令
+\[
+  M:=N_X\cup N_{\widetilde X}\cup\bigcup_{q\in D}N_q,
+\]
+它是可数个零测集的并，仍为零测集。固定 $\omega\notin M$，两条样本路径都连续，且在 $D$ 上重合。
+对任意 $t\in I$，取 $q_n\in D$ 使 $q_n\to t$，由连续性及度量空间中极限的唯一性，
+\[
+  X_t(\omega)=\lim_{n\to\infty}X_{q_n}(\omega)=\lim_{n\to\infty}\widetilde X_{q_n}(\omega)=\widetilde X_t(\omega).
+\]
+所以在 $M$ 之外两条样本路径处处相同，即 $X$ 与 $\widetilde X$ 不可区分。
+\end{proof}
+
+% ==================== 参考文献 ====================
+\begin{thebibliography}{9}
+
+\bibitem{Axler2024}
+Sheldon Axler. \emph{Linear Algebra Done Right}. 4th ed. Springer, 2024.
+（\href{https://linear.axler.net/LADR4e.pdf}{作者公开 PDF}）
+
+\bibitem{Durrett2019}
+Rick Durrett. \emph{Probability: Theory and Examples}. 5th ed.
+（2019 年作者稿，\href{https://sites.math.duke.edu/~rtd/PTE/PTE5_011119.pdf}{公开 PDF}）
+
+\bibitem{LeGall2016}
+Jean-Fran\c{c}ois Le Gall. \emph{Brownian Motion, Martingales, and Stochastic Calculus}. Springer, 2016.
+（\href{https://link.springer.com/chapter/10.1007/978-3-319-31089-3_1}{出版社章节}）
+
+\bibitem{Nualart2018}
+David Nualart, Eulalia Nualart. \emph{Introduction to Malliavin Calculus}. Cambridge University Press, 2018.
+（\href{https://assets.cambridge.org/97811076/11986/excerpt/9781107611986_excerpt.pdf}{出版社官方节选}）
+
+\bibitem{Tao2010}
+Terence Tao. \emph{An Epsilon of Room, I: Real Analysis}. AMS, 2010.
+（\href{https://terrytao.wordpress.com/wp-content/uploads/2012/12/gsm-117-tao3-epsilon1.pdf}{作者授权 PDF}）
+
+\bibitem{Tao2011}
+Terence Tao. \emph{An Introduction to Measure Theory}. AMS, 2011.
+（\href{https://terrytao.wordpress.com/wp-content/uploads/2012/12/gsm-126-tao5-measure-book.pdf}{作者授权 PDF}）
+
+\end{thebibliography}
+
+\end{document}
