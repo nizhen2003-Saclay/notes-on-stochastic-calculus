@@ -28,6 +28,8 @@
 \usepackage{mathtools}
 \usepackage{mathrsfs}
 \usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \numberwithin{equation}{section}
 \allowdisplaybreaks[2]
 
@@ -160,6 +162,7 @@
 \crefname{example}{例}{例}
 \crefname{exercise}{练习}{练习}
 \crefname{remark}{注记}{注记}
+\crefname{figure}{图}{图}
 \Crefname{chapter}{章}{章}
 \Crefname{section}{节}{节}
 \Crefname{subsection}{小节}{小节}
@@ -173,6 +176,12 @@
 \Crefname{example}{例}{例}
 \Crefname{exercise}{练习}{练习}
 \Crefname{remark}{注记}{注记}
+\Crefname{figure}{图}{图}
+% 章、节按中文习惯引用为“第 2 章”“第 2.3 节”。
+\crefformat{chapter}{#2第#1章#3}
+\Crefformat{chapter}{#2第#1章#3}
+\crefformat{section}{#2第#1节#3}
+\Crefformat{section}{#2第#1节#3}
 
 % ==================== 文档信息 ====================
 \title{布朗运动、鞅与随机分析\\复习笔记}
@@ -192,7 +201,7 @@
 
 \chapter{高斯变量与高斯过程}
 \label{chap:gaussian}
-命题标题中的“原命题 1.1”“原定理 1.3(i)”等标注给出该结果在原材料中的编号，便于对照。
+本章部分结果的标题注有“原命题 1.1”“原定理 1.3(i)”等字样，指该结果在原书\cite{LeGall2016} 中的编号，便于对照。
 
 \section{概率空间与标准高斯变量}
 \label{sec:standard-gaussian}
@@ -200,6 +209,8 @@
 除特别说明外，本章的随机变量都定义在概率空间 $(\Omega,\F,\Prob)$ 上。
 实随机变量是可测映射 $X:(\Omega,\F)\to(\R,\B(\R))$，其分布
 $\Law(X):=\Prob\circ X^{-1}$ 是 $(\R,\B(\R))$ 上的概率测度。
+满足 $N\in\F$、$\Prob(N)=0$ 的集合 $N$ 称为零测集，满足 $\Prob(\Omega_0)=1$ 的事件 $\Omega_0$ 称为满测度集；
+某性质“几乎处处”成立，是指它在某个满测度集上成立。
 记 $\Leb$ 为 $\R$ 上的勒贝格测度（限制在 $\B(\R)$ 上）；
 说一个实随机变量“具有密度”，总是指它的分布相对于 $\Leb$ 绝对连续。
 
@@ -967,7 +978,6 @@ $X_t:(\Omega,\F)\to(E,\mathcal{E})$（$t\in T$），记为 $X=(X_t)_{t\in T}$。
 
 \begin{definition}[生成的 $\sigma$ 代数]
 \label{def:sigma-algebra-generated-by-sets}
-\label{def:sigma-algebra-generated-by-variables}
 设 $\mathcal C$ 是 $\Omega$ 的子集族。包含 $\mathcal C$ 的最小 $\sigma$ 代数
 \[
   \sigma(\mathcal C):=\bigcap\bigl\{\A:\A\text{ 是 $\Omega$ 上的 $\sigma$ 代数，且 }\mathcal C\subseteq\A\bigr\}
@@ -1026,18 +1036,11 @@ $Z_k:=(U^{(k)}_1,\ldots,U^{(k)}_{n_k})$ 由 $H_k$ 中元素的代表元组成，
 \end{equation}
 
 \textbf{\boldmath 第二步：扩张到生成的 $\sigma$ 代数。}
-这是标准的 $\pi$--$\lambda$ 论证\cite[\S2.1]{Durrett2019}，对指标逐个进行。
-设对某个 $k$，乘积公式已对所有 $A_l\in\sigma(H_l)$（$l<k$）与 $A_l\in\mathcal C_l$（$l\ge k$）成立
-（$k=1$ 时这正是\cref{eq:gaussian-subspace-cylinder-independence}）。固定这样的 $A_l$（$l\ne k$），令
-$F:=\bigcap_{l\ne k}A_l$，$c:=\prod_{l\ne k}\Prob(A_l)$，并令
-\[
-  \mathcal D:=\{A\in\sigma(H_k):\Prob(A\cap F)=\Prob(A)\,c\}.
-\]
-由假设，$\mathcal C_k\subseteq\mathcal D$，特别地 $\Omega\in\mathcal D$。由概率的可加性与连续性，
-$\mathcal D$ 对差集（$A\subseteq B$ 时的 $B\setminus A$）和单调递增序列的并封闭，故 $\mathcal D$ 是 $\lambda$ 系统。
-由 $\pi$--$\lambda$ 定理\cite[定理 2.1.6，第 46 页；证明见定理 A.1.4，第 456--457 页]{Durrett2019}，
-$\sigma(H_k)=\sigma(\mathcal C_k)\subseteq\mathcal D$，即乘积公式对任意 $A_k\in\sigma(H_k)$ 也成立。
-依次对 $k=1,\ldots,m$ 进行，便得到\cref{eq:gaussian-subspace-sigma-independence}。
+由于每个 $\mathcal C_k$ 都含 $\Omega$，\cref{eq:gaussian-subspace-cylinder-independence} 说明 $\pi$ 系统
+$\mathcal C_1,\ldots,\mathcal C_m$ 相互独立。由 $\pi$--$\lambda$ 定理%
+\cite[定理 2.1.6，第 46 页；证明见定理 A.1.4，第 456--457 页]{Durrett2019} 可知，
+相互独立的 $\pi$ 系统生成相互独立的 $\sigma$ 代数\cite[定理 2.1.7]{Durrett2019}。
+因此 $\sigma(H_k)=\sigma(\mathcal C_k)$（$1\le k\le m$）相互独立，即\cref{eq:gaussian-subspace-sigma-independence} 成立。
 \end{proof}
 
 \begin{corollary}[高斯空间中的条件期望与正交投影]
@@ -1278,13 +1281,8 @@ $r(h)=\int_{\R}e^{\iu\xi h}\,\mu(\dd\xi)$；取 $h=0$ 得 $\mu(\R)=r(0)$。
 
 \begin{proof}
 $G(f)\in\Hcal$ 是中心高斯变量，由等距性，$\Var(G(f))=\norm{G(f)}_{L^2(\Prob)}^2=\norm{f}_{L^2(\mu)}^2$，
-这给出了 $G(f)$ 的分布。在两个 $L^2$ 空间中分别使用极化恒等式，并利用 $G$ 的线性与等距性，
-\begin{align*}
-  \Cov\bigl(G(f),G(g)\bigr)=\E[G(f)G(g)]
-  &=\frac12\Bigl(\norm{G(f+g)}_{L^2(\Prob)}^2-\norm{G(f)}_{L^2(\Prob)}^2-\norm{G(g)}_{L^2(\Prob)}^2\Bigr)\\
-  &=\frac12\Bigl(\norm{f+g}_{L^2(\mu)}^2-\norm{f}_{L^2(\mu)}^2-\norm{g}_{L^2(\mu)}^2\Bigr)
-   =\inner{f}{g}_{L^2(\mu)}.
-\end{align*}
+这给出了 $G(f)$ 的分布。由极化恒等式 $\inner{x}{y}=\frac12\bigl(\norm{x+y}^2-\norm{x}^2-\norm{y}^2\bigr)$，
+线性等距映射保持内积，故 $\Cov(G(f),G(g))=\E[G(f)G(g)]=\inner{f}{g}_{L^2(\mu)}$。
 最后注意 $\norm{\ind{A}}_{L^2(\mu)}^2=\mu(A)$。
 \end{proof}
 
@@ -1487,8 +1485,8 @@ $\F_{t_{n-1}}^X$，而 $X_{t_n}-X_{t_{n-1}}$ 与 $\F_{t_{n-1}}^X$ 独立，故
 右端是独立中心高斯变量的线性组合，由\cref{prop:independent-gaussian-combination} 是中心高斯变量。
 记 $\Hcal_X$ 为 $X$ 生成的高斯空间。
 
-令 $\mathcal D$ 为 $\R_+$ 上有限区间阶梯函数组成的线性空间（按 $\dd t$-几乎处处相等识别）。
-每个 $f\in\mathcal D$ 可写成
+令 $\mathcal S$ 为 $\R_+$ 上有限区间阶梯函数组成的线性空间（按 $\dd t$-几乎处处相等识别）。
+每个 $f\in\mathcal S$ 可写成
 \[
   f=\sum_{i=1}^{n}\alpha_i\ind{(t_{i-1},t_i]},\qquad 0=t_0<t_1<\cdots<t_n,
 \]
@@ -1501,14 +1499,14 @@ $\alpha_i(X_{t_i}-X_u)+\alpha_i(X_u-X_{t_{i-1}})=\alpha_i(X_{t_i}-X_{t_{i-1}})$�
 （必要时以零系数补足到同一右端点）取共同加细，几乎处处相等的阶梯函数在每个正长度区间上系数相同，
 故给出同一个 $G_0(f)$。
 
-$G_0$ 显然是线性的。对 $f,g\in\mathcal D$，取共同的分划，写成
+$G_0$ 显然是线性的。对 $f,g\in\mathcal S$，取共同的分割，写成
 $f=\sum_i\alpha_i\ind{(t_{i-1},t_i]}$、$g=\sum_i\beta_i\ind{(t_{i-1},t_i]}$。
 由 (4) 中增量的独立性、零均值与方差，
 \[
   \E[G_0(f)G_0(g)]=\sum_{i=1}^{n}\alpha_i\beta_i\,\E\bigl[(X_{t_i}-X_{t_{i-1}})^2\bigr]
   =\sum_{i=1}^{n}\alpha_i\beta_i(t_i-t_{i-1})=\int_0^\infty f(r)g(r)\,\dd r,
 \]
-故 $G_0:\mathcal D\to\Hcal_X$ 是线性等距映射。有限区间阶梯函数在 $L^2(\R_+)$ 中稠密，
+故 $G_0:\mathcal S\to\Hcal_X$ 是线性等距映射。有限区间阶梯函数在 $L^2(\R_+)$ 中稠密，
 而 $\Hcal_X$ 是完备的，故 $G_0$ 唯一地延拓为线性等距映射 $G:L^2(\R_+)\to\Hcal_X$
 \cite[\S1.3，第 7--8 页]{Nualart2018}，它是强度为 $\dd t$ 的高斯白噪声。
 对 $t>0$，$\ind{[0,t]}=\ind{(0,t]}$ 作为 $L^2(\R_+)$ 的元素成立，故
@@ -1518,32 +1516,38 @@ $f=\sum_i\alpha_i\ind{(t_{i-1},t_i]}$、$g=\sum_i\beta_i\ind{(t_{i-1},t_i]}$。
 $t=0$ 时两边也都几乎处处为 $0$。因此 $X$ 是预布朗运动。
 \end{proof}
 
+下面记
+\[
+  p_t(x):=\frac{1}{\sqrt{2\pi t}}\exp\!\left(-\frac{x^2}{2t}\right)=\frac{1}{\sqrt t}\,\varphi\!\left(\frac{x}{\sqrt t}\right),
+  \qquad t>0,\ x\in\R,
+\]
+它是 $\Normal(0,t)$ 的密度（\cref{prop:gaussian-equivalent}）。
+
 \begin{proposition}[预布朗运动的有限维密度]
 \label{prop:pre-brownian-finite-dimensional-density}
 设 $B$ 是预布朗运动，$n\ge1$，$0=t_0<t_1<\cdots<t_n$。则 $(B_{t_1},\ldots,B_{t_n})$ 相对于 $\Leb_n$ 的密度为
 \begin{equation}
   \label{eq:pre-brownian-finite-dimensional-density}
-  p_{t_1,\ldots,t_n}(x_1,\ldots,x_n)
-  =\frac{1}{(2\pi)^{n/2}\sqrt{\prod_{i=1}^{n}(t_i-t_{i-1})}}
-    \exp\!\left(-\sum_{i=1}^{n}\frac{(x_i-x_{i-1})^2}{2(t_i-t_{i-1})}\right),
+  \begin{split}
+    p_{t_1,\ldots,t_n}(x_1,\ldots,x_n)
+    &=\prod_{i=1}^{n}p_{t_i-t_{i-1}}(x_i-x_{i-1})\\
+    &=\frac{1}{(2\pi)^{n/2}\sqrt{\prod_{i=1}^{n}(t_i-t_{i-1})}}
+      \exp\!\left(-\sum_{i=1}^{n}\frac{(x_i-x_{i-1})^2}{2(t_i-t_{i-1})}\right),
+  \end{split}
 \end{equation}
 其中 $x_0:=0$。
 \end{proposition}
 
 \begin{proof}
 令 $Y_i:=B_{t_i}-B_{t_{i-1}}$（$1\le i\le n$）。由\cref{prop:pre-brownian-equivalences}，$Y_1,\ldots,Y_n$ 相互独立，
-且 $Y_i\sim\Normal(0,t_i-t_{i-1})$，故 $Y:=(Y_1,\ldots,Y_n)$ 的密度为各分量密度之积
-\[
-  q(y)=\frac{1}{(2\pi)^{n/2}\sqrt{\prod_{i=1}^{n}(t_i-t_{i-1})}}
-    \exp\!\left(-\sum_{i=1}^{n}\frac{y_i^2}{2(t_i-t_{i-1})}\right).
-\]
-令线性映射 $\Phi:\R^n\to\R^n$，$(Ty)_i:=\sum_{j\le i}y_j$。由 $B_0=0$ 几乎处处，
-$(B_{t_1},\ldots,B_{t_n})=TY$ 几乎处处。$\Phi$ 的矩阵是对角元全为 $1$ 的下三角矩阵，故 $\det \Phi=1$，
+且 $Y_i\sim\Normal(0,t_i-t_{i-1})$，故 $Y:=(Y_1,\ldots,Y_n)$ 的密度为乘积 $q(y):=\prod_{i=1}^{n}p_{t_i-t_{i-1}}(y_i)$。
+令线性映射 $\Phi:\R^n\to\R^n$，$(\Phi y)_i:=\sum_{j\le i}y_j$。由 $B_0=0$ 几乎处处，
+$(B_{t_1},\ldots,B_{t_n})=\Phi Y$ 几乎处处。$\Phi$ 的矩阵是对角元全为 $1$ 的下三角矩阵，故 $\det\Phi=1$，
 且 $(\Phi^{-1}x)_i=x_i-x_{i-1}$。由线性换元公式\cite[练习 1.3.16，第 66 页]{Tao2011}，对 $A\in\B(\R^n)$，
 \[
   \Prob\bigl((B_{t_1},\ldots,B_{t_n})\in A\bigr)=\int_{\Phi^{-1}(A)}q(y)\,\dd y=\int_Aq(\Phi^{-1}x)\,\dd x,
 \]
-代入 $\Phi^{-1}x$ 即得\cref{eq:pre-brownian-finite-dimensional-density}。
+而 $q(\Phi^{-1}x)$ 正是\cref{eq:pre-brownian-finite-dimensional-density} 的右端。
 \end{proof}
 
 \begin{proposition}[有限维分布相同的过程]
@@ -1578,7 +1582,7 @@ $(2)\Rightarrow(1)$，$X$ 是预布朗运动。
 \begin{proof}
 由\cref{prop:pre-brownian-equivalences}，$B$ 是协方差函数为 $s\wedge t$ 的中心高斯过程；
 三个过程的有限线性组合都是 $B$ 的有限线性组合，故它们都是中心高斯过程。
-由\cref{prop:pre-brownian-equivalences} 的条件 (2)，只需计算协方差：对 $u,v\ge0$，
+由\cref{prop:pre-brownian-equivalences} 中的 $(2)\Rightarrow(1)$，只需计算协方差：对 $u,v\ge0$，
 \begin{align*}
   \Cov(-B_u,-B_v)&=\Cov(B_u,B_v)=u\wedge v,\\
   \Cov(B_u^\lambda,B_v^\lambda)&=\lambda^{-2}\bigl(\lambda^2u\wedge\lambda^2v\bigr)=u\wedge v,\\
@@ -1656,7 +1660,7 @@ $G_1(\ind{[0,t]})=B_t=G_2(\ind{[0,t]})$，则对每个 $f\in L^2(\R_+)$ 都有 $
 
 本节中，$(E,d)$ 是度量空间，装备 Borel $\sigma$ 代数 $\B(E)$；$T$ 是指标集。
 需要比较的过程都定义在同一概率空间 $(\Omega,\F,\Prob)$ 上，且有相同的指标集与取值空间；
-讨论样本路径时，每个 $X_t$ 都取定一个可测代表元。满足 $N\in\F$、$\Prob(N)=0$ 的集合 $N$ 称为零测集。
+讨论样本路径时，每个 $X_t$ 都取定一个可测代表元。
 
 \begin{definition}[样本路径]
 \label{def:sample-path}
@@ -1705,7 +1709,7 @@ $X_t(\omega)=\widetilde X_t(\omega)$ 对所有 $\omega\notin N_t$ 成立，则�
 \begin{proof}
 对固定的 $t\ge0$，集合 $\{X_t\ne\widetilde X_t\}$ 在 $t\le1$ 时为 $\{t\}$，在 $t>1$ 时为空集，
 其勒贝格测度均为 $0$，故 $\widetilde X$ 是 $X$ 的修正。$\widetilde X$ 的样本路径恒为 $0$，自然连续。
-对固定的 $\omega\in[0,1]$，$X_\omega(\omega)=1$，而当 $t_n:=\omega+1/n\to\omega$ 时 $X_{t_n}(\omega)=0$，
+对固定的 $\omega\in[0,1]$，样本路径 $X_\bullet(\omega)$ 在 $t=\omega$ 处取值 $1$，而当 $t_n:=\omega+1/n\to\omega$ 时 $X_{t_n}(\omega)=0$，
 故 $X_\bullet(\omega)$ 在 $t=\omega$ 处不连续（$\omega=0$ 时按 $\R_+$ 的相对拓扑理解）。
 \end{proof}
 
@@ -1743,6 +1747,7 @@ $X_t=\widetilde X_t$，故 $X_t=\widetilde X_t$ 几乎处处。
 是两个 $E$ 值过程，且二者的样本路径都几乎处处连续：存在零测集 $N_X,N_{\widetilde X}$，
 使得 $\omega\notin N_X$ 时 $X_\bullet(\omega)$ 连续，$\omega\notin N_{\widetilde X}$ 时 $\widetilde X_\bullet(\omega)$ 连续
 （连续性相对于 $I$ 的子空间拓扑）。则 $\widetilde X$ 是 $X$ 的修正，当且仅当 $X$ 与 $\widetilde X$ 不可区分。
+特别地，任一 $E$ 值过程 $Y=(Y_t)_{t\in I}$ 的样本路径连续的修正若存在，则在不可区分的意义下唯一。
 \end{proposition}
 
 \begin{proof}
@@ -1757,7 +1762,1048 @@ $X_t=\widetilde X_t$，故 $X_t=\widetilde X_t$ 几乎处处。
   X_t(\omega)=\lim_{n\to\infty}X_{q_n}(\omega)=\lim_{n\to\infty}\widetilde X_{q_n}(\omega)=\widetilde X_t(\omega).
 \]
 所以在 $M$ 之外两条样本路径处处相同，即 $X$ 与 $\widetilde X$ 不可区分。
+
+最后一句：若 $X$ 与 $\widetilde X$ 都是 $Y$ 的样本路径连续的修正，则对每个 $t\in I$，$X_t=Y_t=\widetilde X_t$ 几乎处处，
+即 $\widetilde X$ 是 $X$ 的修正，由前半部分，二者不可区分。
 \end{proof}
+
+于是样本路径连续的修正只需考虑存在性。
+下面的 Kolmogorov 连续性定理给出存在性的一个充分条件，它只涉及二维分布的矩估计。
+证明中确定性的部分是二进点上的链式估计，先单独写成引理。
+
+\begin{lemma}[二进点上的 Hölder 估计]
+\label{lem:dyadic-holder}
+设 $I\subseteq[0,1]$ 是区间。对整数 $n\ge0$，令 $D_n:=I\cap2^{-n}\Z$，并令 $D:=\bigcup_{n\ge0}D_n$；
+若 $u$ 与 $u+2^{-n}$ 都属于 $D_n$，则称它们是 $D_n$ 中的一对相邻点。设 $f:D\to E$，$\alpha>0$，$K\ge0$，
+且对任意 $n\ge0$ 及 $D_n$ 中的任意一对相邻点 $u,u+2^{-n}$，
+\[
+  d\bigl(f(u),f(u+2^{-n})\bigr)\le K2^{-n\alpha}.
+\]
+则
+\[
+  d\bigl(f(s),f(t)\bigr)\le\frac{2K}{1-2^{-\alpha}}\abs{t-s}^\alpha,\qquad\forall\,s,t\in D.
+\]
+\end{lemma}
+
+\begin{proof}
+不妨设 $s<t$。因为 $0<t-s\le1$，存在整数 $p\ge0$，使得 $2^{-p}\le t-s<2^{-p+1}$。对 $n\ge p$，令
+\[
+  s_n:=2^{-n}\ceil{2^ns},\qquad t_n:=2^{-n}\floor{2^nt},
+\]
+它们分别是 $2^{-n}\Z$ 中不小于 $s$ 的最小点与不大于 $t$ 的最大点。依次验证：
+\begin{enumerate}
+  \item $s_n,t_n\in D_n$。事实上 $s\le s_n<s+2^{-n}\le s+2^{-p}\le t$，同理 $s\le t_n\le t$；
+    而 $I$ 是区间，故 $[s,t]\subseteq I$。
+  \item $s_n-s_{n+1}$ 与 $t_{n+1}-t_n$ 都属于 $\{0,2^{-(n+1)}\}$。事实上，记 $k:=\ceil{2^ns}$，
+    由 $k-1<2^ns\le k$ 得 $2k-2<2^{n+1}s\le2k$，故 $\ceil{2^{n+1}s}\in\{2k-1,2k\}$；$t_n$ 同理。
+    又 $D_n\subseteq D_{n+1}$，所以 $s_n\ne s_{n+1}$ 时 $s_{n+1},s_n$ 是 $D_{n+1}$ 中的一对相邻点。
+    因此 $d\bigl(f(s_{n+1}),f(s_n)\bigr)\le K2^{-(n+1)\alpha}$（二者相等时左端为 $0$），对 $t_n,t_{n+1}$ 亦然。
+  \item $t_p-s_p\in\{0,2^{-p}\}$，从而 $d\bigl(f(s_p),f(t_p)\bigr)\le K2^{-p\alpha}$。事实上，由 $2^pt-2^ps\ge1$，
+    区间 $[2^ps,2^pt]$ 含有整数，故 $s_p\le t_p$；又 $t_p-s_p\le t-s<2^{-p+1}$，且 $t_p-s_p\in2^{-p}\Z$。
+    所以 $s_p,t_p$ 或者相等，或者是 $D_p$ 中的一对相邻点。
+  \item 由于 $D_n$ 关于 $n$ 递增，存在 $m\ge p$ 使 $s,t\in D_m$，从而 $s_m=s$，$t_m=t$。
+\end{enumerate}
+沿着 $s=s_m,s_{m-1},\ldots,s_p,t_p,t_{p+1},\ldots,t_m=t$ 使用三角不等式，并由 (2)、(3) 估计每一段，得
+\[
+  d\bigl(f(s),f(t)\bigr)
+  \le K2^{-p\alpha}+2\sum_{n=p}^{\infty}K2^{-(n+1)\alpha}
+  =\frac{1+2^{-\alpha}}{1-2^{-\alpha}}\,K2^{-p\alpha}
+  \le\frac{2K}{1-2^{-\alpha}}(t-s)^\alpha,
+\]
+最后一步用到 $2^{-p}\le t-s$。
+\end{proof}
+
+\begin{theorem}[Kolmogorov 连续性定理]
+\label{thm:kolmogorov-continuity}
+设 $I\subseteq\R$ 是有界区间，$(E,d)$ 是完备度量空间，$X=(X_t)_{t\in I}$ 是 $E$ 值过程。
+若存在常数 $q,\varepsilon,C>0$，使得\footnote{%
+  这里默认 $d(X_s,X_t)$ 是随机变量。$E$ 可分时这自动成立：此时 $\B(E\times E)=\B(E)\otimes\B(E)$，
+  而 $d$ 在 $E\times E$ 上连续。}
+\begin{equation}
+  \label{eq:kolmogorov-moment}
+  \E\bigl[d(X_s,X_t)^q\bigr]\le C\abs{t-s}^{1+\varepsilon},\qquad\forall\,s,t\in I,
+\end{equation}
+则 $X$ 有一个修正 $\widetilde X$，其样本路径对每个 $\alpha\in(0,\varepsilon/q)$ 都是 $\alpha$ 阶 Hölder 连续的：
+对任意 $\omega\in\Omega$ 及 $\alpha\in(0,\varepsilon/q)$，存在有限常数 $C_\alpha(\omega)$，使得
+\[
+  d\bigl(\widetilde X_s(\omega),\widetilde X_t(\omega)\bigr)\le C_\alpha(\omega)\abs{t-s}^\alpha,\qquad\forall\,s,t\in I.
+\]
+特别地，$\widetilde X$ 是 $X$ 的样本路径连续的修正，且这样的修正在不可区分的意义下唯一。
+\end{theorem}
+
+\begin{proof}
+唯一性已包含在\cref{prop:continuous-modifications-indistinguishable} 中，下面只证存在性。
+
+\textbf{约化与记号。}
+$I$ 为单点时取 $\widetilde X:=X$ 即可。否则记 $I$ 的端点为 $a<b$，$L:=b-a$，令
+$I':=\{(t-a)/L:t\in I\}$，$Y_u:=X_{a+Lu}$（$u\in I'$）。则 $(0,1)\subseteq I'\subseteq[0,1]$，
+且 $Y$ 满足\cref{eq:kolmogorov-moment}，只需把 $C$ 换成 $CL^{1+\varepsilon}$。若 $\widetilde Y$ 是 $Y$ 的满足结论的修正，
+则 $\widetilde X_t:=\widetilde Y_{(t-a)/L}$ 是 $X$ 的满足结论的修正（$C_\alpha(\omega)$ 换成 $L^{-\alpha}C_\alpha(\omega)$）。
+因此以下不妨设 $(0,1)\subseteq I\subseteq[0,1]$，并沿用\cref{lem:dyadic-holder} 的记号 $D_n$、$D$。
+对 $t\in I$ 及 $j\ge1$，取 $s_j(t)$ 为 $\{i2^{-j}:1\le i\le2^j-1\}$ 中离 $t$ 最近的点（有两个时取较小者），
+则 $s_j(t)\in(0,1)\cap2^{-j}\Z\subseteq D$，且 $\abs{s_j(t)-t}\le2^{-j}$。由 Markov 不等式与\cref{eq:kolmogorov-moment}，
+对 $s,t\in I$ 及 $\lambda>0$，
+\begin{equation}
+  \label{eq:kolmogorov-markov}
+  \Prob\bigl(d(X_s,X_t)\ge\lambda\bigr)\le\lambda^{-q}\E\bigl[d(X_s,X_t)^q\bigr]\le C\lambda^{-q}\abs{t-s}^{1+\varepsilon}.
+\end{equation}
+
+\textbf{第一步：相邻二进点上的估计。}
+固定 $\alpha\in(0,\varepsilon/q)$。$D_n$ 中的相邻点对 $u,u+2^{-n}$ 至多有 $2^n$ 对（$u$ 只能取 $(i-1)2^{-n}$，$1\le i\le2^n$）。
+令 $A_n$ 为事件“$D_n$ 中存在一对相邻点 $u,u+2^{-n}$，使 $d(X_u,X_{u+2^{-n}})\ge2^{-n\alpha}$”。
+在\cref{eq:kolmogorov-markov} 中取 $\lambda=2^{-n\alpha}$，得
+\[
+  \Prob(A_n)\le2^n\cdot C2^{nq\alpha}2^{-n(1+\varepsilon)}=C2^{-n(\varepsilon-q\alpha)}.
+\]
+由于 $\varepsilon-q\alpha>0$，$\sum_n\Prob(A_n)<\infty$。由 Borel--Cantelli 引理\cite[定理 2.3.1]{Durrett2019}，
+几乎处处只有有限个 $A_n$ 发生，即对几乎每个 $\omega$，存在 $n_0(\omega)$，使得 $n\ge n_0(\omega)$ 时
+$D_n$ 中每对相邻点都满足 $d(X_u(\omega),X_{u+2^{-n}}(\omega))<2^{-n\alpha}$。因此
+\[
+  K_\alpha:=\sup_{n\ge0}\,\max_{u}\,2^{n\alpha}d\bigl(X_u,X_{u+2^{-n}}\bigr)
+\]
+（$\max$ 取遍 $D_n$ 中的相邻点对，空集上的最大值约定为 $0$）几乎处处有限：$n\ge n_0(\omega)$ 的各项不超过 $1$，
+其余只有有限项，每项都有限。$K_\alpha$ 是可数个随机变量的上确界，故 $\{K_\alpha<\infty\}\in\F$。
+
+\textbf{\boldmath 第二步：$D$ 上的 Hölder 估计。}
+令 $\alpha_k:=(1-2^{-k})\varepsilon/q$（$k\ge1$），则 $\alpha_k\uparrow\varepsilon/q$。令
+$\Omega_0:=\bigcap_{k\ge1}\{K_{\alpha_k}<\infty\}$，由第一步，$\Prob(\Omega_0)=1$。对 $\omega\in\Omega_0$ 及 $k\ge1$，
+把\cref{lem:dyadic-holder} 用于 $f:=X_\bullet(\omega)|_D$、指数 $\alpha_k$ 及常数 $K_{\alpha_k}(\omega)$，得
+\begin{equation}
+  \label{eq:kolmogorov-dyadic-holder}
+  d\bigl(X_s(\omega),X_t(\omega)\bigr)\le C_k(\omega)\abs{t-s}^{\alpha_k},\quad\forall\,s,t\in D,
+  \qquad\text{其中}\ C_k(\omega):=\frac{2K_{\alpha_k}(\omega)}{1-2^{-\alpha_k}}.
+\end{equation}
+
+\textbf{\boldmath 第三步：构造 $\widetilde X$。}
+取定 $x_0\in E$。对 $t\in I$，令
+\[
+  \widetilde X_t(\omega):=
+  \begin{cases}
+    \lim_{j\to\infty}X_{s_j(t)}(\omega), & \omega\in\Omega_0,\\
+    x_0, & \omega\notin\Omega_0.
+  \end{cases}
+\]
+极限存在：对 $\omega\in\Omega_0$，由\cref{eq:kolmogorov-dyadic-holder}（取 $k=1$），
+$d\bigl(X_{s_i(t)}(\omega),X_{s_j(t)}(\omega)\bigr)\le C_1(\omega)(2^{-i}+2^{-j})^{\alpha_1}$，
+故 $\bigl(X_{s_j(t)}(\omega)\bigr)_{j\ge1}$ 是 Cauchy 列，而 $E$ 完备。
+令 $Z_j$ 在 $\Omega_0$ 上等于 $X_{s_j(t)}$、在 $\Omega_0^c$ 上等于 $x_0$，则 $Z_j$ 可测（$\Omega_0\in\F$），
+而 $\widetilde X_t$ 是 $Z_j$ 的逐点极限，故 $\widetilde X_t$ 是随机变量。\footnote{%
+  度量空间值可测映射的逐点极限仍可测：设 $Z_j\to Z$ 逐点。对开集 $U\subseteq E$，令
+  $U_m:=\{x\in E:d(x,E\setminus U)>1/m\}$（开集；约定 $d(x,\varnothing)=\infty$），则
+  $\{Z\in U\}=\bigcup_{m\ge1}\bigcup_{i\ge1}\bigcap_{j\ge i}\{Z_j\in U_m\}\in\F$。
+  事实上，若 $Z(\omega)\in U$，则 $\delta:=d(Z(\omega),E\setminus U)>0$，取 $m>2/\delta$，$j$ 充分大时
+  $Z_j(\omega)\in U_m$；反之，若 $Z_j(\omega)\in U_m$ 对 $j\ge i$ 成立，则 $d(Z(\omega),E\setminus U)\ge1/m>0$，
+  而 $E\setminus U$ 是闭集，故 $Z(\omega)\in U$。}
+对 $\omega\in\Omega_0$、$s,t\in I$ 及 $k\ge1$，在\cref{eq:kolmogorov-dyadic-holder} 中以 $s_j(s),s_j(t)$ 代替 $s,t$，
+并令 $j\to\infty$（$d$ 连续），得
+\[
+  d\bigl(\widetilde X_s(\omega),\widetilde X_t(\omega)\bigr)\le C_k(\omega)\abs{t-s}^{\alpha_k}.
+\]
+给定 $\alpha\in(0,\varepsilon/q)$，取 $k$ 使 $\alpha_k\ge\alpha$；由 $\abs{t-s}\le1$ 有 $\abs{t-s}^{\alpha_k}\le\abs{t-s}^\alpha$，
+故可取 $C_\alpha(\omega):=C_k(\omega)$。$\omega\notin\Omega_0$ 时样本路径是常值，取 $C_\alpha(\omega):=0$。
+
+\textbf{\boldmath 第四步：$\widetilde X$ 是 $X$ 的修正。}
+固定 $t\in I$。在\cref{eq:kolmogorov-markov} 中取 $s=s_j(t)$、$\lambda=1/j$，得
+\[
+  \sum_{j\ge1}\Prob\bigl(d(X_{s_j(t)},X_t)\ge1/j\bigr)\le C\sum_{j\ge1}j^q2^{-j(1+\varepsilon)}<\infty.
+\]
+由 Borel--Cantelli 引理，几乎处处当 $j$ 充分大时 $d(X_{s_j(t)},X_t)<1/j$，即 $X_{s_j(t)}\to X_t$ 几乎处处。
+另一方面，在 $\Omega_0$ 上 $X_{s_j(t)}\to\widetilde X_t$。由极限的唯一性，$X_t=\widetilde X_t$ 几乎处处。
+\end{proof}
+
+\begin{corollary}[任意区间上的连续修正]
+\label{cor:kolmogorov-continuity-general}
+设 $I\subseteq\R$ 是区间（可以无界），$(E,d)$ 是完备度量空间，$E$ 值过程 $X=(X_t)_{t\in I}$
+对某些常数 $q,\varepsilon,C>0$ 满足\cref{eq:kolmogorov-moment}。则 $X$ 有一个修正 $\widetilde X$，其样本路径对每个 $\alpha\in(0,\varepsilon/q)$
+都是局部 $\alpha$ 阶 Hölder 连续的：对任意 $\omega\in\Omega$、$\alpha\in(0,\varepsilon/q)$ 及 $I$ 的有界子区间 $J$，
+存在有限常数 $C_{\alpha,J}(\omega)$，使得
+\[
+  d\bigl(\widetilde X_s(\omega),\widetilde X_t(\omega)\bigr)\le C_{\alpha,J}(\omega)\abs{t-s}^\alpha,\qquad\forall\,s,t\in J.
+\]
+特别地，$\widetilde X$ 是 $X$ 的样本路径连续的修正，且这样的修正在不可区分的意义下唯一。
+\end{corollary}
+
+\begin{proof}
+唯一性见\cref{prop:continuous-modifications-indistinguishable}，下面证明存在性。取定 $c\in I$，对 $n\ge1$ 令 $I_n:=I\cap[c-n,c+n]$。
+它们是递增的有界区间，并集为 $I$，且 $I$ 的每个有界子区间都含于某个 $I_n$。由\cref{thm:kolmogorov-continuity}，
+$(X_t)_{t\in I_n}$ 有修正 $\widetilde X^{(n)}$，其样本路径在 $I_n$ 上对每个 $\alpha\in(0,\varepsilon/q)$ 都是 $\alpha$ 阶
+Hölder 连续的。对 $m<n$，$\widetilde X^{(n)}$ 在 $I_m$ 上的限制与 $\widetilde X^{(m)}$ 都是 $(X_t)_{t\in I_m}$
+的样本路径连续的修正，由\cref{prop:continuous-modifications-indistinguishable}，存在零测集 $M_{m,n}$，在其外二者在 $I_m$ 上处处相等。
+令 $M:=\bigcup_{m<n}M_{m,n}$，它仍是零测集。取定 $x_0\in E$，定义
+\[
+  \widetilde X_t(\omega):=
+  \begin{cases}
+    \widetilde X^{(n)}_t(\omega), & \omega\notin M,\ t\in I_n,\\
+    x_0, & \omega\in M;
+  \end{cases}
+\]
+由 $M$ 的取法，第一行与 $n$ 的选取无关。对 $t\in I_n$，$\widetilde X_t$ 在 $M^c$ 上等于 $\widetilde X^{(n)}_t$、在 $M$
+上为常值，故可测，且 $\widetilde X_t=\widetilde X^{(n)}_t=X_t$ 几乎处处，所以 $\widetilde X$ 是 $X$ 的修正。
+若 $J\subseteq I_n$，则对 $\omega\notin M$，$\widetilde X_\bullet(\omega)$ 在 $J$ 上与 $\widetilde X^{(n)}_\bullet(\omega)$ 相同，
+从而是 $\alpha$ 阶 Hölder 连续的；对 $\omega\in M$，样本路径是常值。
+\end{proof}
+
+\begin{proposition}[预布朗运动的连续修正]
+\label{prop:pre-brownian-holder-modification}
+设 $B=(B_t)_{t\ge0}$ 是预布朗运动。则 $B$ 有一个修正 $\widetilde B$，其样本路径对每个 $\alpha\in(0,1/2)$
+都是局部 $\alpha$ 阶 Hölder 连续的：对任意 $\omega\in\Omega$、$\alpha\in(0,1/2)$ 及 $T>0$，存在有限常数
+$C_{\alpha,T}(\omega)$，使得
+\[
+  \abs{\widetilde B_t(\omega)-\widetilde B_s(\omega)}\le C_{\alpha,T}(\omega)\abs{t-s}^\alpha,\qquad\forall\,s,t\in[0,T].
+\]
+特别地，$\widetilde B$ 的样本路径连续，且这样的修正在不可区分的意义下唯一。
+\end{proposition}
+
+\begin{proof}
+\textbf{矩估计。}
+设 $0\le s<t$。由\cref{prop:pre-brownian-equivalences}，$B_t-B_s\sim\Normal(0,t-s)$，即存在标准高斯变量 $Z$，使
+$B_t-B_s=\sqrt{t-s}\,Z$ 几乎处处（\cref{def:gaussian-affine}）。由\cref{cor:gaussian-moments}，对每个整数 $m\ge1$，
+\begin{equation}
+  \label{eq:pre-brownian-even-moments}
+  \E\bigl[\abs{B_t-B_s}^{2m}\bigr]=(t-s)^m\,\E[Z^{2m}]=(2m-1)!!\,\abs{t-s}^m,
+\end{equation}
+上式对 $s=t$ 及 $s>t$ 也成立。
+
+\textbf{构造修正。}
+对整数 $m\ge2$，\cref{eq:pre-brownian-even-moments} 就是 $I=\R_+$、$E=\R$ 时的条件\cref{eq:kolmogorov-moment}，其中
+$q=2m$，$\varepsilon=m-1$，$C=(2m-1)!!$，而 $\varepsilon/q=\tfrac12-\tfrac1{2m}$。由\cref{cor:kolmogorov-continuity-general}，
+$B$ 有修正 $B^{(m)}$，其样本路径对每个 $\alpha\in(0,\tfrac12-\tfrac1{2m})$ 都是局部 $\alpha$ 阶 Hölder 连续的。
+各 $B^{(m)}$ 都是 $B$ 的样本路径连续的修正，由\cref{prop:continuous-modifications-indistinguishable}，存在零测集 $M_m$，在其外 $B^{(m)}$ 与 $B^{(2)}$
+的样本路径相同。令 $M:=\bigcup_{m\ge2}M_m$，并令 $\widetilde B_t:=B^{(2)}_t$ 在 $M^c$ 上、$\widetilde B_t:=0$ 在 $M$ 上。
+则 $\widetilde B_t=B^{(2)}_t=B_t$ 几乎处处，故 $\widetilde B$ 是 $B$ 的修正。对 $\omega\notin M$ 及 $\alpha\in(0,1/2)$，取 $m$
+使 $\alpha<\tfrac12-\tfrac1{2m}$，则 $\widetilde B_\bullet(\omega)=B^{(m)}_\bullet(\omega)$ 是局部 $\alpha$ 阶 Hölder 连续的；
+对 $\omega\in M$，样本路径恒为 $0$。唯一性仍见\cref{prop:continuous-modifications-indistinguishable}。
+\end{proof}
+
+\begin{definition}[布朗运动]
+\label{def:brownian-motion}
+称实值过程 $B=(B_t)_{t\ge0}$ 为布朗运动，如果：
+\begin{enumerate}
+  \item $B$ 是预布朗运动；
+  \item $B$ 的每条样本路径都连续。
+\end{enumerate}
+\end{definition}
+
+\begin{remark}
+\label{rem:brownian-motion-scope}
+准确地说，\cref{def:brownian-motion} 定义的是从 $0$ 出发的实值（一维）布朗运动；
+任意初值与高维的情形见\cref{def:brownian-motion-initial} 与\cref{def:brownian-motion-d}。
+\end{remark}
+
+\begin{proposition}[布朗运动的存在性]
+\label{prop:brownian-motion-existence}
+在适当选取的概率空间上存在布朗运动。更确切地，若 $B$ 是预布朗运动，则\cref{prop:pre-brownian-holder-modification}
+中的修正 $\widetilde B$ 是布朗运动。
+\end{proposition}
+
+\begin{proof}
+由\cref{prop:gaussian-white-noise-existence}，在某个概率空间上存在 $(\R_+,\B(\R_+))$ 上强度为 $\dd t$ 的高斯白噪声，
+从而由\cref{def:pre-brownian-motion} 存在预布朗运动 $B$。$\widetilde B$ 是 $B$ 的修正，由%
+\cref{prop:modification-finite-dimensional-laws}~(2)，$\widetilde B$ 也是预布朗运动；而 $\widetilde B$ 的每条样本路径都连续。
+\end{proof}
+
+此后我们只考虑布朗运动，不再单独讨论预布朗运动。预布朗运动的不变性对布朗运动同样成立。
+
+\begin{proposition}[布朗运动的不变性]
+\label{prop:brownian-invariances}
+设 $B=(B_t)_{t\ge0}$ 是布朗运动，则：
+\begin{enumerate}
+  \item （对称性）$-B=(-B_t)_{t\ge0}$ 是布朗运动；
+  \item （尺度不变性）对任意 $\lambda>0$，$B^\lambda:=(\lambda^{-1}B_{\lambda^2t})_{t\ge0}$ 是布朗运动；
+  \item （简单马尔可夫性）对任意 $s\ge0$，$B^{(s)}:=(B_{s+t}-B_s)_{t\ge0}$ 是布朗运动，且与 $\F_s^B$ 独立。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+由\cref{prop:pre-brownian-invariances}，三个过程都是预布朗运动，且 $B^{(s)}$ 与 $\F_s^B$ 独立。
+它们的样本路径由 $B$ 的样本路径经取负、时间伸缩与平移得到，因而连续。
+\end{proof}
+
+布朗运动的样本路径是 $\R_+$ 上的连续函数，因此可以把整个布朗运动看成一个取值于连续函数空间的随机元，
+并讨论它的分布。下面说明这一分布与布朗运动的选取无关。
+
+\begin{definition}[连续函数空间及其坐标 $\sigma$ 代数]
+\label{def:continuous-path-space}
+记 $C(\R_+,\R)$ 为 $\R_+$ 到 $\R$ 的全体连续函数，其元素记作 $w$。对 $t\ge0$，称 $w\mapsto w(t)$ 为坐标映射。
+令 $\mathscr C$ 为使所有坐标映射都可测的最小 $\sigma$ 代数，即
+\[
+  \mathscr C:=\sigma\bigl(\{w\in C(\R_+,\R):w(t)\in\Gamma\}:t\ge0,\ \Gamma\in\B(\R)\bigr).
+\]
+\end{definition}
+
+\begin{remark}
+\label{rem:coordinate-sigma-borel}
+可以验证，$\mathscr C$ 与 $C(\R_+,\R)$ 上紧集上一致收敛拓扑的 Borel $\sigma$ 代数相同\cite[\S2.2]{LeGall2016}。
+下文只用到 $\mathscr C$ 的上述定义。
+\end{remark}
+
+\begin{lemma}[样本路径映射的可测性]
+\label{lem:sample-path-map-measurable}
+设 $B=(B_t)_{t\ge0}$ 是 $(\Omega,\F,\Prob)$ 上的布朗运动。则
+\[
+  \Phi_B:\Omega\to C(\R_+,\R),\qquad \omega\mapsto B_\bullet(\omega)=\bigl(t\mapsto B_t(\omega)\bigr)
+\]
+是 $\F/\mathscr C$ 可测的。
+\end{lemma}
+
+\begin{proof}
+由\cref{def:brownian-motion}，每条样本路径连续，故 $\Phi_B$ 确实取值于 $C(\R_+,\R)$。
+对 $\mathscr C$ 的每个生成元，$\Phi_B^{-1}\bigl(\{w:w(t)\in\Gamma\}\bigr)=\{B_t\in\Gamma\}\in\F$；
+而在生成元上可测即可测\cite[定理 1.3.1]{Durrett2019}，故 $\Phi_B$ 是 $\F/\mathscr C$ 可测的。
+\end{proof}
+
+\begin{definition}[Wiener 测度]
+\label{def:wiener-measure}
+设 $B$ 是 $(\Omega,\F,\Prob)$ 上的布朗运动。称 $\Prob$ 在 $\Phi_B$ 下的像测度
+\[
+  W(A):=\Prob\bigl(\Phi_B^{-1}(A)\bigr)=\Prob(B_\bullet\in A),\qquad A\in\mathscr C,
+\]
+为 Wiener 测度（或布朗运动的分布），也记作 $W(\dd w)$。它是 $(C(\R_+,\R),\mathscr C)$ 上的概率测度。
+\end{definition}
+
+先计算 $W$ 在一类简单集合上的值。对整数 $n\ge1$、$0=t_0<t_1<\cdots<t_n$ 及 $A_0,A_1,\ldots,A_n\in\B(\R)$，称
+\[
+  \{w\in C(\R_+,\R):w(t_0)\in A_0,\,w(t_1)\in A_1,\ldots,w(t_n)\in A_n\}
+\]
+为柱集。它是 $n+1$ 个生成元的交，故属于 $\mathscr C$。
+
+\begin{proposition}[柱集的 Wiener 测度]
+\label{prop:wiener-cylinder-sets}
+在上述记号下，
+\[
+  W\bigl(\{w:w(t_0)\in A_0,\ldots,w(t_n)\in A_n\}\bigr)
+  =\ind{A_0}(0)\int_{A_1\times\cdots\times A_n}p_{t_1,\ldots,t_n}(x_1,\ldots,x_n)\,\dd x_1\cdots\dd x_n,
+\]
+其中 $p_{t_1,\ldots,t_n}$ 由\cref{eq:pre-brownian-finite-dimensional-density} 给出。
+\end{proposition}
+
+\begin{proof}
+由定义，左端等于 $\Prob(B_{t_0}\in A_0,B_{t_1}\in A_1,\ldots,B_{t_n}\in A_n)$。由于 $B$ 是预布朗运动，$B_0=0$ 几乎处处，
+故它等于 $\ind{A_0}(0)\,\Prob\bigl((B_{t_1},\ldots,B_{t_n})\in A_1\times\cdots\times A_n\bigr)$，
+再由\cref{prop:pre-brownian-finite-dimensional-density} 即得。
+\end{proof}
+
+右端与 $B$ 的选取无关。由于柱集组成生成 $\mathscr C$ 的 $\pi$ 系统，Wiener 测度本身也与 $B$ 的选取无关。
+
+\begin{theorem}[布朗运动分布的唯一性]
+\label{thm:wiener-measure-uniqueness}
+Wiener 测度不依赖于布朗运动的选取：若 $B$ 与 $B'$ 分别是 $(\Omega,\F,\Prob)$ 与 $(\Omega',\F',\Prob')$ 上的布朗运动，则
+\[
+  \Prob'(B'_\bullet\in A)=\Prob(B_\bullet\in A),\qquad\forall\,A\in\mathscr C.
+\]
+换言之，对 $C(\R_+,\R)$ 中任一可测集 $A$ 所对应的性质，$B$ 与 $B'$ 的样本路径具有该性质的概率相同。
+\end{theorem}
+
+\begin{proof}
+记 $W$ 与 $W'$ 分别为由 $B$ 与 $B'$ 定义的 Wiener 测度，令 $\mathcal P$ 为全体柱集组成的族，
+$\mathcal D:=\{A\in\mathscr C:W(A)=W'(A)\}$。由概率的可加性与连续性，$\mathcal D$ 是 $\lambda$ 系统；
+由\cref{prop:wiener-cylinder-sets}，$\mathcal P\subseteq\mathcal D$。$\mathcal P$ 是 $\pi$ 系统
+（把两个柱集的时刻合并，缺少的时刻处取 $A_i=\R$，即知其交仍是柱集），且 $\sigma(\mathcal P)=\mathscr C$
+（每个生成元 $\{w:w(t)\in\Gamma\}$ 都是柱集）。由 $\pi$--$\lambda$ 定理\cite[定理 2.1.6，第 46 页]{Durrett2019}，
+$\mathscr C\subseteq\mathcal D$，即 $W=W'$。
+\end{proof}
+
+这一结论今后会反复使用：要计算布朗运动样本路径满足某个可测性质的概率，可以任选一个方便的布朗运动来计算。
+特别地，可以把 Wiener 测度所在的空间本身取作概率空间，这就是下面的典范构造。
+
+\begin{proposition}[布朗运动的典范构造]
+\label{prop:canonical-brownian-motion}
+在概率空间 $\bigl(C(\R_+,\R),\mathscr C,W\bigr)$ 上，典范过程
+\[
+  X_t(w):=w(t),\qquad t\ge0,\ w\in C(\R_+,\R),
+\]
+是布朗运动。
+\end{proposition}
+
+\begin{proof}
+由\cref{prop:brownian-motion-existence}，存在某个概率空间 $(\Omega,\F,\Prob)$ 上的布朗运动 $B$；由%
+\cref{thm:wiener-measure-uniqueness}，可以用它来定义 $W$，即 $W=\Prob\circ\Phi_B^{-1}$。$X$ 的每条样本路径 $t\mapsto w(t)$ 显然连续。
+固定 $t_1,\ldots,t_n\ge0$，令 $\pi(w):=(w(t_1),\ldots,w(t_n))$，它就是随机向量 $(X_{t_1},\ldots,X_{t_n})$；
+其各分量都是坐标映射，而取值于 $\R^n$ 的映射可测当且仅当其各分量可测\cite[\S1.3]{Durrett2019}，
+故 $\pi$ 是 $\mathscr C/\B(\R^n)$ 可测的。由 $\pi\circ\Phi_B=(B_{t_1},\ldots,B_{t_n})$，对 $G\in\B(\R^n)$，
+\[
+  W\bigl((X_{t_1},\ldots,X_{t_n})\in G\bigr)=\Prob\bigl(\Phi_B^{-1}(\pi^{-1}(G))\bigr)=\Prob\bigl((B_{t_1},\ldots,B_{t_n})\in G\bigr),
+\]
+即 $X$ 与 $B$ 有相同的有限维分布。由\cref{prop:pre-brownian-same-finite-dimensional-laws}，$X$ 是预布朗运动，
+从而是布朗运动。
+\end{proof}
+
+\section{布朗运动样本路径的性质}
+\label{sec:brownian-path-properties}
+
+本节研究布朗运动样本路径的性质（\cref{fig:brownian-path}）。固定布朗运动 $B=(B_t)_{t\ge0}$，对 $t\ge0$ 记
+\[
+  \F_t:=\F_t^B=\sigma(B_s:0\le s\le t).
+\]
+当 $s\le t$ 时 $\F_s\subseteq\F_t$。再令
+\[
+  \F_{0+}:=\bigcap_{s>0}\F_s.
+\]
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.85\textwidth, height=0.5\textwidth,
+        xmin=0, xmax=1, xlabel={$t$}, ylabel={$B_t$},
+        axis lines=left, tick label style={font=\small},
+        enlarge y limits=0.05]
+      \addplot[very thin, mark=none] table[row sep=\\, header=false, x expr=\coordindex/2000, y index=0]{
+      0.000\\0.006\\-0.031\\-0.025\\-0.039\\0.002\\0.019\\0.007\\0.007\\0.000\\0.014\\0.014\\0.024\\0.030\\0.062\\0.064\\
+      0.071\\0.103\\0.152\\0.151\\0.133\\0.072\\0.112\\0.127\\0.125\\0.105\\0.059\\0.050\\-0.016\\-0.005\\-0.043\\-0.018\\
+      -0.002\\0.075\\0.099\\0.115\\0.114\\0.127\\0.124\\0.074\\0.052\\0.057\\0.061\\0.073\\0.081\\0.110\\0.129\\0.139\\
+      0.166\\0.143\\0.159\\0.128\\0.127\\0.117\\0.097\\0.105\\0.136\\0.131\\0.156\\0.133\\0.140\\0.125\\0.130\\0.147\\
+      0.126\\0.162\\0.177\\0.166\\0.140\\0.149\\0.139\\0.176\\0.210\\0.228\\0.201\\0.164\\0.172\\0.159\\0.160\\0.201\\
+      0.203\\0.196\\0.179\\0.163\\0.133\\0.118\\0.114\\0.098\\0.101\\0.089\\0.076\\0.077\\0.051\\0.058\\0.064\\0.044\\
+      0.036\\0.032\\0.029\\0.064\\0.031\\0.013\\-0.003\\-0.035\\-0.035\\-0.066\\-0.040\\-0.047\\-0.043\\-0.061\\-0.063\\-0.108\\
+      -0.110\\-0.100\\-0.129\\-0.100\\-0.087\\-0.073\\-0.067\\-0.058\\-0.078\\-0.085\\-0.087\\-0.095\\-0.126\\-0.128\\-0.138\\-0.186\\
+      -0.199\\-0.173\\-0.138\\-0.157\\-0.150\\-0.176\\-0.210\\-0.205\\-0.207\\-0.200\\-0.167\\-0.181\\-0.173\\-0.212\\-0.203\\-0.217\\
+      -0.197\\-0.246\\-0.222\\-0.213\\-0.252\\-0.230\\-0.238\\-0.232\\-0.223\\-0.253\\-0.257\\-0.217\\-0.213\\-0.212\\-0.200\\-0.229\\
+      -0.245\\-0.242\\-0.254\\-0.217\\-0.184\\-0.180\\-0.184\\-0.115\\-0.147\\-0.137\\-0.117\\-0.101\\-0.133\\-0.145\\-0.176\\-0.180\\
+      -0.206\\-0.216\\-0.265\\-0.265\\-0.250\\-0.237\\-0.225\\-0.205\\-0.195\\-0.201\\-0.261\\-0.256\\-0.286\\-0.264\\-0.262\\-0.262\\
+      -0.257\\-0.249\\-0.280\\-0.289\\-0.260\\-0.259\\-0.230\\-0.214\\-0.200\\-0.233\\-0.249\\-0.230\\-0.222\\-0.230\\-0.241\\-0.229\\
+      -0.278\\-0.253\\-0.240\\-0.225\\-0.213\\-0.238\\-0.255\\-0.279\\-0.249\\-0.262\\-0.226\\-0.215\\-0.186\\-0.164\\-0.177\\-0.209\\
+      -0.179\\-0.200\\-0.231\\-0.193\\-0.204\\-0.210\\-0.222\\-0.237\\-0.245\\-0.254\\-0.265\\-0.262\\-0.284\\-0.282\\-0.308\\-0.314\\
+      -0.323\\-0.319\\-0.361\\-0.377\\-0.345\\-0.339\\-0.352\\-0.367\\-0.331\\-0.319\\-0.343\\-0.358\\-0.339\\-0.355\\-0.350\\-0.370\\
+      -0.352\\-0.324\\-0.318\\-0.309\\-0.315\\-0.316\\-0.293\\-0.252\\-0.255\\-0.238\\-0.226\\-0.223\\-0.267\\-0.271\\-0.314\\-0.291\\
+      -0.278\\-0.310\\-0.308\\-0.315\\-0.292\\-0.301\\-0.304\\-0.336\\-0.338\\-0.324\\-0.302\\-0.292\\-0.312\\-0.335\\-0.305\\-0.315\\
+      -0.316\\-0.328\\-0.335\\-0.330\\-0.313\\-0.290\\-0.266\\-0.271\\-0.269\\-0.274\\-0.304\\-0.315\\-0.308\\-0.317\\-0.353\\-0.329\\
+      -0.366\\-0.383\\-0.384\\-0.384\\-0.413\\-0.417\\-0.389\\-0.383\\-0.382\\-0.401\\-0.421\\-0.432\\-0.436\\-0.447\\-0.417\\-0.441\\
+      -0.465\\-0.444\\-0.428\\-0.418\\-0.423\\-0.421\\-0.445\\-0.410\\-0.443\\-0.464\\-0.473\\-0.478\\-0.449\\-0.464\\-0.441\\-0.433\\
+      -0.452\\-0.465\\-0.433\\-0.429\\-0.435\\-0.460\\-0.486\\-0.515\\-0.502\\-0.467\\-0.453\\-0.437\\-0.434\\-0.458\\-0.457\\-0.416\\
+      -0.433\\-0.432\\-0.432\\-0.440\\-0.495\\-0.492\\-0.481\\-0.435\\-0.469\\-0.453\\-0.448\\-0.451\\-0.442\\-0.476\\-0.499\\-0.494\\
+      -0.495\\-0.497\\-0.498\\-0.520\\-0.518\\-0.526\\-0.525\\-0.561\\-0.543\\-0.549\\-0.528\\-0.510\\-0.539\\-0.561\\-0.577\\-0.591\\
+      -0.592\\-0.575\\-0.569\\-0.559\\-0.591\\-0.591\\-0.604\\-0.604\\-0.606\\-0.643\\-0.659\\-0.605\\-0.592\\-0.571\\-0.580\\-0.579\\
+      -0.568\\-0.574\\-0.606\\-0.622\\-0.596\\-0.583\\-0.599\\-0.579\\-0.582\\-0.581\\-0.611\\-0.619\\-0.604\\-0.614\\-0.594\\-0.596\\
+      -0.607\\-0.606\\-0.600\\-0.579\\-0.569\\-0.544\\-0.547\\-0.552\\-0.556\\-0.551\\-0.561\\-0.555\\-0.587\\-0.559\\-0.530\\-0.530\\
+      -0.486\\-0.436\\-0.435\\-0.429\\-0.399\\-0.411\\-0.429\\-0.431\\-0.444\\-0.430\\-0.403\\-0.398\\-0.420\\-0.439\\-0.431\\-0.429\\
+      -0.428\\-0.456\\-0.465\\-0.479\\-0.494\\-0.480\\-0.476\\-0.462\\-0.489\\-0.528\\-0.561\\-0.564\\-0.565\\-0.552\\-0.590\\-0.609\\
+      -0.611\\-0.584\\-0.584\\-0.587\\-0.586\\-0.576\\-0.592\\-0.590\\-0.601\\-0.574\\-0.570\\-0.557\\-0.540\\-0.561\\-0.554\\-0.545\\
+      -0.539\\-0.517\\-0.554\\-0.573\\-0.581\\-0.552\\-0.560\\-0.531\\-0.542\\-0.551\\-0.527\\-0.526\\-0.571\\-0.585\\-0.554\\-0.529\\
+      -0.527\\-0.510\\-0.557\\-0.533\\-0.518\\-0.493\\-0.490\\-0.490\\-0.451\\-0.476\\-0.486\\-0.481\\-0.488\\-0.487\\-0.484\\-0.512\\
+      -0.516\\-0.491\\-0.489\\-0.542\\-0.495\\-0.500\\-0.444\\-0.437\\-0.409\\-0.418\\-0.404\\-0.438\\-0.407\\-0.424\\-0.402\\-0.391\\
+      -0.432\\-0.464\\-0.440\\-0.429\\-0.393\\-0.383\\-0.411\\-0.420\\-0.419\\-0.400\\-0.372\\-0.359\\-0.358\\-0.405\\-0.367\\-0.381\\
+      -0.366\\-0.353\\-0.321\\-0.340\\-0.297\\-0.317\\-0.277\\-0.290\\-0.285\\-0.317\\-0.270\\-0.246\\-0.260\\-0.259\\-0.228\\-0.207\\
+      -0.197\\-0.189\\-0.169\\-0.131\\-0.144\\-0.146\\-0.183\\-0.217\\-0.190\\-0.169\\-0.122\\-0.118\\-0.047\\-0.047\\-0.011\\0.004\\
+      0.006\\-0.018\\-0.046\\-0.094\\-0.103\\-0.095\\-0.076\\-0.081\\-0.106\\-0.076\\-0.089\\-0.061\\-0.071\\-0.120\\-0.120\\-0.118\\
+      -0.114\\-0.140\\-0.092\\-0.113\\-0.115\\-0.132\\-0.137\\-0.150\\-0.195\\-0.180\\-0.208\\-0.199\\-0.223\\-0.238\\-0.216\\-0.236\\
+      -0.215\\-0.195\\-0.219\\-0.219\\-0.200\\-0.206\\-0.220\\-0.237\\-0.227\\-0.222\\-0.223\\-0.194\\-0.201\\-0.190\\-0.156\\-0.199\\
+      -0.164\\-0.129\\-0.123\\-0.126\\-0.189\\-0.171\\-0.157\\-0.110\\-0.106\\-0.105\\-0.152\\-0.153\\-0.174\\-0.154\\-0.119\\-0.126\\
+      -0.112\\-0.068\\-0.057\\-0.059\\-0.059\\-0.105\\-0.090\\-0.107\\-0.120\\-0.155\\-0.143\\-0.118\\-0.169\\-0.162\\-0.160\\-0.150\\
+      -0.135\\-0.106\\-0.113\\-0.129\\-0.143\\-0.150\\-0.154\\-0.174\\-0.151\\-0.194\\-0.226\\-0.213\\-0.193\\-0.161\\-0.170\\-0.209\\
+      -0.259\\-0.284\\-0.266\\-0.202\\-0.197\\-0.173\\-0.172\\-0.184\\-0.154\\-0.132\\-0.140\\-0.095\\-0.112\\-0.114\\-0.093\\-0.068\\
+      -0.059\\-0.043\\-0.050\\-0.026\\-0.012\\-0.023\\0.011\\-0.032\\-0.012\\-0.042\\-0.018\\0.001\\0.001\\0.024\\0.011\\-0.026\\
+      -0.067\\-0.119\\-0.098\\-0.152\\-0.177\\-0.189\\-0.180\\-0.142\\-0.156\\-0.175\\-0.151\\-0.140\\-0.132\\-0.150\\-0.155\\-0.168\\
+      -0.160\\-0.163\\-0.185\\-0.168\\-0.160\\-0.142\\-0.120\\-0.140\\-0.107\\-0.120\\-0.151\\-0.136\\-0.160\\-0.187\\-0.173\\-0.182\\
+      -0.205\\-0.216\\-0.242\\-0.231\\-0.275\\-0.325\\-0.340\\-0.352\\-0.372\\-0.401\\-0.394\\-0.390\\-0.380\\-0.383\\-0.384\\-0.395\\
+      -0.401\\-0.364\\-0.355\\-0.339\\-0.336\\-0.351\\-0.347\\-0.367\\-0.342\\-0.369\\-0.391\\-0.375\\-0.368\\-0.325\\-0.318\\-0.284\\
+      -0.294\\-0.250\\-0.232\\-0.233\\-0.227\\-0.241\\-0.259\\-0.231\\-0.224\\-0.239\\-0.293\\-0.283\\-0.293\\-0.300\\-0.294\\-0.324\\
+      -0.327\\-0.341\\-0.353\\-0.363\\-0.352\\-0.337\\-0.303\\-0.315\\-0.296\\-0.313\\-0.332\\-0.307\\-0.301\\-0.302\\-0.320\\-0.335\\
+      -0.329\\-0.329\\-0.352\\-0.309\\-0.316\\-0.306\\-0.283\\-0.300\\-0.262\\-0.295\\-0.275\\-0.258\\-0.310\\-0.324\\-0.314\\-0.293\\
+      -0.279\\-0.331\\-0.337\\-0.360\\-0.369\\-0.415\\-0.446\\-0.454\\-0.456\\-0.401\\-0.401\\-0.424\\-0.432\\-0.452\\-0.413\\-0.423\\
+      -0.403\\-0.369\\-0.374\\-0.391\\-0.381\\-0.391\\-0.426\\-0.448\\-0.450\\-0.460\\-0.489\\-0.511\\-0.469\\-0.517\\-0.531\\-0.530\\
+      -0.532\\-0.558\\-0.571\\-0.558\\-0.554\\-0.540\\-0.558\\-0.568\\-0.617\\-0.584\\-0.566\\-0.539\\-0.519\\-0.535\\-0.507\\-0.535\\
+      -0.543\\-0.533\\-0.503\\-0.490\\-0.489\\-0.475\\-0.475\\-0.489\\-0.475\\-0.426\\-0.394\\-0.367\\-0.398\\-0.375\\-0.386\\-0.363\\
+      -0.411\\-0.422\\-0.427\\-0.446\\-0.448\\-0.468\\-0.422\\-0.435\\-0.436\\-0.467\\-0.477\\-0.458\\-0.429\\-0.395\\-0.391\\-0.377\\
+      -0.365\\-0.380\\-0.352\\-0.339\\-0.353\\-0.331\\-0.297\\-0.293\\-0.331\\-0.377\\-0.396\\-0.394\\-0.390\\-0.423\\-0.441\\-0.447\\
+      -0.416\\-0.415\\-0.392\\-0.352\\-0.385\\-0.373\\-0.309\\-0.307\\-0.315\\-0.285\\-0.296\\-0.304\\-0.305\\-0.298\\-0.286\\-0.255\\
+      -0.264\\-0.263\\-0.241\\-0.243\\-0.239\\-0.253\\-0.253\\-0.256\\-0.259\\-0.236\\-0.254\\-0.261\\-0.289\\-0.288\\-0.260\\-0.223\\
+      -0.201\\-0.207\\-0.222\\-0.224\\-0.233\\-0.278\\-0.296\\-0.319\\-0.322\\-0.298\\-0.266\\-0.250\\-0.210\\-0.227\\-0.217\\-0.208\\
+      -0.209\\-0.171\\-0.162\\-0.147\\-0.134\\-0.160\\-0.168\\-0.171\\-0.176\\-0.180\\-0.195\\-0.159\\-0.149\\-0.116\\-0.117\\-0.128\\
+      -0.142\\-0.154\\-0.176\\-0.160\\-0.152\\-0.172\\-0.175\\-0.205\\-0.179\\-0.167\\-0.220\\-0.237\\-0.242\\-0.218\\-0.192\\-0.216\\
+      -0.215\\-0.181\\-0.224\\-0.246\\-0.270\\-0.280\\-0.253\\-0.218\\-0.195\\-0.179\\-0.204\\-0.230\\-0.233\\-0.208\\-0.208\\-0.225\\
+      -0.258\\-0.224\\-0.222\\-0.200\\-0.216\\-0.200\\-0.175\\-0.185\\-0.229\\-0.209\\-0.159\\-0.176\\-0.150\\-0.158\\-0.163\\-0.200\\
+      -0.215\\-0.242\\-0.210\\-0.201\\-0.220\\-0.187\\-0.171\\-0.173\\-0.195\\-0.191\\-0.213\\-0.179\\-0.164\\-0.146\\-0.170\\-0.174\\
+      -0.143\\-0.097\\-0.118\\-0.125\\-0.131\\-0.159\\-0.152\\-0.140\\-0.102\\-0.100\\-0.137\\-0.152\\-0.179\\-0.180\\-0.142\\-0.148\\
+      -0.182\\-0.180\\-0.173\\-0.188\\-0.180\\-0.187\\-0.188\\-0.187\\-0.218\\-0.244\\-0.242\\-0.188\\-0.143\\-0.112\\-0.117\\-0.093\\
+      -0.112\\-0.140\\-0.151\\-0.146\\-0.205\\-0.239\\-0.218\\-0.251\\-0.293\\-0.291\\-0.264\\-0.267\\-0.288\\-0.314\\-0.296\\-0.279\\
+      -0.266\\-0.255\\-0.229\\-0.222\\-0.237\\-0.209\\-0.209\\-0.209\\-0.226\\-0.244\\-0.207\\-0.166\\-0.211\\-0.227\\-0.219\\-0.201\\
+      -0.192\\-0.198\\-0.208\\-0.196\\-0.207\\-0.188\\-0.203\\-0.189\\-0.183\\-0.174\\-0.171\\-0.171\\-0.193\\-0.180\\-0.160\\-0.114\\
+      -0.122\\-0.151\\-0.166\\-0.144\\-0.100\\-0.091\\-0.080\\-0.115\\-0.106\\-0.133\\-0.130\\-0.106\\-0.126\\-0.135\\-0.112\\-0.114\\
+      -0.118\\-0.134\\-0.173\\-0.192\\-0.170\\-0.164\\-0.167\\-0.170\\-0.158\\-0.190\\-0.195\\-0.203\\-0.211\\-0.226\\-0.241\\-0.269\\
+      -0.293\\-0.284\\-0.297\\-0.322\\-0.299\\-0.301\\-0.305\\-0.312\\-0.282\\-0.244\\-0.276\\-0.278\\-0.271\\-0.240\\-0.214\\-0.211\\
+      -0.224\\-0.230\\-0.247\\-0.279\\-0.312\\-0.323\\-0.318\\-0.314\\-0.292\\-0.294\\-0.284\\-0.311\\-0.298\\-0.368\\-0.382\\-0.418\\
+      -0.419\\-0.401\\-0.402\\-0.374\\-0.337\\-0.301\\-0.355\\-0.362\\-0.393\\-0.399\\-0.437\\-0.440\\-0.431\\-0.395\\-0.396\\-0.385\\
+      -0.400\\-0.396\\-0.375\\-0.351\\-0.377\\-0.372\\-0.412\\-0.405\\-0.388\\-0.398\\-0.372\\-0.391\\-0.416\\-0.424\\-0.429\\-0.411\\
+      -0.424\\-0.413\\-0.387\\-0.404\\-0.386\\-0.376\\-0.400\\-0.364\\-0.353\\-0.335\\-0.339\\-0.322\\-0.325\\-0.277\\-0.233\\-0.229\\
+      -0.229\\-0.238\\-0.251\\-0.242\\-0.286\\-0.310\\-0.299\\-0.249\\-0.294\\-0.306\\-0.286\\-0.282\\-0.262\\-0.253\\-0.277\\-0.282\\
+      -0.326\\-0.336\\-0.350\\-0.336\\-0.351\\-0.382\\-0.364\\-0.303\\-0.325\\-0.339\\-0.351\\-0.383\\-0.442\\-0.455\\-0.484\\-0.479\\
+      -0.498\\-0.492\\-0.492\\-0.471\\-0.498\\-0.524\\-0.544\\-0.526\\-0.513\\-0.527\\-0.540\\-0.542\\-0.558\\-0.536\\-0.538\\-0.569\\
+      -0.565\\-0.556\\-0.502\\-0.456\\-0.471\\-0.450\\-0.426\\-0.455\\-0.428\\-0.458\\-0.453\\-0.479\\-0.494\\-0.493\\-0.497\\-0.505\\
+      -0.516\\-0.508\\-0.500\\-0.488\\-0.494\\-0.473\\-0.472\\-0.493\\-0.491\\-0.579\\-0.606\\-0.585\\-0.567\\-0.578\\-0.575\\-0.607\\
+      -0.570\\-0.566\\-0.588\\-0.570\\-0.586\\-0.593\\-0.614\\-0.613\\-0.624\\-0.613\\-0.605\\-0.642\\-0.606\\-0.578\\-0.567\\-0.556\\
+      -0.566\\-0.576\\-0.572\\-0.582\\-0.609\\-0.604\\-0.598\\-0.578\\-0.551\\-0.509\\-0.492\\-0.441\\-0.438\\-0.437\\-0.419\\-0.430\\
+      -0.428\\-0.412\\-0.392\\-0.384\\-0.381\\-0.399\\-0.373\\-0.347\\-0.342\\-0.352\\-0.318\\-0.305\\-0.323\\-0.331\\-0.371\\-0.347\\
+      -0.361\\-0.340\\-0.326\\-0.320\\-0.332\\-0.333\\-0.359\\-0.345\\-0.369\\-0.369\\-0.350\\-0.359\\-0.368\\-0.370\\-0.367\\-0.412\\
+      -0.445\\-0.454\\-0.453\\-0.435\\-0.463\\-0.497\\-0.519\\-0.521\\-0.510\\-0.521\\-0.539\\-0.556\\-0.559\\-0.569\\-0.569\\-0.584\\
+      -0.575\\-0.576\\-0.564\\-0.538\\-0.498\\-0.496\\-0.515\\-0.552\\-0.563\\-0.590\\-0.551\\-0.553\\-0.547\\-0.530\\-0.515\\-0.535\\
+      -0.556\\-0.594\\-0.619\\-0.626\\-0.621\\-0.637\\-0.659\\-0.667\\-0.679\\-0.665\\-0.653\\-0.657\\-0.686\\-0.679\\-0.645\\-0.657\\
+      -0.670\\-0.659\\-0.655\\-0.661\\-0.706\\-0.726\\-0.744\\-0.777\\-0.788\\-0.769\\-0.771\\-0.806\\-0.793\\-0.784\\-0.770\\-0.773\\
+      -0.748\\-0.759\\-0.742\\-0.723\\-0.729\\-0.746\\-0.768\\-0.757\\-0.757\\-0.743\\-0.746\\-0.715\\-0.662\\-0.646\\-0.633\\-0.640\\
+      -0.669\\-0.647\\-0.587\\-0.578\\-0.571\\-0.584\\-0.589\\-0.576\\-0.575\\-0.574\\-0.586\\-0.545\\-0.587\\-0.588\\-0.629\\-0.622\\
+      -0.620\\-0.613\\-0.658\\-0.634\\-0.628\\-0.638\\-0.612\\-0.588\\-0.606\\-0.575\\-0.558\\-0.531\\-0.535\\-0.541\\-0.584\\-0.598\\
+      -0.567\\-0.568\\-0.542\\-0.552\\-0.564\\-0.575\\-0.523\\-0.508\\-0.497\\-0.533\\-0.509\\-0.518\\-0.491\\-0.525\\-0.541\\-0.547\\
+      -0.541\\-0.541\\-0.521\\-0.499\\-0.526\\-0.513\\-0.511\\-0.501\\-0.518\\-0.490\\-0.446\\-0.466\\-0.511\\-0.524\\-0.524\\-0.563\\
+      -0.568\\-0.595\\-0.558\\-0.563\\-0.565\\-0.552\\-0.549\\-0.580\\-0.554\\-0.557\\-0.554\\-0.549\\-0.542\\-0.573\\-0.610\\-0.638\\
+      -0.608\\-0.592\\-0.543\\-0.595\\-0.613\\-0.593\\-0.563\\-0.579\\-0.559\\-0.571\\-0.558\\-0.560\\-0.532\\-0.535\\-0.532\\-0.531\\
+      -0.545\\-0.549\\-0.559\\-0.569\\-0.533\\-0.520\\-0.541\\-0.493\\-0.492\\-0.488\\-0.474\\-0.523\\-0.470\\-0.480\\-0.488\\-0.503\\
+      -0.517\\-0.520\\-0.551\\-0.549\\-0.553\\-0.538\\-0.533\\-0.525\\-0.527\\-0.494\\-0.510\\-0.520\\-0.472\\-0.492\\-0.479\\-0.463\\
+      -0.468\\-0.473\\-0.450\\-0.440\\-0.445\\-0.460\\-0.413\\-0.442\\-0.453\\-0.442\\-0.397\\-0.369\\-0.395\\-0.394\\-0.385\\-0.390\\
+      -0.385\\-0.372\\-0.367\\-0.345\\-0.358\\-0.340\\-0.344\\-0.334\\-0.338\\-0.353\\-0.349\\-0.443\\-0.473\\-0.467\\-0.449\\-0.452\\
+      -0.482\\-0.481\\-0.490\\-0.511\\-0.461\\-0.482\\-0.491\\-0.509\\-0.520\\-0.547\\-0.596\\-0.617\\-0.597\\-0.571\\-0.587\\-0.568\\
+      -0.571\\-0.569\\-0.587\\-0.601\\-0.624\\-0.629\\-0.646\\-0.622\\-0.658\\-0.685\\-0.638\\-0.653\\-0.632\\-0.586\\-0.583\\-0.579\\
+      -0.587\\-0.596\\-0.580\\-0.544\\-0.568\\-0.565\\-0.554\\-0.569\\-0.557\\-0.552\\-0.571\\-0.579\\-0.547\\-0.503\\-0.532\\-0.506\\
+      -0.496\\-0.460\\-0.486\\-0.518\\-0.546\\-0.554\\-0.536\\-0.543\\-0.575\\-0.574\\-0.576\\-0.528\\-0.530\\-0.542\\-0.560\\-0.546\\
+      -0.554\\-0.573\\-0.604\\-0.596\\-0.580\\-0.524\\-0.523\\-0.536\\-0.531\\-0.521\\-0.499\\-0.477\\-0.478\\-0.475\\-0.511\\-0.540\\
+      -0.508\\-0.509\\-0.506\\-0.548\\-0.580\\-0.593\\-0.564\\-0.539\\-0.568\\-0.551\\-0.545\\-0.498\\-0.480\\-0.478\\-0.461\\-0.455\\
+      -0.502\\-0.489\\-0.469\\-0.519\\-0.516\\-0.506\\-0.478\\-0.425\\-0.410\\-0.428\\-0.485\\-0.482\\-0.461\\-0.473\\-0.464\\-0.461\\
+      -0.476\\-0.480\\-0.484\\-0.473\\-0.484\\-0.484\\-0.444\\-0.402\\-0.401\\-0.387\\-0.390\\-0.384\\-0.407\\-0.423\\-0.409\\-0.409\\
+      -0.374\\-0.395\\-0.372\\-0.362\\-0.358\\-0.332\\-0.344\\-0.331\\-0.359\\-0.373\\-0.408\\-0.405\\-0.432\\-0.464\\-0.427\\-0.452\\
+      -0.463\\-0.468\\-0.505\\-0.498\\-0.517\\-0.556\\-0.575\\-0.573\\-0.572\\-0.604\\-0.595\\-0.580\\-0.563\\-0.500\\-0.499\\-0.515\\
+      -0.488\\-0.492\\-0.506\\-0.524\\-0.521\\-0.556\\-0.570\\-0.562\\-0.530\\-0.526\\-0.494\\-0.506\\-0.480\\-0.469\\-0.443\\-0.438\\
+      -0.472\\-0.498\\-0.511\\-0.486\\-0.482\\-0.472\\-0.479\\-0.506\\-0.472\\-0.510\\-0.528\\-0.524\\-0.540\\-0.537\\-0.542\\-0.537\\
+      -0.518\\-0.506\\-0.538\\-0.514\\-0.538\\-0.559\\-0.566\\-0.561\\-0.544\\-0.528\\-0.523\\-0.569\\-0.554\\-0.574\\-0.574\\-0.539\\
+      -0.493\\-0.497\\-0.521\\-0.470\\-0.462\\-0.480\\-0.497\\-0.513\\-0.493\\-0.475\\-0.475\\-0.470\\-0.495\\-0.506\\-0.513\\-0.524\\
+      -0.508\\-0.518\\-0.513\\-0.500\\-0.460\\-0.454\\-0.481\\-0.484\\-0.474\\-0.475\\-0.460\\-0.457\\-0.475\\-0.489\\-0.490\\-0.492\\
+      -0.537\\-0.562\\-0.566\\-0.590\\-0.596\\-0.620\\-0.617\\-0.650\\-0.641\\-0.651\\-0.641\\-0.636\\-0.654\\-0.671\\-0.677\\-0.649\\
+      -0.647\\-0.600\\-0.609\\-0.564\\-0.568\\-0.589\\-0.558\\-0.539\\-0.567\\-0.629\\-0.620\\-0.618\\-0.635\\-0.618\\-0.574\\-0.566\\
+      -0.564\\-0.577\\-0.552\\-0.521\\-0.522\\-0.529\\-0.529\\-0.506\\-0.471\\-0.484\\-0.479\\-0.470\\-0.492\\-0.468\\-0.447\\-0.428\\
+      -0.447\\-0.478\\-0.478\\-0.459\\-0.422\\-0.452\\-0.428\\-0.443\\-0.444\\-0.414\\-0.394\\-0.377\\-0.359\\-0.369\\-0.395\\-0.430\\
+      -0.430\\-0.470\\-0.399\\-0.385\\-0.376\\-0.407\\-0.403\\-0.414\\-0.445\\-0.496\\-0.492\\-0.504\\-0.511\\-0.477\\-0.476\\-0.462\\
+      -0.438\\-0.470\\-0.480\\-0.489\\-0.531\\-0.568\\-0.577\\-0.557\\-0.565\\-0.579\\-0.580\\-0.557\\-0.566\\-0.521\\-0.482\\-0.487\\
+      -0.444\\-0.492\\-0.518\\-0.512\\-0.470\\-0.446\\-0.484\\-0.505\\-0.497\\-0.492\\-0.458\\-0.426\\-0.437\\-0.423\\-0.402\\-0.426\\
+      -0.428\\-0.439\\-0.432\\-0.400\\-0.395\\-0.404\\-0.352\\-0.370\\-0.342\\-0.345\\-0.353\\-0.391\\-0.422\\-0.384\\-0.417\\-0.400\\
+      -0.406\\-0.403\\-0.404\\-0.397\\-0.413\\-0.366\\-0.350\\-0.377\\-0.363\\-0.341\\-0.309\\-0.332\\-0.367\\-0.360\\-0.351\\-0.329\\
+      -0.312\\
+      };
+    \end{axis}
+  \end{tikzpicture}
+  \caption{布朗运动在时间区间 $[0,1]$ 上的一条模拟样本路径（步长为 $1/2000$ 的高斯随机游走）}
+  \label{fig:brownian-path}
+\end{figure}
+
+$\F_{0+}$ 中的事件只依赖于 $B$ 在 $0$ 之后“无穷小时间”内的行为。下面的零一律说明这样的事件是平凡的。
+
+\begin{theorem}[Blumenthal 零一律]
+\label{thm:blumenthal}
+$\sigma$ 代数 $\F_{0+}$ 是平凡的：对每个 $A\in\F_{0+}$，$\Prob(A)=0$ 或 $1$。
+\end{theorem}
+
+\begin{proof}
+固定 $A\in\F_{0+}$。
+
+\textbf{\boldmath 第一步：$\F_{0+}$ 与 $(B_{t_1},\ldots,B_{t_k})$ 独立。}
+设 $0<t_1<\cdots<t_k$，$\xi\in\R^k$，令 $F(x):=e^{\iu\inner{\xi}{x}}$（$x\in\R^k$），并记 $Y:=(B_{t_1},\ldots,B_{t_k})$、
+$Y_\varepsilon:=(B_{t_1}-B_\varepsilon,\ldots,B_{t_k}-B_\varepsilon)$。由样本路径的连续性，$\varepsilon\downarrow0$ 时 $B_\varepsilon\to B_0$，
+而 $B_0=0$ 几乎处处，故 $Y_\varepsilon\to Y$ 几乎处处；又 $\abs{F}=1$，由控制收敛定理，
+\[
+  \E\bigl[\ind{A}F(Y)\bigr]=\lim_{\varepsilon\downarrow0}\E\bigl[\ind{A}F(Y_\varepsilon)\bigr],\qquad
+  \E\bigl[F(Y)\bigr]=\lim_{\varepsilon\downarrow0}\E\bigl[F(Y_\varepsilon)\bigr].
+\]
+当 $0<\varepsilon<t_1$ 时，$Y_\varepsilon=(B^{(\varepsilon)}_{t_1-\varepsilon},\ldots,B^{(\varepsilon)}_{t_k-\varepsilon})$。由\cref{prop:brownian-invariances}~(3)，
+它与 $\F_\varepsilon$ 独立，从而与 $\F_{0+}\subseteq\F_\varepsilon$ 独立，故 $\E[\ind{A}F(Y_\varepsilon)]=\Prob(A)\,\E[F(Y_\varepsilon)]$。
+令 $\varepsilon\downarrow0$，得 $\E[\ind{A}F(Y)]=\Prob(A)\,\E[F(Y)]$。若 $\Prob(A)>0$，这说明 $Y$ 在条件概率
+$\Prob(\,\cdot\mid A)$ 下与在 $\Prob$ 下有相同的特征函数，由\cref{thm:characteristic-uniqueness}，二者分布相同，即
+$\Prob(A\cap\{Y\in C\})=\Prob(A)\Prob(Y\in C)$ 对一切 $C\in\B(\R^k)$ 成立；$\Prob(A)=0$ 时此式显然。
+
+\textbf{第二步：结论。}
+形如 $\{(B_{t_1},\ldots,B_{t_k})\in C\}$（$k\ge1$，$0<t_1<\cdots<t_k$，$C\in\B(\R^k)$）的事件构成生成 $\sigma(B_t:t>0)$
+的 $\pi$ 系统（两个这样的事件之交可写成合并后时刻上的同类事件），而由第一步，$\{D\in\F:\Prob(A\cap D)=\Prob(A)\Prob(D)\}$
+是包含它的 $\lambda$ 系统。由 $\pi$--$\lambda$ 定理\cite[定理 2.1.6，第 46 页]{Durrett2019}，$A$ 与 $\sigma(B_t:t>0)$ 中每个事件独立。
+由样本路径的连续性，$B_0=\lim_nB_{1/n}$ 逐点成立，故 $B_0$ 关于 $\sigma(B_t:t>0)$ 可测，从而
+$\sigma(B_t:t>0)=\sigma(B_t:t\ge0)\supseteq\F_1\supseteq\F_{0+}\ni A$。于是 $A$ 与自身独立，$\Prob(A)=\Prob(A)^2$，即 $\Prob(A)\in\{0,1\}$。
+\end{proof}
+
+下面的结论涉及 $\sup_{0\le s\le\varepsilon}B_s$ 这样的量，先说明它们的可测性。
+
+\begin{remark}[上确界的可测性]
+\label{rem:sup-measurability}
+$\sup_{0\le s\le\varepsilon}B_s$ 是不可数个随机变量的上确界，其可测性并非显然。但 $[0,\varepsilon]\cap\Q$ 在 $[0,\varepsilon]$ 中稠密，
+由样本路径的连续性，它等于 $\sup\{B_s:s\in[0,\varepsilon]\cap\Q\}$，是可数个随机变量的上确界，因而可测。
+同理，$C(\R_+,\R)$ 上的映射 $w\mapsto\sup_{0\le s\le T}w(s)$ 与 $w\mapsto\sup_{s\ge0}w(s)$ 都是 $\mathscr C$ 可测的。
+今后将默认使用这类论证。
+\end{remark}
+
+\begin{proposition}[布朗运动在 $0$ 附近与无穷远处的振荡]
+\label{prop:brownian-oscillation}
+\begin{enumerate}
+  \item 几乎处处，对每个 $\varepsilon>0$，
+    \[
+      \sup_{0\le s\le\varepsilon}B_s>0,\qquad\inf_{0\le s\le\varepsilon}B_s<0.
+    \]
+  \item 几乎处处，$\sup_{t\ge0}B_t=+\infty$，$\inf_{t\ge0}B_t=-\infty$。因此几乎处处，
+    $\limsup_{t\to\infty}B_t=+\infty$，$\liminf_{t\to\infty}B_t=-\infty$，且对每个 $a\in\R$，首中时
+    \[
+      T_a:=\inf\{t\in[0,\infty):B_t=a\}\qquad(\text{约定}\ \inf\varnothing=\infty)
+    \]
+    都是有限的。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+\textbf{(1)} 取严格递减趋于 $0$ 的正数列 $(\varepsilon_p)_{p\ge1}$，令
+\[
+  A:=\bigcap_{p\ge1}\Bigl\{\sup_{0\le s\le\varepsilon_p}B_s>0\Bigr\}.
+\]
+右端事件关于 $p$ 递减，故对任意 $p_0$，$A=\bigcap_{p\ge p_0}\{\sup_{0\le s\le\varepsilon_p}B_s>0\}\in\F_{\varepsilon_{p_0}}$；
+而对任意 $s>0$ 都有 $\varepsilon_{p_0}\le s$ 的 $p_0$，故 $A\in\F_{0+}$。由概率的连续性，
+\[
+  \Prob(A)=\lim_{p\to\infty}\Prob\Bigl(\sup_{0\le s\le\varepsilon_p}B_s>0\Bigr)\ge\frac12,
+\]
+其中不等号是因为对每个 $p$ 有 $\{B_{\varepsilon_p}>0\}\subseteq\{\sup_{0\le s\le\varepsilon_p}B_s>0\}$，而 $B_{\varepsilon_p}\sim\Normal(0,\varepsilon_p)$ 的分布关于 $0$ 对称且无原子，故 $\Prob(B_{\varepsilon_p}>0)=\frac12$。由\cref{thm:blumenthal}，$\Prob(A)=1$。
+在 $A$ 上，对任意 $\varepsilon>0$ 取 $\varepsilon_p\le\varepsilon$，即得 $\sup_{0\le s\le\varepsilon}B_s\ge\sup_{0\le s\le\varepsilon_p}B_s>0$。
+由\cref{prop:brownian-invariances}~(1)，$-B$ 也是布朗运动，对它应用上述结论即得关于下确界的断言。
+
+\textbf{(2)} 思路是：由 (1)，$\Prob(\sup_{0\le s\le1}B_s>\delta)\to1$（$\delta\downarrow0$），即在固定时间内越过一个很小的水平的概率接近 $1$；
+而尺度不变性把空间放大 $1/\lambda$ 倍、时间放大 $1/\lambda^2$ 倍后得到的仍是布朗运动，因此“在时间 $1$ 内越过水平 $\delta$”与
+“在时间 $1/\lambda^2$ 内越过水平 $\delta/\lambda$”概率相同。取 $\lambda:=\delta/M$，便把小水平 $\delta$ 变成任意给定的大水平 $M$。
+
+具体地，固定 $M>0$ 及 $\delta>0$，令 $\lambda:=\delta/M$。由\cref{prop:brownian-invariances}~(2)，$B^\lambda_u=\lambda^{-1}B_{\lambda^2u}$
+定义的 $B^\lambda$ 是布朗运动，且 $B_s=\lambda B^\lambda_{s/\lambda^2}$。令 $s=\lambda^2u$，则 $s\in[0,1]$ 当且仅当 $u\in[0,M^2/\delta^2]$，
+而 $B_s>\delta$ 当且仅当 $B^\lambda_u>\delta/\lambda=M$，故
+\[
+  \Bigl\{\sup_{0\le s\le1}B_s>\delta\Bigr\}=\Bigl\{\sup_{0\le u\le M^2/\delta^2}B^\lambda_u>M\Bigr\}.
+\]
+集合 $\{w:\sup_{0\le u\le M^2/\delta^2}w(u)>M\}$ 属于 $\mathscr C$（\cref{rem:sup-measurability}），由\cref{thm:wiener-measure-uniqueness}，
+它在 $B^\lambda$ 与 $B$ 下的概率相同，故
+\[
+  \Prob\Bigl(\sup_{s\ge0}B_s>M\Bigr)\ge\Prob\Bigl(\sup_{0\le u\le M^2/\delta^2}B_u>M\Bigr)=\Prob\Bigl(\sup_{0\le s\le1}B_s>\delta\Bigr).
+\]
+令 $\delta\downarrow0$，右端递增趋于 $\Prob(\sup_{0\le s\le1}B_s>0)$，由 (1) 它等于 $1$。故 $\Prob(\sup_{s\ge0}B_s>M)=1$；
+对 $-B$ 同理得 $\Prob(\inf_{s\ge0}B_s<-M)=1$。对 $M=1,2,\ldots$ 取交，即知几乎处处 $\sup_{t\ge0}B_t=+\infty$、$\inf_{t\ge0}B_t=-\infty$。
+
+在这一事件上固定一条样本路径。对任意 $a\in\R$，存在 $s_1,s_2$ 使 $B_{s_1}>a>B_{s_2}$，由介值定理，$B$ 在 $s_1$ 与 $s_2$ 之间取到 $a$，
+故 $T_a<\infty$。又对任意 $T>0$，$B$ 在紧集 $[0,T]$ 上有界，故 $\sup_{t\ge T}B_t=+\infty$，即 $\limsup_{t\to\infty}B_t=+\infty$；
+$\liminf$ 同理。
+\end{proof}
+
+\begin{corollary}[样本路径处处不单调]
+\label{cor:brownian-not-monotone}
+几乎处处，$t\mapsto B_t$ 在任何非平凡区间上都不单调。
+\end{corollary}
+
+\begin{proof}
+对每个有理数 $q\ge0$，由\cref{prop:brownian-invariances}~(3)，$B^{(q)}=(B_{q+t}-B_q)_{t\ge0}$ 是布朗运动。对它应用%
+\cref{prop:brownian-oscillation}~(1)，并对可数个 $q$ 去掉相应的零测集，得：几乎处处，对每个有理数 $q\ge0$ 及每个 $\varepsilon>0$，
+\[
+  \sup_{q\le t\le q+\varepsilon}B_t>B_q,\qquad\inf_{q\le t\le q+\varepsilon}B_t<B_q.
+\]
+在这一事件上，设 $a<b$，取有理数 $q\in(a,b)$ 及 $\varepsilon:=b-q$。若 $B$ 在 $[a,b]$ 上单调不减，则 $B_t\ge B_q$ 对 $t\in[q,b]$ 成立，
+与上式中的下确界矛盾；单调不增的情形同理。
+\end{proof}
+
+\begin{remark}
+\label{rem:not-monotone-rational}
+证明中只取有理数 $q$，是为了只去掉可数个零测集。上式对所有实数 $q$ 并不同时成立：由\cref{cor:brownian-not-monotone}，
+$B$ 在 $[0,1]$ 上不单调，故存在 $s<t<u$ 使 $B_t>\max\{B_s,B_u\}$ 或 $B_t<\min\{B_s,B_u\}$。不妨设前者，
+则 $B$ 在 $[s,u]$ 上的最大值在某个内点 $q^*\in(s,u)$ 处取到，从而 $\sup_{q^*\le t\le q^*+\varepsilon}B_t=B_{q^*}$ 对 $\varepsilon\le u-q^*$ 成立。
+\end{remark}
+
+接下来考虑样本路径在细分割上的平方增量之和。
+
+\begin{proposition}[二次变差]
+\label{prop:brownian-quadratic-variation}
+设 $t>0$，对每个 $n\ge1$，$0=t_0^n<t_1^n<\cdots<t_{p_n}^n=t$ 是 $[0,t]$ 的分割，且其步长
+$\max_{1\le i\le p_n}(t_i^n-t_{i-1}^n)\to0$（$n\to\infty$）。则
+\[
+  \sum_{i=1}^{p_n}\bigl(B_{t_i^n}-B_{t_{i-1}^n}\bigr)^2\Lpto{2}t\qquad(n\to\infty).
+\]
+\end{proposition}
+
+\begin{proof}
+$B$ 是预布朗运动，设 $G$ 是强度为 $\dd t$ 的高斯白噪声，使 $B_s=G([0,s])$ 几乎处处（\cref{def:pre-brownian-motion}）。
+由 $\ind{(s,u]}=\ind{[0,u]}-\ind{[0,s]}$ 及 $G$ 的线性，$B_{t_i^n}-B_{t_{i-1}^n}=G\bigl((t_{i-1}^n,t_i^n]\bigr)$ 几乎处处。
+对 $A:=(0,t]$ 及其分割 $A=\bigsqcup_{i=1}^{p_n}(t_{i-1}^n,t_i^n]$ 应用\cref{prop:gaussian-white-noise-quadratic-sums} 即得。
+\end{proof}
+
+\begin{definition}[无穷变差]
+\label{def:infinite-variation}
+设 $a<b$，$f$ 是 $[a,b]$ 上的实函数。若
+\[
+  \sup\Bigl\{\sum_{i=1}^{p}\abs{f(t_i)-f(t_{i-1})}:p\ge1,\ a=t_0<t_1<\cdots<t_p=b\Bigr\}=\infty,
+\]
+则称 $f$ 在 $[a,b]$ 上具有无穷变差。
+\end{definition}
+
+\begin{corollary}[样本路径处处无穷变差]
+\label{cor:brownian-infinite-variation}
+几乎处处，$t\mapsto B_t$ 在任何非平凡区间上都具有无穷变差。
+\end{corollary}
+
+\begin{proof}
+\textbf{\boldmath 第一步：区间 $[0,t]$。}
+固定 $t>0$。取 $t_i^n:=it2^{-n}$（$0\le i\le2^n$），记 $S_n:=\sum_{i}(B_{t_i^n}-B_{t_{i-1}^n})^2$。由\cref{prop:brownian-quadratic-variation}，
+$S_n\Lpto{2}t$。$L^2$ 收敛蕴含依概率收敛（Markov 不等式），从而存在子列 $n_k$，使得事件
+\[
+  \Omega_t:=\Bigl\{\omega\in\Omega:\lim_{k\to\infty}S_{n_k}(\omega)=t\Bigr\}
+\]
+满足 $\Prob(\Omega_t)=1$\cite[定理 2.3.2]{Durrett2019}。下面证明：对每个 $\omega\in\Omega_t$，$B_\bullet(\omega)$ 在 $[0,t]$ 上具有无穷变差。
+固定 $\omega\in\Omega_t$（以下省略 $\omega$）。对每个 $k$，
+\[
+  S_{n_k}\le\Bigl(\max_{i}\abs{B_{t_i^{n_k}}-B_{t_{i-1}^{n_k}}}\Bigr)\sum_{i}\abs{B_{t_i^{n_k}}-B_{t_{i-1}^{n_k}}}.
+\]
+样本路径在 $[0,t]$ 上一致连续，而分割的步长 $t2^{-n_k}\to0$，故括号内的最大值趋于 $0$。若 $B_\bullet(\omega)$ 在 $[0,t]$ 上的变差 $V$ 有限，
+则右端不超过 $V$ 乘以趋于 $0$ 的量，从而 $S_{n_k}(\omega)\to0$，与 $\omega\in\Omega_t$、$t>0$ 矛盾。
+因此在满测度集 $\Omega_t$ 上，$B$ 在 $[0,t]$ 上具有无穷变差。这一步对任意布朗运动都成立。
+
+\textbf{第二步：任意非平凡区间。}
+设 $f$ 是 $[a,b]$ 上的实函数，$[c,d]\subseteq[a,b]$。$[c,d]$ 的任一分割添上端点 $a,b$ 后成为 $[a,b]$ 的分割，
+\cref{def:infinite-variation} 中相应的和只增不减，故 $f$ 在 $[a,b]$ 上的变差不小于在 $[c,d]$ 上的变差。对有理数 $0\le q<q'$，由\cref{prop:brownian-invariances}~(3)，$B^{(q)}$ 是布朗运动；
+把第一步用于 $B^{(q)}$ 及 $t=q'-q$，得到满测度集 $\Omega_{q,q'}$，在其上 $B^{(q)}$ 在 $[0,q'-q]$ 上具有无穷变差，
+也就是 $B$ 在 $[q,q']$ 上具有无穷变差（二者的变差相等）。令
+\[
+  \Omega^*:=\bigcap\bigl\{\Omega_{q,q'}:q,q'\in\Q,\ 0\le q<q'\bigr\},
+\]
+它是可数个满测度集之交，故 $\Prob(\Omega^*)=1$。对 $\omega\in\Omega^*$ 及任意非平凡区间 $[a,b]$，取有理数 $a\le q<q'\le b$，
+则 $B_\bullet(\omega)$ 在 $[a,b]$ 上的变差不小于它在 $[q,q']$ 上的变差，而后者为 $\infty$。
+\end{proof}
+
+因此，不能把积分 $\int_0^tf(s)\,\dd B_s$ 当作关于有限变差函数的通常（Stieltjes）积分的特例来逐条路径地定义；
+关于有限变差函数的积分将在后文简要介绍。\cref{def:wiener-integral} 中的 Wiener 积分正是借助 $L^2$ 等距而非逐条路径定义的。
+
+\section{布朗运动的强马尔可夫性}
+\label{sec:strong-markov}
+
+本节的目标是把简单马尔可夫性（\cref{prop:brownian-invariances}~(3)）推广到把确定时刻 $s$ 换成随机时刻 $T$ 的情形。
+为此先要确定哪些随机时刻是允许的。仍固定布朗运动 $B=(B_t)_{t\in[0,\infty)}$，沿用\cref{sec:brownian-path-properties}的记号 $\F_t$，
+并令 $\F_\infty:=\sigma(B_s:s\in[0,\infty))$。
+
+\begin{definition}[停时]
+\label{def:stopping-time}
+取值于 $[0,\infty]$ 的随机变量 $T$（允许取值 $\infty$）称为停时，如果对每个 $t\in[0,\infty)$，$\{T\le t\}\in\F_t$。
+\end{definition}
+
+\begin{proposition}[停时的例子与基本性质]
+\label{prop:stopping-time-basics}
+\begin{enumerate}
+  \item 若 $T$ 是停时，则对每个 $t\in(0,\infty)$，$\{T<t\}\in\F_t$。
+  \item 常数 $T\equiv t$（$t\in[0,\infty]$）是停时；若 $T$ 是停时，则对每个 $t\in[0,\infty)$，$T+t$ 也是停时。
+  \item 对 $a\in\R$，首中时 $T_a$（\cref{prop:brownian-oscillation}~(2)）是停时；并且在 $\{T_a<\infty\}$ 上逐点地有
+    $B_{T_a}=a$，即样本路径在时刻 $T_a(\omega)$ 的值为 $a$。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+\textbf{(1)} 若 $T(\omega)<t$，则存在有理数 $q\in[T(\omega),t)$，故
+$\{T<t\}=\bigcup_{q\in[0,t)\cap\Q}\{T\le q\}$，而每个 $\{T\le q\}\in\F_q\subseteq\F_t$。
+
+\textbf{(2)} 对常数 $T\equiv t$，$\{T\le s\}$ 是 $\varnothing$ 或 $\Omega$。对停时 $T$ 及 $s\in[0,\infty)$，$s<t$ 时 $\{T+t\le s\}=\varnothing$，
+$s\ge t$ 时 $\{T+t\le s\}=\{T\le s-t\}\in\F_{s-t}\subseteq\F_s$。
+
+\textbf{(3)} 固定 $\omega$。集合 $\{s\in[0,\infty):B_s(\omega)=a\}$ 是闭集 $\{a\}$ 在连续函数 $s\mapsto B_s(\omega)$ 下的原像，
+故为 $[0,\infty)$ 的闭子集；它非空当且仅当 $T_a(\omega)<\infty$，此时它包含其下确界 $T_a(\omega)$，即 $B_{T_a(\omega)}(\omega)=a$。
+由此及连续函数在紧集上取到最小值，对 $t\in[0,\infty)$，
+\[
+  \{T_a\le t\}=\Bigl\{\inf_{0\le s\le t}\abs{B_s-a}=0\Bigr\}.
+\]
+与\cref{rem:sup-measurability} 同理，右端的下确界可限制在 $[0,t]\cap\Q$ 上（它在 $[0,t]$ 中稠密），故该事件属于 $\F_t$。
+\end{proof}
+
+\begin{definition}[停时前的 $\sigma$ 代数]
+\label{def:stopping-time-sigma-algebra}
+设 $T$ 是停时。称
+\[
+  \F_T:=\bigl\{A\in\F_\infty:A\cap\{T\le t\}\in\F_t,\ \forall\,t\in[0,\infty)\bigr\}
+\]
+为 $T$ 之前的过去的 $\sigma$ 代数。
+\end{definition}
+
+对停时 $T$，定义实随机变量
+\[
+  \ind{\{T<\infty\}}B_T(\omega):=
+  \begin{cases}
+    B_{T(\omega)}(\omega), & T(\omega)<\infty,\\
+    0, & T(\omega)=\infty.
+  \end{cases}
+\]
+
+\begin{proposition}[$\F_T$ 的基本性质]
+\label{prop:stopping-sigma-basics}
+设 $T$ 是停时，则：
+\begin{enumerate}
+  \item $\F_T$ 是 $\sigma$ 代数；
+  \item $T$ 是 $\F_T$ 可测的；
+  \item $\ind{\{T<\infty\}}B_T$ 是 $\F_T$ 可测的。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+\textbf{(1)} 显然 $\Omega\in\F_T$。若 $A\in\F_T$，则 $A^c\cap\{T\le t\}=\{T\le t\}\setminus(A\cap\{T\le t\})\in\F_t$；
+若 $A_n\in\F_T$，则 $(\bigcup_nA_n)\cap\{T\le t\}=\bigcup_n(A_n\cap\{T\le t\})\in\F_t$。
+
+\textbf{(2)} 对 $s\in[0,\infty)$，$\{T\le s\}\in\F_s\subseteq\F_\infty$，且 $\{T\le s\}\cap\{T\le t\}=\{T\le s\wedge t\}\in\F_{s\wedge t}\subseteq\F_t$，
+故 $\{T\le s\}\in\F_T$。由于区间族 $\{[0,s]:s\in[0,\infty)\}$ 生成 $[0,\infty]$ 上的 Borel $\sigma$ 代数，取值于 $[0,\infty]$ 的映射可测当且仅当对每个 $s\in[0,\infty)$ 有 $\{T\le s\}$ 可测\cite[定理 1.3.1]{Durrett2019}\cite[\S1.4.3]{Tao2011}，故 $T$ 是 $\F_T$ 可测的。
+
+\textbf{(3)} 先证：对每个 $s\in[0,\infty)$，$B_s\ind{\{s\le T\}}$ 是 $\F_T$ 可测的。它显然 $\F_\infty$ 可测。设 $A\in\B(\R)$ 且 $0\notin A$
+（$0\in A$ 时考虑补集即可），则
+\[
+  \bigl\{B_s\ind{\{s\le T\}}\in A\bigr\}\cap\{T\le t\}=
+  \begin{cases}
+    \varnothing, & t<s,\\
+    \{B_s\in A\}\cap\{T\le t\}\cap\{T<s\}^c, & t\ge s,
+  \end{cases}
+\]
+由\cref{prop:stopping-time-basics}~(1)，$\{T<s\}\in\F_s\subseteq\F_t$，故两种情形下它都属于 $\F_t$（$s=0$ 时 $\{T<0\}=\varnothing$）。
+再由 (2)，$\ind{\{T<(i+1)2^{-n}\}}$ 是 $\F_T$ 可测的。
+
+最后用二进时刻逼近 $T$。对 $n\ge1$，令
+\[
+  X_n:=\sum_{i=0}^{\infty}\ind{\{i2^{-n}\le T<(i+1)2^{-n}\}}B_{i2^{-n}}
+  =\sum_{i=0}^{\infty}\ind{\{T<(i+1)2^{-n}\}}\bigl(B_{i2^{-n}}\ind{\{i2^{-n}\le T\}}\bigr),
+\]
+其中第二个等号逐项成立，因为 $\ind{\{i2^{-n}\le T<(i+1)2^{-n}\}}=\ind{\{T<(i+1)2^{-n}\}}\ind{\{i2^{-n}\le T\}}$。
+\begin{itemize}
+  \item \emph{$X_n$ 是 $\F_T$ 可测的。}由第二种写法，每一项是两个 $\F_T$ 可测函数之积。区间 $[i2^{-n},(i+1)2^{-n})$（$i\ge0$）
+  互不相交，故在每一点至多一项非零，级数就是部分和的逐点极限。可测函数的乘积、有限和与逐点极限仍可测\cite[\S1.3]{Durrett2019}。
+  \item \emph{$X_n\to\ind{\{T<\infty\}}B_T$ 逐点成立。}若 $T(\omega)=\infty$，则所有示性函数为 $0$，$X_n(\omega)=0$。
+  若 $T(\omega)<\infty$，上述区间划分 $[0,\infty)$，恰有 $i=\floor{2^nT(\omega)}$ 一项非零，故
+  $X_n(\omega)=B_{T_n(\omega)}(\omega)$，其中 $T_n:=2^{-n}\floor{2^nT}\in(T-2^{-n},T]$。于是 $T_n(\omega)\to T(\omega)$，
+  由样本路径 $s\mapsto B_s(\omega)$ 的连续性，$X_n(\omega)\to B_{T(\omega)}(\omega)$。
+\end{itemize}
+因此 $\ind{\{T<\infty\}}B_T=\lim_nX_n$ 是 $\F_T$ 可测函数的逐点极限，从而是 $\F_T$ 可测的。
+\end{proof}
+
+由\cref{prop:stopping-time-basics}~(2) 与\cref{prop:stopping-sigma-basics}~(3)，对停时 $T$ 及 $t\in[0,\infty)$，
+$\ind{\{T<\infty\}}(B_{T+t}-B_T)=\ind{\{T+t<\infty\}}B_{T+t}-\ind{\{T<\infty\}}B_T$ 是随机变量。
+
+\begin{theorem}[强马尔可夫性]
+\label{thm:strong-markov}
+设 $T$ 是停时，$\Prob(T<\infty)>0$。对 $t\in[0,\infty)$，令
+\[
+  B^{(T)}_t:=\ind{\{T<\infty\}}(B_{T+t}-B_T).
+\]
+则在概率测度 $\Prob(\,\cdot\mid T<\infty)$ 下，$B^{(T)}=(B^{(T)}_t)_{t\in[0,\infty)}$ 是与 $\F_T$ 独立的布朗运动。
+\end{theorem}
+
+\begin{proof}
+记 $\Prob^*:=\Prob(\,\cdot\mid T<\infty)$，$\E^*$ 为相应的期望。固定 $0\le t_1<\cdots<t_p$，$\xi\in\R^p$，令 $F(x):=e^{\iu\inner{\xi}{x}}$（$x\in\R^p$），
+对过程 $Z$ 记 $Z_{\bm t}:=(Z_{t_1},\ldots,Z_{t_p})$。
+
+\textbf{第一步：关键等式。} 我们证明：对每个 $A\in\F_T$，
+\begin{equation}
+  \label{eq:strong-markov-key}
+  \E\bigl[\ind{A\cap\{T<\infty\}}F(B^{(T)}_{\bm t})\bigr]=\Prob(A\cap\{T<\infty\})\,\E\bigl[F(B_{\bm t})\bigr].
+\end{equation}
+对 $n\ge1$，令 $T_n:=2^{-n}\ceil{2^nT}$（$T=\infty$ 时 $T_n:=\infty$），它是 $[T,\infty)$ 中形如 $k2^{-n}$（$k=0,1,2,\ldots$）的最小数。
+在 $\{T<\infty\}$ 上 $T_n\downarrow T$，由样本路径的连续性，$B_{T_n+t_i}-B_{T_n}\to B_{T+t_i}-B_T$。又 $\abs{F}=1$，由控制收敛定理（它也保证求和与期望可交换），
+\[
+  \E\bigl[\ind{A\cap\{T<\infty\}}F(B^{(T)}_{\bm t})\bigr]
+  =\lim_{n\to\infty}\sum_{k=0}^{\infty}\E\Bigl[\ind{A\cap\{T_n=k2^{-n}\}}F\bigl(B^{(k2^{-n})}_{\bm t}\bigr)\Bigr],
+\]
+这里按 $T_n$ 的可能取值分解了期望（各事件 $\{T_n=k2^{-n}\}=\{(k-1)2^{-n}<T\le k2^{-n}\}$ 互不相交，并集为 $\{T<\infty\}$），
+并在 $\{T_n=k2^{-n}\}$ 上写 $B_{T_n+t_i}-B_{T_n}=B^{(k2^{-n})}_{t_i}$。由 $A\in\F_T$，
+\[
+  A\cap\{T_n=k2^{-n}\}=\bigl(A\cap\{T\le k2^{-n}\}\bigr)\cap\{T\le(k-1)2^{-n}\}^c\in\F_{k2^{-n}}.
+\]
+由简单马尔可夫性（\cref{prop:brownian-invariances}~(3)），$B^{(k2^{-n})}$ 是与 $\F_{k2^{-n}}$ 独立的布朗运动，
+故上式求和中的第 $k$ 项等于 $\Prob(A\cap\{T_n=k2^{-n}\})\,\E[F(B_{\bm t})]$。对 $k$ 求和，再令 $n\to\infty$，即得\cref{eq:strong-markov-key}。
+
+\textbf{\boldmath 第二步：$B^{(T)}$ 是布朗运动。}
+在\cref{eq:strong-markov-key} 中取 $A=\Omega$ 并除以 $\Prob(T<\infty)$，得 $\E^*[F(B^{(T)}_{\bm t})]=\E[F(B_{\bm t})]$。
+由\cref{thm:characteristic-uniqueness}，$B^{(T)}_{\bm t}$ 在 $\Prob^*$ 下的分布与 $B_{\bm t}$ 在 $\Prob$ 下的分布相同。
+由\cref{prop:pre-brownian-same-finite-dimensional-laws}，$B^{(T)}$ 在 $\Prob^*$ 下是预布朗运动；而它的每条样本路径都连续
+（在 $\{T=\infty\}$ 上恒为 $0$），故是布朗运动。
+
+\textbf{\boldmath 第三步：与 $\F_T$ 独立。}
+设 $A\in\F_T$，$\Prob^*(A)>0$。由\cref{eq:strong-markov-key} 及第二步，$B^{(T)}_{\bm t}$ 在 $\Prob^*(\,\cdot\mid A)$ 下与在 $\Prob^*$ 下有相同的特征函数，
+故 $\Prob^*(A\cap\{B^{(T)}_{\bm t}\in C\})=\Prob^*(A)\Prob^*(B^{(T)}_{\bm t}\in C)$ 对一切 $C\in\B(\R^p)$ 成立；$\Prob^*(A)=0$ 时此式显然。
+与\cref{thm:blumenthal} 证明的第二步相同，由 $\pi$--$\lambda$ 定理，$\F_T$ 与 $\sigma(B^{(T)}_t:t\in[0,\infty))$ 在 $\Prob^*$ 下独立。
+\end{proof}
+
+\begin{remark}
+\label{rem:last-zero-not-stopping}
+并非所有随机时刻都是停时。例如 $L:=\sup\{s\le1:B_s=0\}$ 不是停时。事实上，若 $L$ 是停时，则由于 $\{s\le1:B_s=0\}$ 几乎处处非空且是闭集，
+$L\le1$ 且 $B_L=0$ 几乎处处；又 $\Prob(L=1)\le\Prob(B_1=0)=0$。由\cref{thm:strong-markov}，$B^{(L)}$ 是布朗运动，
+对它应用\cref{prop:brownian-oscillation}~(1)（取 $\varepsilon=1-L$）并用介值定理，几乎处处 $B$ 在 $(L,1]$ 中有零点，与 $L$ 的定义矛盾。
+\end{remark}
+
+强马尔可夫性的一个重要应用是下面的反射原理。
+
+\begin{theorem}[反射原理]
+\label{thm:reflection-principle}
+对 $t\in(0,\infty)$，令 $S_t:=\sup_{0\le s\le t}B_s$。则对 $a\ge0$ 及 $b\le a$，
+\[
+  \Prob(S_t\ge a,\ B_t\le b)=\Prob(B_t\ge2a-b).
+\]
+特别地，$S_t$ 与 $\abs{B_t}$ 同分布。
+\end{theorem}
+
+\begin{proof}
+\textbf{\boldmath 第一步：化为 $T_a$ 的事件。}
+由\cref{prop:stopping-time-basics}~(3)，在 $\{T_a\le t\}$ 上 $S_t\ge B_{T_a}=a$；反之，若 $S_t\ge a$，由 $B_0=0\le a$ 及介值定理，
+$B$ 在 $[0,t]$ 上取到 $a$，故 $T_a\le t$。于是 $\{S_t\ge a\}=\{T_a\le t\}$ 几乎处处。由\cref{prop:brownian-oscillation}~(2)，
+$T_a<\infty$ 几乎处处，故在\cref{thm:strong-markov} 中 $\Prob(\,\cdot\mid T_a<\infty)=\Prob$。记 $B':=B^{(T_a)}$。
+在 $\{T_a\le t\}$ 上 $B'_{t-T_a}=B_t-B_{T_a}=B_t-a$，故
+\[
+  \Prob(S_t\ge a,\ B_t\le b)=\Prob\bigl(T_a\le t,\ B'_{t-T_a}\le b-a\bigr)=\Prob\bigl((T_a,B')\in H\bigr),
+\]
+其中
+\[
+  H:=\bigl\{(s,w)\in[0,\infty]\times C(\R_+,\R):s\le t,\ w(t-s)\le b-a\bigr\}
+\]
+是 $\B([0,\infty])\otimes\mathscr C$ 中的可测集。\footnote{%
+  令 $\Psi(s,w):=w((t-s)^+)$。对 $n\ge1$，$\Psi_n(s,w):=\sum_{k\ge0}\ind{\{2^{-n}\ceil{2^ns}=k2^{-n}\}}(s)\,w((t-k2^{-n})^+)$
+  （$s<\infty$）是乘积可测的，且由 $w$ 的连续性，$\Psi_n\to\Psi$ 逐点成立，故 $\Psi$ 乘积可测，
+  从而 $H=\{s\le t\}\cap\{\Psi\le b-a\}$ 可测。}
+
+\textbf{\boldmath 第二步：$(T_a,B')$ 与 $(T_a,-B')$ 同分布。}
+由\cref{thm:strong-markov}，$B'$ 是与 $\F_{T_a}$ 独立的布朗运动；由\cref{prop:stopping-sigma-basics}~(2)，$T_a$ 是 $\F_{T_a}$ 可测的，
+故 $B'$ 与 $T_a$ 独立。$-B'$ 也是布朗运动（\cref{prop:brownian-invariances}~(1)），且 $\sigma(-B')=\sigma(B')$，故 $-B'$ 也与 $T_a$ 独立。
+由\cref{lem:sample-path-map-measurable}，$B'$ 与 $-B'$ 都是 $C(\R_+,\R)$ 值随机元。对 $\Gamma\in\B([0,\infty])$ 及 $A\in\mathscr C$，
+由独立性及\cref{thm:wiener-measure-uniqueness}，
+\[
+  \Prob(T_a\in\Gamma,\ B'\in A)=\Prob(T_a\in\Gamma)W(A)=\Prob(T_a\in\Gamma,\ -B'\in A).
+\]
+可测矩形 $\Gamma\times A$ 构成生成 $\B([0,\infty])\otimes\mathscr C$ 的 $\pi$ 系统，由 $\pi$--$\lambda$ 定理，$(T_a,B')$ 与 $(T_a,-B')$ 同分布
+（共同的分布是 $T_a$ 的分布与 Wiener 测度的乘积）。
+
+\textbf{第三步：结论。} 由第一、二步，
+\[
+  \Prob(S_t\ge a,\ B_t\le b)=\Prob\bigl((T_a,-B')\in H\bigr)=\Prob\bigl(T_a\le t,\ -(B_t-a)\le b-a\bigr)=\Prob(T_a\le t,\ B_t\ge2a-b).
+\]
+由于 $2a-b\ge a$，$\{B_t\ge2a-b\}\subseteq\{S_t\ge a\}=\{T_a\le t\}$（几乎处处），故右端等于 $\Prob(B_t\ge2a-b)$（\cref{fig:reflection-principle}）。
+
+最后，$B_t\sim\Normal(0,t)$ 无原子且关于 $0$ 对称，又 $\{B_t\ge a\}\subseteq\{S_t\ge a\}$，故对 $a>0$，由已证等式（取 $b=a$），
+\[
+  \Prob(S_t\ge a)=\Prob(S_t\ge a,\ B_t\ge a)+\Prob(S_t\ge a,\ B_t\le a)=2\Prob(B_t\ge a)=\Prob(\abs{B_t}\ge a).
+\]
+$a\le0$ 时两端都等于 $1$（$S_t\ge B_0=0$ 几乎处处）。区间 $[a,\infty)$（$a\in\R$）构成生成 $\B(\R)$ 的 $\pi$ 系统，故 $S_t$ 与 $\abs{B_t}$ 同分布。
+\end{proof}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.85\textwidth, height=0.55\textwidth,
+        xmin=0, xmax=1.08, ymin=-0.35, ymax=1.45,
+        axis lines=left, xtick=\empty, ytick=\empty,
+        clip=false]
+      \addplot[thin, gray, domain=0:1.05] {0.6} node[right, black] {$a$};
+      \addplot[thin, gray, domain=0:1.05] {0.25} node[right, black] {$b$};
+      \addplot[thin, gray, domain=0:1.05] {0.95} node[right, black] {$2a-b$};
+      \draw[densely dashed, gray] (axis cs:0.4056,-0.35) -- (axis cs:0.4056,1.4);
+      \draw[densely dashed, gray] (axis cs:1,-0.35) -- (axis cs:1,1.4);
+      \node[below] at (axis cs:0.4056,-0.35) {$T_a$};
+      \node[below] at (axis cs:1,-0.35) {$t$};
+      \addplot[semithick, mark=none] table[row sep=\\]{
+        s y\\
+        0.0000 0.000\\0.0143 0.104\\0.0286 0.168\\0.0429 0.221\\0.0571 0.222\\0.0714 0.133\\
+        0.0857 0.072\\0.1000 0.028\\0.1143 0.062\\0.1286 0.193\\0.1429 0.074\\0.1571 -0.072\\
+        0.1714 -0.054\\0.1857 0.014\\0.2000 0.158\\0.2143 0.157\\0.2286 0.081\\0.2429 0.171\\
+        0.2571 0.281\\0.2714 0.363\\0.2857 0.454\\0.3000 0.450\\0.3143 0.486\\0.3286 0.369\\
+        0.3429 0.555\\0.3571 0.477\\0.3714 0.453\\0.3857 0.504\\0.4000 0.521\\0.4056 0.600\\
+        0.4143 0.723\\0.4286 0.711\\0.4429 0.590\\0.4571 0.500\\0.4714 0.534\\0.4857 0.488\\
+        0.5000 0.529\\0.5143 0.308\\0.5286 0.253\\0.5429 0.439\\0.5571 0.363\\0.5714 0.522\\
+        0.5857 0.522\\0.6000 0.601\\0.6143 0.683\\0.6286 0.675\\0.6429 0.681\\0.6571 0.773\\
+        0.6714 0.694\\0.6857 0.691\\0.7000 0.799\\0.7143 0.828\\0.7286 0.811\\0.7429 0.816\\
+        0.7571 0.874\\0.7714 0.869\\0.7857 0.559\\0.8000 0.532\\0.8143 0.598\\0.8286 0.357\\
+        0.8429 0.526\\0.8571 0.466\\0.8714 0.319\\0.8857 0.270\\0.9000 0.213\\0.9143 0.489\\
+        0.9286 0.305\\0.9429 0.342\\0.9571 0.362\\0.9714 0.408\\0.9857 0.090\\1.0000 -0.018\\
+      };
+      \addplot[semithick, densely dashed, mark=none] table[row sep=\\]{
+        s y\\
+        0.4056 0.600\\0.4143 0.477\\0.4286 0.489\\0.4429 0.610\\0.4571 0.700\\0.4714 0.666\\
+        0.4857 0.712\\0.5000 0.671\\0.5143 0.892\\0.5286 0.947\\0.5429 0.761\\0.5571 0.837\\
+        0.5714 0.678\\0.5857 0.678\\0.6000 0.599\\0.6143 0.517\\0.6286 0.525\\0.6429 0.519\\
+        0.6571 0.427\\0.6714 0.506\\0.6857 0.509\\0.7000 0.401\\0.7143 0.372\\0.7286 0.389\\
+        0.7429 0.384\\0.7571 0.326\\0.7714 0.331\\0.7857 0.641\\0.8000 0.668\\0.8143 0.602\\
+        0.8286 0.843\\0.8429 0.674\\0.8571 0.734\\0.8714 0.881\\0.8857 0.930\\0.9000 0.987\\
+        0.9143 0.711\\0.9286 0.895\\0.9429 0.858\\0.9571 0.838\\0.9714 0.792\\0.9857 1.110\\
+        1.0000 1.218\\
+      };
+      \fill (axis cs:1,-0.018) circle[radius=1.2pt];
+      \fill (axis cs:1,1.218) circle[radius=1.2pt];
+    \end{axis}
+  \end{tikzpicture}
+  \caption{反射原理示意：在 $\{T_a\le t\}$ 上，路径在时刻 $t$ 位于 $b$ 以下的条件概率，
+    等于把 $T_a$ 之后的路径关于水平线 $a$ 反射（虚线）后在时刻 $t$ 位于 $2a-b$ 以上的条件概率}
+  \label{fig:reflection-principle}
+\end{figure}
+
+由反射原理可以写出 $(S_t,B_t)$ 的联合密度。仍记 $p_t$ 为 $\Normal(0,t)$ 的密度（\cref{sec:pre-brownian-motion}）。
+
+\begin{proposition}[$(S_t,B_t)$ 的联合密度]
+\label{prop:max-joint-density}
+对 $t\in(0,\infty)$，$(S_t,B_t)$ 的分布具有密度
+\begin{equation}
+  \label{eq:max-joint-density}
+  g(a,b)=\frac{2(2a-b)}{\sqrt{2\pi t^3}}\exp\!\left(-\frac{(2a-b)^2}{2t}\right)\ind{\{a>0,\ b<a\}}
+  =\frac{2(2a-b)}{t}\,p_t(2a-b)\,\ind{\{a>0,\ b<a\}}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+记 $\mu$ 为 $(S_t,B_t)$ 的分布，$\nu$ 为以 $g$ 为密度的测度。集合 $[a,\infty)\times C$（$a\in\R$，$C\in\B(\R)$）构成生成 $\B(\R^2)$ 的 $\pi$ 系统，
+由 $\pi$--$\lambda$ 定理，只需证明 $\mu$ 与 $\nu$ 在这些集合上相等。由于 $S_t\ge0$ 几乎处处且 $g$ 在 $\{a\le0\}$ 上为零，可设 $a\ge0$。
+
+\textbf{\boldmath 第一步：计算 $\mu$。}
+若 $C\subseteq(-\infty,a]$，由\cref{thm:reflection-principle}，对 $b\le a$ 有 $\Prob(S_t\ge a,B_t\le b)=\Prob(2a-B_t\le b)$，
+即 $(-\infty,a]$ 上的两个有限测度 $\Prob(S_t\ge a,B_t\in\cdot\,)$ 与 $\Prob(2a-B_t\in\cdot\,)$ 在半直线 $(-\infty,b]$（$b\le a$）上相等，
+从而相等；而 $2a-B_t$ 的密度为 $p_t(2a-\cdot\,)$，故 $\mu([a,\infty)\times C)=\int_Cp_t(2a-b)\,\dd b$。若 $C\subseteq(a,\infty)$，
+则 $\{B_t\in C\}\subseteq\{S_t\ge a\}$，故 $\mu([a,\infty)\times C)=\int_Cp_t(b)\,\dd b$。对一般的 $C$ 分成这两部分，得
+\[
+  \mu([a,\infty)\times C)=\int_Cp_t\bigl(2(a\vee b)-b\bigr)\,\dd b.
+\]
+
+\textbf{\boldmath 第二步：计算 $\nu$。}
+由 $\frac{\partial}{\partial x}p_t(2x-b)=-\frac{2(2x-b)}{t}p_t(2x-b)$，对任意 $b\in\R$（注意 $a\ge0$），
+\[
+  \int_a^\infty g(x,b)\,\dd x=\int_{a\vee b}^\infty\frac{2(2x-b)}{t}p_t(2x-b)\,\dd x=p_t\bigl(2(a\vee b)-b\bigr).
+\]
+由 Tonelli 定理，$\nu([a,\infty)\times C)=\int_Cp_t\bigl(2(a\vee b)-b\bigr)\,\dd b$，与第一步的结果相同。
+\end{proof}
+
+\begin{corollary}[首中时的分布]
+\label{cor:hitting-time-law}
+对 $a>0$，$T_a$ 与 $a^2/B_1^2$ 同分布，且具有密度
+\[
+  f(t)=\frac{a}{\sqrt{2\pi t^3}}\exp\!\left(-\frac{a^2}{2t}\right)\ind{\{t>0\}}.
+\]
+\end{corollary}
+
+\begin{proof}
+由于 $B_t\sim\Normal(0,t)$，有 $B_t\deq\sqrt t\,B_1$。对 $t\in(0,\infty)$，由\cref{thm:reflection-principle} 证明的第一步及该定理，
+\[
+  \Prob(T_a\le t)=\Prob(S_t\ge a)=\Prob(\abs{B_t}\ge a)=\Prob(tB_1^2\ge a^2)=\Prob\Bigl(\frac{a^2}{B_1^2}\le t\Bigr),
+\]
+最后一步用到 $B_1\ne0$ 几乎处处。$t=0$ 时两端都为 $0$（$T_a=0$ 当且仅当 $B_0=a$）。二者都是非负随机变量且分布函数相同，故同分布。
+对 $t\in(0,\infty)$，$F(t):=\Prob(a^2/B_1^2\le t)=2\int_{a/\sqrt t}^\infty\varphi(x)\,\dd x$ 连续可微，
+$F'(t)=2\varphi(a/\sqrt t)\cdot\frac a2t^{-3/2}=f(t)$，且 $F(0+)=0$，故 $F(t)=\int_0^tf(s)\,\dd s$。
+\end{proof}
+
+\begin{remark}
+\label{rem:hitting-time-infinite-mean}
+由密度的形式立即得到 $\E[T_a]=\infty$：$t\to\infty$ 时 $tf(t)\sim\frac{a}{\sqrt{2\pi}}t^{-1/2}$，不可积。
+\end{remark}
+
+最后，把布朗运动的定义推广到任意（可以随机的）初始值与任意维数。
+
+\begin{definition}[任意初值的实布朗运动]
+\label{def:brownian-motion-initial}
+设 $Z$ 是实随机变量。若过程 $(X_t)_{t\in[0,\infty)}$ 可以写成 $X_t=Z+B_t$，其中 $B$ 是从 $0$ 出发、与 $Z$ 独立的实布朗运动，
+则称 $X$ 是从 $Z$ 出发的实布朗运动。
+\end{definition}
+
+\begin{definition}[$d$ 维布朗运动]
+\label{def:brownian-motion-d}
+若 $\R^d$ 值过程 $B_t=(B_t^1,\ldots,B_t^d)$ 的各分量 $B^1,\ldots,B^d$ 是相互独立的、从 $0$ 出发的实布朗运动，
+则称 $B$ 是从 $0$ 出发的 $d$ 维布朗运动。设 $Z$ 是 $\R^d$ 值随机变量，若 $\R^d$ 值过程 $X$ 可以写成 $X_t=Z+B_t$，其中 $B$ 是从 $0$ 出发、
+与 $Z$ 独立的 $d$ 维布朗运动，则称 $X$ 是从 $Z$ 出发的 $d$ 维布朗运动。
+\end{definition}
+
+\begin{remark}
+\label{rem:brownian-d-extensions}
+\begin{enumerate}
+  \item 若 $X$ 是 $d$ 维布朗运动且初值随机，$X$ 的各分量未必独立，因为初值可能带来相关性；初值确定时不会出现这一情况。
+  \item 与 Wiener 测度的定义类似，$d$ 维 Wiener 测度定义为从 $0$ 出发的 $d$ 维布朗运动在 $C(\R_+,\R^d)$ 上的分布；
+    \cref{prop:canonical-brownian-motion} 的典范构造也适用于 $d$ 维布朗运动。
+  \item 前面的许多结论可以推广到任意初值的 $d$ 维布朗运动。特别地，\cref{prop:brownian-invariances} 中的不变性在作相应修改后仍成立，
+    且对称性可推广为：若 $X$ 是 $d$ 维布朗运动，$\Phi$ 是 $\R^d$ 的等距变换，则 $(\Phi(X_t))_{t\in[0,\infty)}$ 仍是 $d$ 维布朗运动。
+  \item Wiener 测度的构造与 Blumenthal 零一律都容易推广；强马尔可夫性也成立：仿照\cref{thm:strong-markov} 的证明可知，
+    若 $T$ 是（按\cref{def:stopping-time} 显然推广的意义下的）停时且 $\Prob(T<\infty)>0$，则在 $\Prob(\,\cdot\mid T<\infty)$ 下，
+    $X^{(T)}_t:=X_{T+t}-X_T$（$t\in[0,\infty)$）是从 $0$ 出发、与 $\F_T$ 独立的 $d$ 维布朗运动。
+\end{enumerate}
+\end{remark}
 
 % ==================== 参考文献 ====================
 \begin{thebibliography}{9}

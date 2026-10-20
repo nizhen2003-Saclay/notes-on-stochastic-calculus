@@ -6,4 +6,6 @@
 \contentsline {chapter}{\numberline {第二章\hspace {.3em}}布朗运动}{18}{chapter.2}%
 \contentsline {section}{\numberline {2.1}预布朗运动}{18}{section.2.1}%
 \contentsline {section}{\numberline {2.2}样本路径的连续性}{21}{section.2.2}%
-\contentsline {chapter}{参考文献}{24}{chapter*.2}%
+\contentsline {section}{\numberline {2.3}布朗运动样本路径的性质}{28}{section.2.3}%
+\contentsline {section}{\numberline {2.4}布朗运动的强马尔可夫性}{32}{section.2.4}%
+\contentsline {chapter}{参考文献}{37}{chapter*.2}%

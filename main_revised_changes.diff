@@ -1,0 +1,720 @@
+--- orig.tex	2026-10-20 14:23:17.352367241 +0000
++++ main_revised.tex	2026-10-20 14:58:53.298454729 +0000
+@@ -177,6 +177,11 @@
+ \Crefname{exercise}{练习}{练习}
+ \Crefname{remark}{注记}{注记}
+ \Crefname{figure}{图}{图}
++% 章、节按中文习惯引用为“第 2 章”“第 2.3 节”。
++\crefformat{chapter}{#2第#1章#3}
++\Crefformat{chapter}{#2第#1章#3}
++\crefformat{section}{#2第#1节#3}
++\Crefformat{section}{#2第#1节#3}
+ 
+ % ==================== 文档信息 ====================
+ \title{布朗运动、鞅与随机分析\\复习笔记}
+@@ -196,7 +201,7 @@
+ 
+ \chapter{高斯变量与高斯过程}
+ \label{chap:gaussian}
+-命题标题中的“原命题 1.1”“原定理 1.3(i)”等标注给出该结果在原材料中的编号，便于对照。
++本章部分结果的标题注有“原命题 1.1”“原定理 1.3(i)”等字样，指该结果在原书\cite{LeGall2016} 中的编号，便于对照。
+ 
+ \section{概率空间与标准高斯变量}
+ \label{sec:standard-gaussian}
+@@ -204,6 +209,8 @@
+ 除特别说明外，本章的随机变量都定义在概率空间 $(\Omega,\F,\Prob)$ 上。
+ 实随机变量是可测映射 $X:(\Omega,\F)\to(\R,\B(\R))$，其分布
+ $\Law(X):=\Prob\circ X^{-1}$ 是 $(\R,\B(\R))$ 上的概率测度。
++满足 $N\in\F$、$\Prob(N)=0$ 的集合 $N$ 称为零测集，满足 $\Prob(\Omega_0)=1$ 的事件 $\Omega_0$ 称为满测度集；
++某性质“几乎处处”成立，是指它在某个满测度集上成立。
+ 记 $\Leb$ 为 $\R$ 上的勒贝格测度（限制在 $\B(\R)$ 上）；
+ 说一个实随机变量“具有密度”，总是指它的分布相对于 $\Leb$ 绝对连续。
+ 
+@@ -971,7 +978,6 @@
+ 
+ \begin{definition}[生成的 $\sigma$ 代数]
+ \label{def:sigma-algebra-generated-by-sets}
+-\label{def:sigma-algebra-generated-by-variables}
+ 设 $\mathcal C$ 是 $\Omega$ 的子集族。包含 $\mathcal C$ 的最小 $\sigma$ 代数
+ \[
+   \sigma(\mathcal C):=\bigcap\bigl\{\A:\A\text{ 是 $\Omega$ 上的 $\sigma$ 代数，且 }\mathcal C\subseteq\A\bigr\}
+@@ -1030,18 +1036,11 @@
+ \end{equation}
+ 
+ \textbf{\boldmath 第二步：扩张到生成的 $\sigma$ 代数。}
+-这是标准的 $\pi$--$\lambda$ 论证\cite[\S2.1]{Durrett2019}，对指标逐个进行。
+-设对某个 $k$，乘积公式已对所有 $A_l\in\sigma(H_l)$（$l<k$）与 $A_l\in\mathcal C_l$（$l\ge k$）成立
+-（$k=1$ 时这正是\cref{eq:gaussian-subspace-cylinder-independence}）。固定这样的 $A_l$（$l\ne k$），令
+-$F:=\bigcap_{l\ne k}A_l$，$c:=\prod_{l\ne k}\Prob(A_l)$，并令
+-\[
+-  \mathcal D:=\{A\in\sigma(H_k):\Prob(A\cap F)=\Prob(A)\,c\}.
+-\]
+-由假设，$\mathcal C_k\subseteq\mathcal D$，特别地 $\Omega\in\mathcal D$。由概率的可加性与连续性，
+-$\mathcal D$ 对差集（$A\subseteq B$ 时的 $B\setminus A$）和单调递增序列的并封闭，故 $\mathcal D$ 是 $\lambda$ 系统。
+-由 $\pi$--$\lambda$ 定理\cite[定理 2.1.6，第 46 页；证明见定理 A.1.4，第 456--457 页]{Durrett2019}，
+-$\sigma(H_k)=\sigma(\mathcal C_k)\subseteq\mathcal D$，即乘积公式对任意 $A_k\in\sigma(H_k)$ 也成立。
+-依次对 $k=1,\ldots,m$ 进行，便得到\cref{eq:gaussian-subspace-sigma-independence}。
++由于每个 $\mathcal C_k$ 都含 $\Omega$，\cref{eq:gaussian-subspace-cylinder-independence} 说明 $\pi$ 系统
++$\mathcal C_1,\ldots,\mathcal C_m$ 相互独立。由 $\pi$--$\lambda$ 定理%
++\cite[定理 2.1.6，第 46 页；证明见定理 A.1.4，第 456--457 页]{Durrett2019} 可知，
++相互独立的 $\pi$ 系统生成相互独立的 $\sigma$ 代数\cite[定理 2.1.7]{Durrett2019}。
++因此 $\sigma(H_k)=\sigma(\mathcal C_k)$（$1\le k\le m$）相互独立，即\cref{eq:gaussian-subspace-sigma-independence} 成立。
+ \end{proof}
+ 
+ \begin{corollary}[高斯空间中的条件期望与正交投影]
+@@ -1282,13 +1281,8 @@
+ 
+ \begin{proof}
+ $G(f)\in\Hcal$ 是中心高斯变量，由等距性，$\Var(G(f))=\norm{G(f)}_{L^2(\Prob)}^2=\norm{f}_{L^2(\mu)}^2$，
+-这给出了 $G(f)$ 的分布。在两个 $L^2$ 空间中分别使用极化恒等式，并利用 $G$ 的线性与等距性，
+-\begin{align*}
+-  \Cov\bigl(G(f),G(g)\bigr)=\E[G(f)G(g)]
+-  &=\frac12\Bigl(\norm{G(f+g)}_{L^2(\Prob)}^2-\norm{G(f)}_{L^2(\Prob)}^2-\norm{G(g)}_{L^2(\Prob)}^2\Bigr)\\
+-  &=\frac12\Bigl(\norm{f+g}_{L^2(\mu)}^2-\norm{f}_{L^2(\mu)}^2-\norm{g}_{L^2(\mu)}^2\Bigr)
+-   =\inner{f}{g}_{L^2(\mu)}.
+-\end{align*}
++这给出了 $G(f)$ 的分布。由极化恒等式 $\inner{x}{y}=\frac12\bigl(\norm{x+y}^2-\norm{x}^2-\norm{y}^2\bigr)$，
++线性等距映射保持内积，故 $\Cov(G(f),G(g))=\E[G(f)G(g)]=\inner{f}{g}_{L^2(\mu)}$。
+ 最后注意 $\norm{\ind{A}}_{L^2(\mu)}^2=\mu(A)$。
+ \end{proof}
+ 
+@@ -1491,8 +1485,8 @@
+ 右端是独立中心高斯变量的线性组合，由\cref{prop:independent-gaussian-combination} 是中心高斯变量。
+ 记 $\Hcal_X$ 为 $X$ 生成的高斯空间。
+ 
+-令 $\mathcal D$ 为 $\R_+$ 上有限区间阶梯函数组成的线性空间（按 $\dd t$-几乎处处相等识别）。
+-每个 $f\in\mathcal D$ 可写成
++令 $\mathcal S$ 为 $\R_+$ 上有限区间阶梯函数组成的线性空间（按 $\dd t$-几乎处处相等识别）。
++每个 $f\in\mathcal S$ 可写成
+ \[
+   f=\sum_{i=1}^{n}\alpha_i\ind{(t_{i-1},t_i]},\qquad 0=t_0<t_1<\cdots<t_n,
+ \]
+@@ -1505,14 +1499,14 @@
+ （必要时以零系数补足到同一右端点）取共同加细，几乎处处相等的阶梯函数在每个正长度区间上系数相同，
+ 故给出同一个 $G_0(f)$。
+ 
+-$G_0$ 显然是线性的。对 $f,g\in\mathcal D$，取共同的分划，写成
++$G_0$ 显然是线性的。对 $f,g\in\mathcal S$，取共同的分割，写成
+ $f=\sum_i\alpha_i\ind{(t_{i-1},t_i]}$、$g=\sum_i\beta_i\ind{(t_{i-1},t_i]}$。
+ 由 (4) 中增量的独立性、零均值与方差，
+ \[
+   \E[G_0(f)G_0(g)]=\sum_{i=1}^{n}\alpha_i\beta_i\,\E\bigl[(X_{t_i}-X_{t_{i-1}})^2\bigr]
+   =\sum_{i=1}^{n}\alpha_i\beta_i(t_i-t_{i-1})=\int_0^\infty f(r)g(r)\,\dd r,
+ \]
+-故 $G_0:\mathcal D\to\Hcal_X$ 是线性等距映射。有限区间阶梯函数在 $L^2(\R_+)$ 中稠密，
++故 $G_0:\mathcal S\to\Hcal_X$ 是线性等距映射。有限区间阶梯函数在 $L^2(\R_+)$ 中稠密，
+ 而 $\Hcal_X$ 是完备的，故 $G_0$ 唯一地延拓为线性等距映射 $G:L^2(\R_+)\to\Hcal_X$
+ \cite[\S1.3，第 7--8 页]{Nualart2018}，它是强度为 $\dd t$ 的高斯白噪声。
+ 对 $t>0$，$\ind{[0,t]}=\ind{(0,t]}$ 作为 $L^2(\R_+)$ 的元素成立，故
+@@ -1522,32 +1516,38 @@
+ $t=0$ 时两边也都几乎处处为 $0$。因此 $X$ 是预布朗运动。
+ \end{proof}
+ 
++下面记
++\[
++  p_t(x):=\frac{1}{\sqrt{2\pi t}}\exp\!\left(-\frac{x^2}{2t}\right)=\frac{1}{\sqrt t}\,\varphi\!\left(\frac{x}{\sqrt t}\right),
++  \qquad t>0,\ x\in\R,
++\]
++它是 $\Normal(0,t)$ 的密度（\cref{prop:gaussian-equivalent}）。
++
+ \begin{proposition}[预布朗运动的有限维密度]
+ \label{prop:pre-brownian-finite-dimensional-density}
+ 设 $B$ 是预布朗运动，$n\ge1$，$0=t_0<t_1<\cdots<t_n$。则 $(B_{t_1},\ldots,B_{t_n})$ 相对于 $\Leb_n$ 的密度为
+ \begin{equation}
+   \label{eq:pre-brownian-finite-dimensional-density}
+-  p_{t_1,\ldots,t_n}(x_1,\ldots,x_n)
+-  =\frac{1}{(2\pi)^{n/2}\sqrt{\prod_{i=1}^{n}(t_i-t_{i-1})}}
+-    \exp\!\left(-\sum_{i=1}^{n}\frac{(x_i-x_{i-1})^2}{2(t_i-t_{i-1})}\right),
++  \begin{split}
++    p_{t_1,\ldots,t_n}(x_1,\ldots,x_n)
++    &=\prod_{i=1}^{n}p_{t_i-t_{i-1}}(x_i-x_{i-1})\\
++    &=\frac{1}{(2\pi)^{n/2}\sqrt{\prod_{i=1}^{n}(t_i-t_{i-1})}}
++      \exp\!\left(-\sum_{i=1}^{n}\frac{(x_i-x_{i-1})^2}{2(t_i-t_{i-1})}\right),
++  \end{split}
+ \end{equation}
+ 其中 $x_0:=0$。
+ \end{proposition}
+ 
+ \begin{proof}
+ 令 $Y_i:=B_{t_i}-B_{t_{i-1}}$（$1\le i\le n$）。由\cref{prop:pre-brownian-equivalences}，$Y_1,\ldots,Y_n$ 相互独立，
+-且 $Y_i\sim\Normal(0,t_i-t_{i-1})$，故 $Y:=(Y_1,\ldots,Y_n)$ 的密度为各分量密度之积
+-\[
+-  q(y)=\frac{1}{(2\pi)^{n/2}\sqrt{\prod_{i=1}^{n}(t_i-t_{i-1})}}
+-    \exp\!\left(-\sum_{i=1}^{n}\frac{y_i^2}{2(t_i-t_{i-1})}\right).
+-\]
+-令线性映射 $\Phi:\R^n\to\R^n$，$(Ty)_i:=\sum_{j\le i}y_j$。由 $B_0=0$ 几乎处处，
+-$(B_{t_1},\ldots,B_{t_n})=TY$ 几乎处处。$\Phi$ 的矩阵是对角元全为 $1$ 的下三角矩阵，故 $\det \Phi=1$，
++且 $Y_i\sim\Normal(0,t_i-t_{i-1})$，故 $Y:=(Y_1,\ldots,Y_n)$ 的密度为乘积 $q(y):=\prod_{i=1}^{n}p_{t_i-t_{i-1}}(y_i)$。
++令线性映射 $\Phi:\R^n\to\R^n$，$(\Phi y)_i:=\sum_{j\le i}y_j$。由 $B_0=0$ 几乎处处，
++$(B_{t_1},\ldots,B_{t_n})=\Phi Y$ 几乎处处。$\Phi$ 的矩阵是对角元全为 $1$ 的下三角矩阵，故 $\det\Phi=1$，
+ 且 $(\Phi^{-1}x)_i=x_i-x_{i-1}$。由线性换元公式\cite[练习 1.3.16，第 66 页]{Tao2011}，对 $A\in\B(\R^n)$，
+ \[
+   \Prob\bigl((B_{t_1},\ldots,B_{t_n})\in A\bigr)=\int_{\Phi^{-1}(A)}q(y)\,\dd y=\int_Aq(\Phi^{-1}x)\,\dd x,
+ \]
+-代入 $\Phi^{-1}x$ 即得\cref{eq:pre-brownian-finite-dimensional-density}。
++而 $q(\Phi^{-1}x)$ 正是\cref{eq:pre-brownian-finite-dimensional-density} 的右端。
+ \end{proof}
+ 
+ \begin{proposition}[有限维分布相同的过程]
+@@ -1582,7 +1582,7 @@
+ \begin{proof}
+ 由\cref{prop:pre-brownian-equivalences}，$B$ 是协方差函数为 $s\wedge t$ 的中心高斯过程；
+ 三个过程的有限线性组合都是 $B$ 的有限线性组合，故它们都是中心高斯过程。
+-由\cref{prop:pre-brownian-equivalences} 的条件 (2)，只需计算协方差：对 $u,v\ge0$，
++由\cref{prop:pre-brownian-equivalences} 中的 $(2)\Rightarrow(1)$，只需计算协方差：对 $u,v\ge0$，
+ \begin{align*}
+   \Cov(-B_u,-B_v)&=\Cov(B_u,B_v)=u\wedge v,\\
+   \Cov(B_u^\lambda,B_v^\lambda)&=\lambda^{-2}\bigl(\lambda^2u\wedge\lambda^2v\bigr)=u\wedge v,\\
+@@ -1660,7 +1660,7 @@
+ 
+ 本节中，$(E,d)$ 是度量空间，装备 Borel $\sigma$ 代数 $\B(E)$；$T$ 是指标集。
+ 需要比较的过程都定义在同一概率空间 $(\Omega,\F,\Prob)$ 上，且有相同的指标集与取值空间；
+-讨论样本路径时，每个 $X_t$ 都取定一个可测代表元。满足 $N\in\F$、$\Prob(N)=0$ 的集合 $N$ 称为零测集。
++讨论样本路径时，每个 $X_t$ 都取定一个可测代表元。
+ 
+ \begin{definition}[样本路径]
+ \label{def:sample-path}
+@@ -1709,7 +1709,7 @@
+ \begin{proof}
+ 对固定的 $t\ge0$，集合 $\{X_t\ne\widetilde X_t\}$ 在 $t\le1$ 时为 $\{t\}$，在 $t>1$ 时为空集，
+ 其勒贝格测度均为 $0$，故 $\widetilde X$ 是 $X$ 的修正。$\widetilde X$ 的样本路径恒为 $0$，自然连续。
+-对固定的 $\omega\in[0,1]$，$X_\omega(\omega)=1$，而当 $t_n:=\omega+1/n\to\omega$ 时 $X_{t_n}(\omega)=0$，
++对固定的 $\omega\in[0,1]$，样本路径 $X_\bullet(\omega)$ 在 $t=\omega$ 处取值 $1$，而当 $t_n:=\omega+1/n\to\omega$ 时 $X_{t_n}(\omega)=0$，
+ 故 $X_\bullet(\omega)$ 在 $t=\omega$ 处不连续（$\omega=0$ 时按 $\R_+$ 的相对拓扑理解）。
+ \end{proof}
+ 
+@@ -1747,6 +1747,7 @@
+ 是两个 $E$ 值过程，且二者的样本路径都几乎处处连续：存在零测集 $N_X,N_{\widetilde X}$，
+ 使得 $\omega\notin N_X$ 时 $X_\bullet(\omega)$ 连续，$\omega\notin N_{\widetilde X}$ 时 $\widetilde X_\bullet(\omega)$ 连续
+ （连续性相对于 $I$ 的子空间拓扑）。则 $\widetilde X$ 是 $X$ 的修正，当且仅当 $X$ 与 $\widetilde X$ 不可区分。
++特别地，任一 $E$ 值过程 $Y=(Y_t)_{t\in I}$ 的样本路径连续的修正若存在，则在不可区分的意义下唯一。
+ \end{proposition}
+ 
+ \begin{proof}
+@@ -1761,9 +1762,12 @@
+   X_t(\omega)=\lim_{n\to\infty}X_{q_n}(\omega)=\lim_{n\to\infty}\widetilde X_{q_n}(\omega)=\widetilde X_t(\omega).
+ \]
+ 所以在 $M$ 之外两条样本路径处处相同，即 $X$ 与 $\widetilde X$ 不可区分。
++
++最后一句：若 $X$ 与 $\widetilde X$ 都是 $Y$ 的样本路径连续的修正，则对每个 $t\in I$，$X_t=Y_t=\widetilde X_t$ 几乎处处，
++即 $\widetilde X$ 是 $X$ 的修正，由前半部分，二者不可区分。
+ \end{proof}
+ 
+-由\cref{prop:continuous-modifications-indistinguishable}，样本路径连续的修正若存在，则在不可区分的意义下唯一。
++于是样本路径连续的修正只需考虑存在性。
+ 下面的 Kolmogorov 连续性定理给出存在性的一个充分条件，它只涉及二维分布的矩估计。
+ 证明中确定性的部分是二进点上的链式估计，先单独写成引理。
+ 
+@@ -1828,9 +1832,7 @@
+ \end{theorem}
+ 
+ \begin{proof}
+-\textbf{唯一性。}
+-若 $\widetilde X$ 与 $\widehat X$ 都是 $X$ 的样本路径连续的修正，则对每个 $t\in I$，$\widehat X_t=X_t=\widetilde X_t$ 几乎处处，
+-即 $\widehat X$ 是 $\widetilde X$ 的修正；由\cref{prop:continuous-modifications-indistinguishable}，二者不可区分。
++唯一性已包含在\cref{prop:continuous-modifications-indistinguishable} 中，下面只证存在性。
+ 
+ \textbf{约化与记号。}
+ $I$ 为单点时取 $\widetilde X:=X$ 即可。否则记 $I$ 的端点为 $a<b$，$L:=b-a$，令
+@@ -1922,11 +1924,11 @@
+ \end{corollary}
+ 
+ \begin{proof}
+-唯一性的证明与\cref{thm:kolmogorov-continuity} 相同。取定 $c\in I$，对 $n\ge1$ 令 $I_n:=I\cap[c-n,c+n]$。
++唯一性见\cref{prop:continuous-modifications-indistinguishable}，下面证明存在性。取定 $c\in I$，对 $n\ge1$ 令 $I_n:=I\cap[c-n,c+n]$。
+ 它们是递增的有界区间，并集为 $I$，且 $I$ 的每个有界子区间都含于某个 $I_n$。由\cref{thm:kolmogorov-continuity}，
+ $(X_t)_{t\in I_n}$ 有修正 $\widetilde X^{(n)}$，其样本路径在 $I_n$ 上对每个 $\alpha\in(0,\varepsilon/q)$ 都是 $\alpha$ 阶
+ Hölder 连续的。对 $m<n$，$\widetilde X^{(n)}$ 在 $I_m$ 上的限制与 $\widetilde X^{(m)}$ 都是 $(X_t)_{t\in I_m}$
+-的样本路径连续的修正，由该定理中的唯一性，存在零测集 $M_{m,n}$，在其外二者在 $I_m$ 上处处相等。
++的样本路径连续的修正，由\cref{prop:continuous-modifications-indistinguishable}，存在零测集 $M_{m,n}$，在其外二者在 $I_m$ 上处处相等。
+ 令 $M:=\bigcup_{m<n}M_{m,n}$，它仍是零测集。取定 $x_0\in E$，定义
+ \[
+   \widetilde X_t(\omega):=
+@@ -1966,11 +1968,11 @@
+ 对整数 $m\ge2$，\cref{eq:pre-brownian-even-moments} 就是 $I=\R_+$、$E=\R$ 时的条件\cref{eq:kolmogorov-moment}，其中
+ $q=2m$，$\varepsilon=m-1$，$C=(2m-1)!!$，而 $\varepsilon/q=\tfrac12-\tfrac1{2m}$。由\cref{cor:kolmogorov-continuity-general}，
+ $B$ 有修正 $B^{(m)}$，其样本路径对每个 $\alpha\in(0,\tfrac12-\tfrac1{2m})$ 都是局部 $\alpha$ 阶 Hölder 连续的。
+-各 $B^{(m)}$ 都是 $B$ 的样本路径连续的修正，由该推论中的唯一性，存在零测集 $M_m$，在其外 $B^{(m)}$ 与 $B^{(2)}$
++各 $B^{(m)}$ 都是 $B$ 的样本路径连续的修正，由\cref{prop:continuous-modifications-indistinguishable}，存在零测集 $M_m$，在其外 $B^{(m)}$ 与 $B^{(2)}$
+ 的样本路径相同。令 $M:=\bigcup_{m\ge2}M_m$，并令 $\widetilde B_t:=B^{(2)}_t$ 在 $M^c$ 上、$\widetilde B_t:=0$ 在 $M$ 上。
+ 则 $\widetilde B_t=B^{(2)}_t=B_t$ 几乎处处，故 $\widetilde B$ 是 $B$ 的修正。对 $\omega\notin M$ 及 $\alpha\in(0,1/2)$，取 $m$
+ 使 $\alpha<\tfrac12-\tfrac1{2m}$，则 $\widetilde B_\bullet(\omega)=B^{(m)}_\bullet(\omega)$ 是局部 $\alpha$ 阶 Hölder 连续的；
+-对 $\omega\in M$，样本路径恒为 $0$。唯一性仍由\cref{prop:continuous-modifications-indistinguishable} 得到。
++对 $\omega\in M$，样本路径恒为 $0$。唯一性仍见\cref{prop:continuous-modifications-indistinguishable}。
+ \end{proof}
+ 
+ \begin{definition}[布朗运动]
+@@ -1984,7 +1986,8 @@
+ 
+ \begin{remark}
+ \label{rem:brownian-motion-scope}
+-准确地说，\cref{def:brownian-motion} 定义的是从 $0$ 出发的实值（一维）布朗运动；任意初始点与高维的情形留待以后讨论。
++准确地说，\cref{def:brownian-motion} 定义的是从 $0$ 出发的实值（一维）布朗运动；
++任意初值与高维的情形见\cref{def:brownian-motion-initial} 与\cref{def:brownian-motion-d}。
+ \end{remark}
+ 
+ \begin{proposition}[布朗运动的存在性]
+@@ -2003,14 +2006,17 @@
+ 
+ \begin{proposition}[布朗运动的不变性]
+ \label{prop:brownian-invariances}
+-设 $B=(B_t)_{t\ge0}$ 是布朗运动，$\lambda>0$，$s\ge0$。则 $-B$、$B^\lambda:=(\lambda^{-1}B_{\lambda^2t})_{t\ge0}$
+-与 $B^{(s)}:=(B_{s+t}-B_s)_{t\ge0}$ 都是布朗运动，且 $B^{(s)}$ 与 $\F_s^B=\sigma(B_r:0\le r\le s)$ 独立。
++设 $B=(B_t)_{t\ge0}$ 是布朗运动，则：
++\begin{enumerate}
++  \item （对称性）$-B=(-B_t)_{t\ge0}$ 是布朗运动；
++  \item （尺度不变性）对任意 $\lambda>0$，$B^\lambda:=(\lambda^{-1}B_{\lambda^2t})_{t\ge0}$ 是布朗运动；
++  \item （简单马尔可夫性）对任意 $s\ge0$，$B^{(s)}:=(B_{s+t}-B_s)_{t\ge0}$ 是布朗运动，且与 $\F_s^B$ 独立。
++\end{enumerate}
+ \end{proposition}
+ 
+ \begin{proof}
+ 由\cref{prop:pre-brownian-invariances}，三个过程都是预布朗运动，且 $B^{(s)}$ 与 $\F_s^B$ 独立。
+-对每个 $\omega$，$t\mapsto-B_t(\omega)$、$t\mapsto\lambda^{-1}B_{\lambda^2t}(\omega)$ 与 $t\mapsto B_{s+t}(\omega)-B_s(\omega)$
+-都是连续函数与连续映射的复合或差，因而连续。
++它们的样本路径由 $B$ 的样本路径经取负、时间伸缩与平移得到，因而连续。
+ \end{proof}
+ 
+ 布朗运动的样本路径是 $\R_+$ 上的连续函数，因此可以把整个布朗运动看成一个取值于连续函数空间的随机元，
+@@ -2041,13 +2047,9 @@
+ \end{lemma}
+ 
+ \begin{proof}
+-由\cref{def:brownian-motion}，每条样本路径连续，故 $\Phi_B$ 确实取值于 $C(\R_+,\R)$。令
+-$\mathcal A:=\{A\in\mathscr C:\Phi_B^{-1}(A)\in\F\}$。由于原像运算保持补集与可数并，$\mathcal A$ 是 $\sigma$ 代数。
+-对 $t\ge0$ 及 $\Gamma\in\B(\R)$，
+-\[
+-  \Phi_B^{-1}\bigl(\{w:w(t)\in\Gamma\}\bigr)=\{B_t\in\Gamma\}\in\F,
+-\]
+-故 $\mathcal A$ 包含 $\mathscr C$ 的全部生成元，从而 $\mathcal A=\mathscr C$。
++由\cref{def:brownian-motion}，每条样本路径连续，故 $\Phi_B$ 确实取值于 $C(\R_+,\R)$。
++对 $\mathscr C$ 的每个生成元，$\Phi_B^{-1}\bigl(\{w:w(t)\in\Gamma\}\bigr)=\{B_t\in\Gamma\}\in\F$；
++而在生成元上可测即可测\cite[定理 1.3.1]{Durrett2019}，故 $\Phi_B$ 是 $\F/\mathscr C$ 可测的。
+ \end{proof}
+ 
+ \begin{definition}[Wiener 测度]
+@@ -2067,13 +2069,12 @@
+ 
+ \begin{proposition}[柱集的 Wiener 测度]
+ \label{prop:wiener-cylinder-sets}
+-在上述记号下，记 $x_0:=0$，则
+-\begin{multline*}
+-  W\bigl(\{w:w(t_0)\in A_0,\ldots,w(t_n)\in A_n\}\bigr)\\
+-  =\ind{A_0}(0)\int_{A_1\times\cdots\times A_n}
+-    \frac{1}{(2\pi)^{n/2}\sqrt{t_1(t_2-t_1)\cdots(t_n-t_{n-1})}}
+-    \exp\!\left(-\sum_{i=1}^{n}\frac{(x_i-x_{i-1})^2}{2(t_i-t_{i-1})}\right)\dd x_1\cdots\dd x_n.
+-\end{multline*}
++在上述记号下，
++\[
++  W\bigl(\{w:w(t_0)\in A_0,\ldots,w(t_n)\in A_n\}\bigr)
++  =\ind{A_0}(0)\int_{A_1\times\cdots\times A_n}p_{t_1,\ldots,t_n}(x_1,\ldots,x_n)\,\dd x_1\cdots\dd x_n,
++\]
++其中 $p_{t_1,\ldots,t_n}$ 由\cref{eq:pre-brownian-finite-dimensional-density} 给出。
+ \end{proposition}
+ 
+ \begin{proof}
+@@ -2082,7 +2083,7 @@
+ 再由\cref{prop:pre-brownian-finite-dimensional-density} 即得。
+ \end{proof}
+ 
+-右端与 $B$ 的选取无关。由于柱集足以决定 $\mathscr C$ 上的概率测度，Wiener 测度本身也与 $B$ 的选取无关。
++右端与 $B$ 的选取无关。由于柱集组成生成 $\mathscr C$ 的 $\pi$ 系统，Wiener 测度本身也与 $B$ 的选取无关。
+ 
+ \begin{theorem}[布朗运动分布的唯一性]
+ \label{thm:wiener-measure-uniqueness}
+@@ -2103,7 +2104,7 @@
+ \end{proof}
+ 
+ 这一结论今后会反复使用：要计算布朗运动样本路径满足某个可测性质的概率，可以任选一个方便的布朗运动来计算。
+-特别地，可以把 Wiener 测度所在的空间本身取作概率空间。
++特别地，可以把 Wiener 测度所在的空间本身取作概率空间，这就是下面的典范构造。
+ 
+ \begin{proposition}[布朗运动的典范构造]
+ \label{prop:canonical-brownian-motion}
+@@ -2115,12 +2116,11 @@
+ \end{proposition}
+ 
+ \begin{proof}
+-由\cref{prop:brownian-motion-existence}，存在某个概率空间 $(\Omega,\F,\Prob)$ 上的布朗运动 $B$，而由%
+-\cref{thm:wiener-measure-uniqueness}，$W$ 是 $\Prob$ 在 $\Phi_B$ 下的像测度。$X$ 的每条样本路径 $t\mapsto w(t)$ 显然连续。
+-对 $t_1,\ldots,t_n\ge0$，令 $\pi:w\mapsto(w(t_1),\ldots,w(t_n))$，它就是随机向量 $(X_{t_1},\ldots,X_{t_n})$。
+-$\pi$ 的各分量是坐标映射，都是 $\mathscr C$ 可测的，而取值于 $\R^n$ 的映射可测当且仅当其各分量可测%
+-\cite[\S1.3]{Durrett2019}，故 $\pi$ 是 $\mathscr C/\B(\R^n)$ 可测的。对 $G\in\B(\R^n)$，
+-有 $\{(X_{t_1},\ldots,X_{t_n})\in G\}=\pi^{-1}(G)$，而 $W$ 是 $\Prob$ 在 $\Phi_B$ 下的像测度，且 $\pi\circ\Phi_B=(B_{t_1},\ldots,B_{t_n})$，故
++由\cref{prop:brownian-motion-existence}，存在某个概率空间 $(\Omega,\F,\Prob)$ 上的布朗运动 $B$；由%
++\cref{thm:wiener-measure-uniqueness}，可以用它来定义 $W$，即 $W=\Prob\circ\Phi_B^{-1}$。$X$ 的每条样本路径 $t\mapsto w(t)$ 显然连续。
++固定 $t_1,\ldots,t_n\ge0$，令 $\pi(w):=(w(t_1),\ldots,w(t_n))$，它就是随机向量 $(X_{t_1},\ldots,X_{t_n})$；
++其各分量都是坐标映射，而取值于 $\R^n$ 的映射可测当且仅当其各分量可测\cite[\S1.3]{Durrett2019}，
++故 $\pi$ 是 $\mathscr C/\B(\R^n)$ 可测的。由 $\pi\circ\Phi_B=(B_{t_1},\ldots,B_{t_n})$，对 $G\in\B(\R^n)$，
+ \[
+   W\bigl((X_{t_1},\ldots,X_{t_n})\in G\bigr)=\Prob\bigl(\Phi_B^{-1}(\pi^{-1}(G))\bigr)=\Prob\bigl((B_{t_1},\ldots,B_{t_n})\in G\bigr),
+ \]
+@@ -2128,8 +2128,6 @@
+ 从而是布朗运动。
+ \end{proof}
+ 
+-称上述构造为布朗运动的典范构造。
+-
+ \section{布朗运动样本路径的性质}
+ \label{sec:brownian-path-properties}
+ 
+@@ -2295,16 +2293,16 @@
+ 固定 $A\in\F_{0+}$。
+ 
+ \textbf{\boldmath 第一步：$\F_{0+}$ 与 $(B_{t_1},\ldots,B_{t_k})$ 独立。}
+-设 $0<t_1<\cdots<t_k$，$\xi\in\R^k$，令 $g(x):=e^{\iu\inner{\xi}{x}}$（$x\in\R^k$），并记 $Y:=(B_{t_1},\ldots,B_{t_k})$、
++设 $0<t_1<\cdots<t_k$，$\xi\in\R^k$，令 $F(x):=e^{\iu\inner{\xi}{x}}$（$x\in\R^k$），并记 $Y:=(B_{t_1},\ldots,B_{t_k})$、
+ $Y_\varepsilon:=(B_{t_1}-B_\varepsilon,\ldots,B_{t_k}-B_\varepsilon)$。由样本路径的连续性，$\varepsilon\downarrow0$ 时 $B_\varepsilon\to B_0$，
+-而 $B_0=0$ 几乎处处，故 $Y_\varepsilon\to Y$ 几乎处处；又 $\abs{g}=1$，由控制收敛定理，
++而 $B_0=0$ 几乎处处，故 $Y_\varepsilon\to Y$ 几乎处处；又 $\abs{F}=1$，由控制收敛定理，
+ \[
+-  \E\bigl[\ind{A}g(Y)\bigr]=\lim_{\varepsilon\downarrow0}\E\bigl[\ind{A}g(Y_\varepsilon)\bigr],\qquad
+-  \E\bigl[g(Y)\bigr]=\lim_{\varepsilon\downarrow0}\E\bigl[g(Y_\varepsilon)\bigr].
++  \E\bigl[\ind{A}F(Y)\bigr]=\lim_{\varepsilon\downarrow0}\E\bigl[\ind{A}F(Y_\varepsilon)\bigr],\qquad
++  \E\bigl[F(Y)\bigr]=\lim_{\varepsilon\downarrow0}\E\bigl[F(Y_\varepsilon)\bigr].
+ \]
+-当 $0<\varepsilon<t_1$ 时，$Y_\varepsilon=(B^{(\varepsilon)}_{t_1-\varepsilon},\ldots,B^{(\varepsilon)}_{t_k-\varepsilon})$。由\cref{prop:brownian-invariances}，
+-它与 $\F_\varepsilon$ 独立，从而与 $\F_{0+}\subseteq\F_\varepsilon$ 独立，故 $\E[\ind{A}g(Y_\varepsilon)]=\Prob(A)\,\E[g(Y_\varepsilon)]$。
+-令 $\varepsilon\downarrow0$，得 $\E[\ind{A}g(Y)]=\Prob(A)\,\E[g(Y)]$。若 $\Prob(A)>0$，这说明 $Y$ 在条件概率
++当 $0<\varepsilon<t_1$ 时，$Y_\varepsilon=(B^{(\varepsilon)}_{t_1-\varepsilon},\ldots,B^{(\varepsilon)}_{t_k-\varepsilon})$。由\cref{prop:brownian-invariances}~(3)，
++它与 $\F_\varepsilon$ 独立，从而与 $\F_{0+}\subseteq\F_\varepsilon$ 独立，故 $\E[\ind{A}F(Y_\varepsilon)]=\Prob(A)\,\E[F(Y_\varepsilon)]$。
++令 $\varepsilon\downarrow0$，得 $\E[\ind{A}F(Y)]=\Prob(A)\,\E[F(Y)]$。若 $\Prob(A)>0$，这说明 $Y$ 在条件概率
+ $\Prob(\,\cdot\mid A)$ 下与在 $\Prob$ 下有相同的特征函数，由\cref{thm:characteristic-uniqueness}，二者分布相同，即
+ $\Prob(A\cap\{Y\in C\})=\Prob(A)\Prob(Y\in C)$ 对一切 $C\in\B(\R^k)$ 成立；$\Prob(A)=0$ 时此式显然。
+ 
+@@ -2316,13 +2314,14 @@
+ $\sigma(B_t:t>0)=\sigma(B_t:t\ge0)\supseteq\F_1\supseteq\F_{0+}\ni A$。于是 $A$ 与自身独立，$\Prob(A)=\Prob(A)^2$，即 $\Prob(A)\in\{0,1\}$。
+ \end{proof}
+ 
+-下面的结论涉及形如 $\sup_{0\le s\le\varepsilon}B_s$ 的量。
++下面的结论涉及 $\sup_{0\le s\le\varepsilon}B_s$ 这样的量，先说明它们的可测性。
+ 
+ \begin{remark}[上确界的可测性]
+ \label{rem:sup-measurability}
+-$\sup_{0\le s\le\varepsilon}B_s$ 是不可数个随机变量的上确界，其可测性并非显然。但由样本路径的连续性，
+-它等于 $\sup\{B_s:s\in[0,\varepsilon]\cap(\Q\cup\{\varepsilon\})\}$，是可数个随机变量的上确界，因而可测。
+-同理，对连续函数 $w$，$\sup_{0\le s\le T}w(s)$ 与 $\sup_{s\ge0}w(s)$ 都是 $\mathscr C$ 可测的。今后将默认使用这类论证。
++$\sup_{0\le s\le\varepsilon}B_s$ 是不可数个随机变量的上确界，其可测性并非显然。但 $[0,\varepsilon]\cap\Q$ 在 $[0,\varepsilon]$ 中稠密，
++由样本路径的连续性，它等于 $\sup\{B_s:s\in[0,\varepsilon]\cap\Q\}$，是可数个随机变量的上确界，因而可测。
++同理，$C(\R_+,\R)$ 上的映射 $w\mapsto\sup_{0\le s\le T}w(s)$ 与 $w\mapsto\sup_{s\ge0}w(s)$ 都是 $\mathscr C$ 可测的。
++今后将默认使用这类论证。
+ \end{remark}
+ 
+ \begin{proposition}[布朗运动在 $0$ 附近与无穷远处的振荡]
+@@ -2333,11 +2332,11 @@
+       \sup_{0\le s\le\varepsilon}B_s>0,\qquad\inf_{0\le s\le\varepsilon}B_s<0.
+     \]
+   \item 几乎处处，$\sup_{t\ge0}B_t=+\infty$，$\inf_{t\ge0}B_t=-\infty$。因此几乎处处，
++    $\limsup_{t\to\infty}B_t=+\infty$，$\liminf_{t\to\infty}B_t=-\infty$，且对每个 $a\in\R$，首中时
+     \[
+-      T_a:=\inf\{t\in[0,\infty):B_t=a\}<\infty\quad(\forall\,a\in\R),\qquad
+-      \limsup_{t\to\infty}B_t=+\infty,\qquad\liminf_{t\to\infty}B_t=-\infty,
++      T_a:=\inf\{t\in[0,\infty):B_t=a\}\qquad(\text{约定}\ \inf\varnothing=\infty)
+     \]
+-    其中约定 $\inf\varnothing=\infty$。
++    都是有限的。
+ \end{enumerate}
+ \end{proposition}
+ 
+@@ -2353,13 +2352,13 @@
+ \]
+ 其中不等号是因为对每个 $p$ 有 $\{B_{\varepsilon_p}>0\}\subseteq\{\sup_{0\le s\le\varepsilon_p}B_s>0\}$，而 $B_{\varepsilon_p}\sim\Normal(0,\varepsilon_p)$ 的分布关于 $0$ 对称且无原子，故 $\Prob(B_{\varepsilon_p}>0)=\frac12$。由\cref{thm:blumenthal}，$\Prob(A)=1$。
+ 在 $A$ 上，对任意 $\varepsilon>0$ 取 $\varepsilon_p\le\varepsilon$，即得 $\sup_{0\le s\le\varepsilon}B_s\ge\sup_{0\le s\le\varepsilon_p}B_s>0$。
+-由\cref{prop:brownian-invariances}，$-B$ 也是布朗运动，对它应用上述结论即得关于下确界的断言。
++由\cref{prop:brownian-invariances}~(1)，$-B$ 也是布朗运动，对它应用上述结论即得关于下确界的断言。
+ 
+-\textbf{(2)} 思路是：由 (1)，$\Prob(\sup_{0\le s\le1}B_s>\delta)\to1$（$\delta\downarrow0$），即在固定时间内越过一个很小的水平几乎必然发生；
++\textbf{(2)} 思路是：由 (1)，$\Prob(\sup_{0\le s\le1}B_s>\delta)\to1$（$\delta\downarrow0$），即在固定时间内越过一个很小的水平的概率接近 $1$；
+ 而尺度不变性把空间放大 $1/\lambda$ 倍、时间放大 $1/\lambda^2$ 倍后得到的仍是布朗运动，因此“在时间 $1$ 内越过水平 $\delta$”与
+ “在时间 $1/\lambda^2$ 内越过水平 $\delta/\lambda$”概率相同。取 $\lambda:=\delta/M$，便把小水平 $\delta$ 变成任意给定的大水平 $M$。
+ 
+-具体地，固定 $M>0$ 及 $\delta>0$，令 $\lambda:=\delta/M$。由\cref{prop:brownian-invariances}，$B^\lambda_u=\lambda^{-1}B_{\lambda^2u}$
++具体地，固定 $M>0$ 及 $\delta>0$，令 $\lambda:=\delta/M$。由\cref{prop:brownian-invariances}~(2)，$B^\lambda_u=\lambda^{-1}B_{\lambda^2u}$
+ 定义的 $B^\lambda$ 是布朗运动，且 $B_s=\lambda B^\lambda_{s/\lambda^2}$。令 $s=\lambda^2u$，则 $s\in[0,1]$ 当且仅当 $u\in[0,M^2/\delta^2]$，
+ 而 $B_s>\delta$ 当且仅当 $B^\lambda_u>\delta/\lambda=M$，故
+ \[
+@@ -2384,7 +2383,7 @@
+ \end{corollary}
+ 
+ \begin{proof}
+-对每个有理数 $q\ge0$，由\cref{prop:brownian-invariances}，$B^{(q)}=(B_{q+t}-B_q)_{t\ge0}$ 是布朗运动。对它应用%
++对每个有理数 $q\ge0$，由\cref{prop:brownian-invariances}~(3)，$B^{(q)}=(B_{q+t}-B_q)_{t\ge0}$ 是布朗运动。对它应用%
+ \cref{prop:brownian-oscillation}~(1)，并对可数个 $q$ 去掉相应的零测集，得：几乎处处，对每个有理数 $q\ge0$ 及每个 $\varepsilon>0$，
+ \[
+   \sup_{q\le t\le q+\varepsilon}B_t>B_q,\qquad\inf_{q\le t\le q+\varepsilon}B_t<B_q.
+@@ -2432,16 +2431,8 @@
+ \end{corollary}
+ 
+ \begin{proof}
+-\textbf{约化。}
+-若 $[c,d]\subseteq[a,b]$，则 $f$ 在 $[c,d]$ 上的任一分割添上端点 $a,b$ 后成为 $[a,b]$ 的分割，相应的和只增不减，故 $[a,b]$ 上的变差不小于
+-$[c,d]$ 上的变差。下面第二部分将证明：对任意布朗运动 $B$ 及 $t>0$，存在满测度集 $\Omega_t$，在其上 $B$ 在 $[0,t]$ 上具有无穷变差。
+-承认这一点。对有理数 $0\le q<q'$，由\cref{prop:brownian-invariances}，$B^{(q)}$ 是布朗运动，把上述结论用于 $B^{(q)}$ 及 $t=q'-q$，
+-得到满测度集 $\Omega_{q,q'}$，在其上 $B^{(q)}$ 在 $[0,q'-q]$ 上具有无穷变差；而 $B$ 在 $[q,q']$ 上的变差等于 $B^{(q)}$ 在 $[0,q'-q]$ 上的变差。
+-令 $\Omega^*:=\bigcap_{q<q',\ q,q'\in\Q_+}\Omega_{q,q'}$，它是可数个满测度集之交，$\Prob(\Omega^*)=1$。对 $\omega\in\Omega^*$ 及任意非平凡区间 $[a,b]$，
+-取有理数 $a\le q<q'\le b$，则 $B_\bullet(\omega)$ 在 $[a,b]$ 上的变差不小于它在 $[q,q']$ 上的变差，后者为 $\infty$。
+-
+-\textbf{\boldmath $[0,t]$ 的情形。}
+-取 $t_i^n:=it2^{-n}$（$0\le i\le2^n$），记 $S_n:=\sum_{i}(B_{t_i^n}-B_{t_{i-1}^n})^2$。由\cref{prop:brownian-quadratic-variation}，
++\textbf{\boldmath 第一步：区间 $[0,t]$。}
++固定 $t>0$。取 $t_i^n:=it2^{-n}$（$0\le i\le2^n$），记 $S_n:=\sum_{i}(B_{t_i^n}-B_{t_{i-1}^n})^2$。由\cref{prop:brownian-quadratic-variation}，
+ $S_n\Lpto{2}t$。$L^2$ 收敛蕴含依概率收敛（Markov 不等式），从而存在子列 $n_k$，使得事件
+ \[
+   \Omega_t:=\Bigl\{\omega\in\Omega:\lim_{k\to\infty}S_{n_k}(\omega)=t\Bigr\}
+@@ -2453,7 +2444,18 @@
+ \]
+ 样本路径在 $[0,t]$ 上一致连续，而分割的步长 $t2^{-n_k}\to0$，故括号内的最大值趋于 $0$。若 $B_\bullet(\omega)$ 在 $[0,t]$ 上的变差 $V$ 有限，
+ 则右端不超过 $V$ 乘以趋于 $0$ 的量，从而 $S_{n_k}(\omega)\to0$，与 $\omega\in\Omega_t$、$t>0$ 矛盾。
+-因此在满测度集 $\Omega_t$ 上，$B$ 在 $[0,t]$ 上具有无穷变差。
++因此在满测度集 $\Omega_t$ 上，$B$ 在 $[0,t]$ 上具有无穷变差。这一步对任意布朗运动都成立。
++
++\textbf{第二步：任意非平凡区间。}
++设 $f$ 是 $[a,b]$ 上的实函数，$[c,d]\subseteq[a,b]$。$[c,d]$ 的任一分割添上端点 $a,b$ 后成为 $[a,b]$ 的分割，
++\cref{def:infinite-variation} 中相应的和只增不减，故 $f$ 在 $[a,b]$ 上的变差不小于在 $[c,d]$ 上的变差。对有理数 $0\le q<q'$，由\cref{prop:brownian-invariances}~(3)，$B^{(q)}$ 是布朗运动；
++把第一步用于 $B^{(q)}$ 及 $t=q'-q$，得到满测度集 $\Omega_{q,q'}$，在其上 $B^{(q)}$ 在 $[0,q'-q]$ 上具有无穷变差，
++也就是 $B$ 在 $[q,q']$ 上具有无穷变差（二者的变差相等）。令
++\[
++  \Omega^*:=\bigcap\bigl\{\Omega_{q,q'}:q,q'\in\Q,\ 0\le q<q'\bigr\},
++\]
++它是可数个满测度集之交，故 $\Prob(\Omega^*)=1$。对 $\omega\in\Omega^*$ 及任意非平凡区间 $[a,b]$，取有理数 $a\le q<q'\le b$，
++则 $B_\bullet(\omega)$ 在 $[a,b]$ 上的变差不小于它在 $[q,q']$ 上的变差，而后者为 $\infty$。
+ \end{proof}
+ 
+ 因此，不能把积分 $\int_0^tf(s)\,\dd B_s$ 当作关于有限变差函数的通常（Stieltjes）积分的特例来逐条路径地定义；
+@@ -2463,22 +2465,21 @@
+ \label{sec:strong-markov}
+ 
+ 本节的目标是把简单马尔可夫性（\cref{prop:brownian-invariances}~(3)）推广到把确定时刻 $s$ 换成随机时刻 $T$ 的情形。
+-为此先要确定哪些随机时刻是允许的。仍固定布朗运动 $B=(B_t)_{t\ge0}$，沿用\cref{sec:brownian-path-properties} 的记号 $\F_t$，
+-并令 $\F_\infty:=\sigma(B_s:s\ge0)$。
++为此先要确定哪些随机时刻是允许的。仍固定布朗运动 $B=(B_t)_{t\in[0,\infty)}$，沿用\cref{sec:brownian-path-properties}的记号 $\F_t$，
++并令 $\F_\infty:=\sigma(B_s:s\in[0,\infty))$。
+ 
+ \begin{definition}[停时]
+ \label{def:stopping-time}
+-取值于 $[0,\infty]$ 的随机变量 $T$ 称为停时，如果对每个 $t\ge0$，$\{T\le t\}\in\F_t$。
++取值于 $[0,\infty]$ 的随机变量 $T$（允许取值 $\infty$）称为停时，如果对每个 $t\in[0,\infty)$，$\{T\le t\}\in\F_t$。
+ \end{definition}
+ 
+-注意 $T$ 允许取值 $\infty$。
+-
+ \begin{proposition}[停时的例子与基本性质]
+ \label{prop:stopping-time-basics}
+ \begin{enumerate}
+-  \item 若 $T$ 是停时，则对每个 $t>0$，$\{T<t\}\in\F_t$。
+-  \item 常数 $T\equiv t$（$t\in[0,\infty]$）是停时；若 $T$ 是停时，则对每个 $t\ge0$，$T+t$ 也是停时。
+-  \item 对 $a\in\R$，首中时 $T_a:=\inf\{t\in[0,\infty):B_t=a\}$（$t$ 只取有限值；约定 $\inf\varnothing=\infty$）是停时；并且对每个满足 $T_a(\omega)<\infty$ 的 $\omega$，有 $B_{T_a(\omega)}(\omega)=a$，即样本路径在时刻 $T_a(\omega)$ 的值为 $a$。
++  \item 若 $T$ 是停时，则对每个 $t\in(0,\infty)$，$\{T<t\}\in\F_t$。
++  \item 常数 $T\equiv t$（$t\in[0,\infty]$）是停时；若 $T$ 是停时，则对每个 $t\in[0,\infty)$，$T+t$ 也是停时。
++  \item 对 $a\in\R$，首中时 $T_a$（\cref{prop:brownian-oscillation}~(2)）是停时；并且在 $\{T_a<\infty\}$ 上逐点地有
++    $B_{T_a}=a$，即样本路径在时刻 $T_a(\omega)$ 的值为 $a$。
+ \end{enumerate}
+ \end{proposition}
+ 
+@@ -2486,22 +2487,23 @@
+ \textbf{(1)} 若 $T(\omega)<t$，则存在有理数 $q\in[T(\omega),t)$，故
+ $\{T<t\}=\bigcup_{q\in[0,t)\cap\Q}\{T\le q\}$，而每个 $\{T\le q\}\in\F_q\subseteq\F_t$。
+ 
+-\textbf{(2)} 对常数 $T\equiv t$，$\{T\le s\}$ 是 $\varnothing$ 或 $\Omega$。对停时 $T$ 及 $s\ge0$，$s<t$ 时 $\{T+t\le s\}=\varnothing$，
++\textbf{(2)} 对常数 $T\equiv t$，$\{T\le s\}$ 是 $\varnothing$ 或 $\Omega$。对停时 $T$ 及 $s\in[0,\infty)$，$s<t$ 时 $\{T+t\le s\}=\varnothing$，
+ $s\ge t$ 时 $\{T+t\le s\}=\{T\le s-t\}\in\F_{s-t}\subseteq\F_s$。
+ 
+-\textbf{(3)} 固定一条样本路径。集合 $\{s\in[0,\infty):B_s(\omega)=a\}$（$s$ 不取 $\infty$）是连续函数 $s\mapsto B_s(\omega)$ 下 $\{a\}$ 的原像，故为 $[0,\infty)$ 的闭子集。由约定 $\inf\varnothing=\infty$，该集合非空当且仅当 $T_a(\omega)<\infty$；而 $[0,\infty)$ 的非空闭子集包含其下确界，故 $T_a(\omega)<\infty$ 时 $T_a(\omega)$ 属于该集合，即 $B_{T_a(\omega)}(\omega)=a$。
+-由此及连续函数在紧集上取到下确界，对 $t\ge0$，
++\textbf{(3)} 固定 $\omega$。集合 $\{s\in[0,\infty):B_s(\omega)=a\}$ 是闭集 $\{a\}$ 在连续函数 $s\mapsto B_s(\omega)$ 下的原像，
++故为 $[0,\infty)$ 的闭子集；它非空当且仅当 $T_a(\omega)<\infty$，此时它包含其下确界 $T_a(\omega)$，即 $B_{T_a(\omega)}(\omega)=a$。
++由此及连续函数在紧集上取到最小值，对 $t\in[0,\infty)$，
+ \[
+   \{T_a\le t\}=\Bigl\{\inf_{0\le s\le t}\abs{B_s-a}=0\Bigr\}.
+ \]
+-与\cref{rem:sup-measurability} 同理，右端的下确界可限制在 $[0,t]\cap(\Q\cup\{t\})$ 上，故该事件属于 $\F_t$。
++与\cref{rem:sup-measurability} 同理，右端的下确界可限制在 $[0,t]\cap\Q$ 上（它在 $[0,t]$ 中稠密），故该事件属于 $\F_t$。
+ \end{proof}
+ 
+ \begin{definition}[停时前的 $\sigma$ 代数]
+ \label{def:stopping-time-sigma-algebra}
+ 设 $T$ 是停时。称
+ \[
+-  \F_T:=\bigl\{A\in\F_\infty:A\cap\{T\le t\}\in\F_t,\ \forall\,t\ge0\bigr\}
++  \F_T:=\bigl\{A\in\F_\infty:A\cap\{T\le t\}\in\F_t,\ \forall\,t\in[0,\infty)\bigr\}
+ \]
+ 为 $T$ 之前的过去的 $\sigma$ 代数。
+ \end{definition}
+@@ -2529,10 +2531,10 @@
+ \textbf{(1)} 显然 $\Omega\in\F_T$。若 $A\in\F_T$，则 $A^c\cap\{T\le t\}=\{T\le t\}\setminus(A\cap\{T\le t\})\in\F_t$；
+ 若 $A_n\in\F_T$，则 $(\bigcup_nA_n)\cap\{T\le t\}=\bigcup_n(A_n\cap\{T\le t\})\in\F_t$。
+ 
+-\textbf{(2)} 对 $s\ge0$，$\{T\le s\}\in\F_s\subseteq\F_\infty$，且 $\{T\le s\}\cap\{T\le t\}=\{T\le s\wedge t\}\in\F_{s\wedge t}\subseteq\F_t$，
+-故 $\{T\le s\}\in\F_T$。由于区间族 $\{[0,s]:s\ge0\}$ 生成 $[0,\infty]$ 上的 Borel $\sigma$ 代数，取值于 $[0,\infty]$ 的映射可测当且仅当对每个 $s\ge0$ 有 $\{T\le s\}$ 可测\cite[定理 1.3.1]{Durrett2019}\cite[\S1.4.3]{Tao2011}，故 $T$ 是 $\F_T$ 可测的。
++\textbf{(2)} 对 $s\in[0,\infty)$，$\{T\le s\}\in\F_s\subseteq\F_\infty$，且 $\{T\le s\}\cap\{T\le t\}=\{T\le s\wedge t\}\in\F_{s\wedge t}\subseteq\F_t$，
++故 $\{T\le s\}\in\F_T$。由于区间族 $\{[0,s]:s\in[0,\infty)\}$ 生成 $[0,\infty]$ 上的 Borel $\sigma$ 代数，取值于 $[0,\infty]$ 的映射可测当且仅当对每个 $s\in[0,\infty)$ 有 $\{T\le s\}$ 可测\cite[定理 1.3.1]{Durrett2019}\cite[\S1.4.3]{Tao2011}，故 $T$ 是 $\F_T$ 可测的。
+ 
+-\textbf{(3)} 先证：对每个 $s\ge0$，$B_s\ind{\{s\le T\}}$ 是 $\F_T$ 可测的。它显然 $\F_\infty$ 可测。设 $A\in\B(\R)$ 且 $0\notin A$
++\textbf{(3)} 先证：对每个 $s\in[0,\infty)$，$B_s\ind{\{s\le T\}}$ 是 $\F_T$ 可测的。它显然 $\F_\infty$ 可测。设 $A\in\B(\R)$ 且 $0\notin A$
+ （$0\in A$ 时考虑补集即可），则
+ \[
+   \bigl\{B_s\ind{\{s\le T\}}\in A\bigr\}\cap\{T\le t\}=
+@@ -2558,23 +2560,23 @@
+   $X_n(\omega)=B_{T_n(\omega)}(\omega)$，其中 $T_n:=2^{-n}\floor{2^nT}\in(T-2^{-n},T]$。于是 $T_n(\omega)\to T(\omega)$，
+   由样本路径 $s\mapsto B_s(\omega)$ 的连续性，$X_n(\omega)\to B_{T(\omega)}(\omega)$。
+ \end{itemize}
+-因此 $\ind{\{T<\infty\}}B_T=\lim_nX_n$ 是 $\F_T$ 可测函数的逐点极限，从而是 $\F_T$ 可测的\cite[\S1.3]{Durrett2019}。
++因此 $\ind{\{T<\infty\}}B_T=\lim_nX_n$ 是 $\F_T$ 可测函数的逐点极限，从而是 $\F_T$ 可测的。
+ \end{proof}
+ 
+-由\cref{prop:stopping-time-basics}~(2) 与\cref{prop:stopping-sigma-basics}~(3)，对停时 $T$ 及 $t\ge0$，
++由\cref{prop:stopping-time-basics}~(2) 与\cref{prop:stopping-sigma-basics}~(3)，对停时 $T$ 及 $t\in[0,\infty)$，
+ $\ind{\{T<\infty\}}(B_{T+t}-B_T)=\ind{\{T+t<\infty\}}B_{T+t}-\ind{\{T<\infty\}}B_T$ 是随机变量。
+ 
+ \begin{theorem}[强马尔可夫性]
+ \label{thm:strong-markov}
+-设 $T$ 是停时，$\Prob(T<\infty)>0$。对 $t\ge0$，令
++设 $T$ 是停时，$\Prob(T<\infty)>0$。对 $t\in[0,\infty)$，令
+ \[
+   B^{(T)}_t:=\ind{\{T<\infty\}}(B_{T+t}-B_T).
+ \]
+-则在概率测度 $\Prob(\,\cdot\mid T<\infty)$ 下，$B^{(T)}=(B^{(T)}_t)_{t\ge0}$ 是与 $\F_T$ 独立的布朗运动。
++则在概率测度 $\Prob(\,\cdot\mid T<\infty)$ 下，$B^{(T)}=(B^{(T)}_t)_{t\in[0,\infty)}$ 是与 $\F_T$ 独立的布朗运动。
+ \end{theorem}
+ 
+ \begin{proof}
+-记 $\Prob^*:=\Prob(\,\cdot\mid T<\infty)$。固定 $0\le t_1<\cdots<t_p$，$\xi\in\R^p$，令 $F(x):=e^{\iu\inner{\xi}{x}}$（$x\in\R^p$），
++记 $\Prob^*:=\Prob(\,\cdot\mid T<\infty)$，$\E^*$ 为相应的期望。固定 $0\le t_1<\cdots<t_p$，$\xi\in\R^p$，令 $F(x):=e^{\iu\inner{\xi}{x}}$（$x\in\R^p$），
+ 对过程 $Z$ 记 $Z_{\bm t}:=(Z_{t_1},\ldots,Z_{t_p})$。
+ 
+ \textbf{第一步：关键等式。} 我们证明：对每个 $A\in\F_T$，
+@@ -2582,7 +2584,7 @@
+   \label{eq:strong-markov-key}
+   \E\bigl[\ind{A\cap\{T<\infty\}}F(B^{(T)}_{\bm t})\bigr]=\Prob(A\cap\{T<\infty\})\,\E\bigl[F(B_{\bm t})\bigr].
+ \end{equation}
+-对 $n\ge1$，令 $T_n:=2^{-n}\ceil{2^nT}$（$T=\infty$ 时 $T_n:=\infty$），它是 $[T,\infty)$ 中形如 $k2^{-n}$（$k\in\Z_+$）的最小数。
++对 $n\ge1$，令 $T_n:=2^{-n}\ceil{2^nT}$（$T=\infty$ 时 $T_n:=\infty$），它是 $[T,\infty)$ 中形如 $k2^{-n}$（$k=0,1,2,\ldots$）的最小数。
+ 在 $\{T<\infty\}$ 上 $T_n\downarrow T$，由样本路径的连续性，$B_{T_n+t_i}-B_{T_n}\to B_{T+t_i}-B_T$。又 $\abs{F}=1$，由控制收敛定理（它也保证求和与期望可交换），
+ \[
+   \E\bigl[\ind{A\cap\{T<\infty\}}F(B^{(T)}_{\bm t})\bigr]
+@@ -2605,7 +2607,7 @@
+ \textbf{\boldmath 第三步：与 $\F_T$ 独立。}
+ 设 $A\in\F_T$，$\Prob^*(A)>0$。由\cref{eq:strong-markov-key} 及第二步，$B^{(T)}_{\bm t}$ 在 $\Prob^*(\,\cdot\mid A)$ 下与在 $\Prob^*$ 下有相同的特征函数，
+ 故 $\Prob^*(A\cap\{B^{(T)}_{\bm t}\in C\})=\Prob^*(A)\Prob^*(B^{(T)}_{\bm t}\in C)$ 对一切 $C\in\B(\R^p)$ 成立；$\Prob^*(A)=0$ 时此式显然。
+-与\cref{thm:blumenthal} 证明的第二步相同，由 $\pi$--$\lambda$ 定理，$\F_T$ 与 $\sigma(B^{(T)}_t:t\ge0)$ 在 $\Prob^*$ 下独立。
++与\cref{thm:blumenthal} 证明的第二步相同，由 $\pi$--$\lambda$ 定理，$\F_T$ 与 $\sigma(B^{(T)}_t:t\in[0,\infty))$ 在 $\Prob^*$ 下独立。
+ \end{proof}
+ 
+ \begin{remark}
+@@ -2619,7 +2621,7 @@
+ 
+ \begin{theorem}[反射原理]
+ \label{thm:reflection-principle}
+-对 $t>0$，令 $S_t:=\sup_{0\le s\le t}B_s$。则对 $a\ge0$ 及 $b\le a$，
++对 $t\in(0,\infty)$，令 $S_t:=\sup_{0\le s\le t}B_s$。则对 $a\ge0$ 及 $b\le a$，
+ \[
+   \Prob(S_t\ge a,\ B_t\le b)=\Prob(B_t\ge2a-b).
+ \]
+@@ -2637,15 +2639,16 @@
+ \]
+ 其中
+ \[
+-  H:=\bigl\{(s,w)\in[0,\infty]\times C(\R_+,\R):s\le t,\ w(t-s)\le b-a\bigr\}\in\B([0,\infty])\otimes\mathscr C.\footnote{%
++  H:=\bigl\{(s,w)\in[0,\infty]\times C(\R_+,\R):s\le t,\ w(t-s)\le b-a\bigr\}
++\]
++是 $\B([0,\infty])\otimes\mathscr C$ 中的可测集。\footnote{%
+   令 $\Psi(s,w):=w((t-s)^+)$。对 $n\ge1$，$\Psi_n(s,w):=\sum_{k\ge0}\ind{\{2^{-n}\ceil{2^ns}=k2^{-n}\}}(s)\,w((t-k2^{-n})^+)$
+   （$s<\infty$）是乘积可测的，且由 $w$ 的连续性，$\Psi_n\to\Psi$ 逐点成立，故 $\Psi$ 乘积可测，
+   从而 $H=\{s\le t\}\cap\{\Psi\le b-a\}$ 可测。}
+-\]
+ 
+ \textbf{\boldmath 第二步：$(T_a,B')$ 与 $(T_a,-B')$ 同分布。}
+ 由\cref{thm:strong-markov}，$B'$ 是与 $\F_{T_a}$ 独立的布朗运动；由\cref{prop:stopping-sigma-basics}~(2)，$T_a$ 是 $\F_{T_a}$ 可测的，
+-故 $B'$ 与 $T_a$ 独立。$-B'$ 也是布朗运动（\cref{prop:brownian-invariances}），且 $\sigma(-B')=\sigma(B')$，故 $-B'$ 也与 $T_a$ 独立。
++故 $B'$ 与 $T_a$ 独立。$-B'$ 也是布朗运动（\cref{prop:brownian-invariances}~(1)），且 $\sigma(-B')=\sigma(B')$，故 $-B'$ 也与 $T_a$ 独立。
+ 由\cref{lem:sample-path-map-measurable}，$B'$ 与 $-B'$ 都是 $C(\R_+,\R)$ 值随机元。对 $\Gamma\in\B([0,\infty])$ 及 $A\in\mathscr C$，
+ 由独立性及\cref{thm:wiener-measure-uniqueness}，
+ \[
+@@ -2717,11 +2720,11 @@
+   \label{fig:reflection-principle}
+ \end{figure}
+ 
+-由反射原理可以写出 $(S_t,B_t)$ 的联合密度。下面记 $p_t(x):=(2\pi t)^{-1/2}e^{-x^2/(2t)}$ 为 $\Normal(0,t)$ 的密度。
++由反射原理可以写出 $(S_t,B_t)$ 的联合密度。仍记 $p_t$ 为 $\Normal(0,t)$ 的密度（\cref{sec:pre-brownian-motion}）。
+ 
+ \begin{proposition}[$(S_t,B_t)$ 的联合密度]
+ \label{prop:max-joint-density}
+-对 $t>0$，$(S_t,B_t)$ 的分布具有密度
++对 $t\in(0,\infty)$，$(S_t,B_t)$ 的分布具有密度
+ \begin{equation}
+   \label{eq:max-joint-density}
+   g(a,b)=\frac{2(2a-b)}{\sqrt{2\pi t^3}}\exp\!\left(-\frac{(2a-b)^2}{2t}\right)\ind{\{a>0,\ b<a\}}
+@@ -2732,20 +2735,22 @@
+ \begin{proof}
+ 记 $\mu$ 为 $(S_t,B_t)$ 的分布，$\nu$ 为以 $g$ 为密度的测度。集合 $[a,\infty)\times C$（$a\in\R$，$C\in\B(\R)$）构成生成 $\B(\R^2)$ 的 $\pi$ 系统，
+ 由 $\pi$--$\lambda$ 定理，只需证明 $\mu$ 与 $\nu$ 在这些集合上相等。由于 $S_t\ge0$ 几乎处处且 $g$ 在 $\{a\le0\}$ 上为零，可设 $a\ge0$。
+-\begin{enumerate}
+-  \item 计算 $\mu$。若 $C\subseteq(-\infty,a]$，由\cref{thm:reflection-principle}，对 $b\le a$ 有
+-    $\Prob(S_t\ge a,B_t\le b)=\Prob(2a-B_t\le b)$，两个 $(-\infty,a]$ 上的有限测度 $\Prob(S_t\ge a,B_t\in\cdot\,)$ 与 $\Prob(2a-B_t\in\cdot\,)$
+-    在半直线 $(-\infty,b]$（$b\le a$）上相等，故相等，即 $\mu([a,\infty)\times C)=\int_Cp_t(2a-b)\,\dd b$。若 $C\subseteq(a,\infty)$，
+-    则 $\{B_t\in C\}\subseteq\{S_t\ge a\}$，故 $\mu([a,\infty)\times C)=\int_Cp_t(b)\,\dd b$。合起来，
+-    \[
+-      \mu([a,\infty)\times C)=\int_Cp_t\bigl(2(a\vee b)-b\bigr)\,\dd b.
+-    \]
+-  \item 计算 $\nu$。由 $\frac{\partial}{\partial x}p_t(2x-b)=-\frac{2(2x-b)}{t}p_t(2x-b)$，对任意 $b$，
+-    \[
+-      \int_a^\infty g(x,b)\,\dd x=\int_{a\vee b\vee0}^\infty\frac{2(2x-b)}{t}p_t(2x-b)\,\dd x=p_t\bigl(2(a\vee b)-b\bigr)\qquad(a\ge0),
+-    \]
+-    由 Tonelli 定理，$\nu([a,\infty)\times C)=\int_Cp_t(2(a\vee b)-b)\,\dd b$。\qedhere
+-\end{enumerate}
++
++\textbf{\boldmath 第一步：计算 $\mu$。}
++若 $C\subseteq(-\infty,a]$，由\cref{thm:reflection-principle}，对 $b\le a$ 有 $\Prob(S_t\ge a,B_t\le b)=\Prob(2a-B_t\le b)$，
++即 $(-\infty,a]$ 上的两个有限测度 $\Prob(S_t\ge a,B_t\in\cdot\,)$ 与 $\Prob(2a-B_t\in\cdot\,)$ 在半直线 $(-\infty,b]$（$b\le a$）上相等，
++从而相等；而 $2a-B_t$ 的密度为 $p_t(2a-\cdot\,)$，故 $\mu([a,\infty)\times C)=\int_Cp_t(2a-b)\,\dd b$。若 $C\subseteq(a,\infty)$，
++则 $\{B_t\in C\}\subseteq\{S_t\ge a\}$，故 $\mu([a,\infty)\times C)=\int_Cp_t(b)\,\dd b$。对一般的 $C$ 分成这两部分，得
++\[
++  \mu([a,\infty)\times C)=\int_Cp_t\bigl(2(a\vee b)-b\bigr)\,\dd b.
++\]
++
++\textbf{\boldmath 第二步：计算 $\nu$。}
++由 $\frac{\partial}{\partial x}p_t(2x-b)=-\frac{2(2x-b)}{t}p_t(2x-b)$，对任意 $b\in\R$（注意 $a\ge0$），
++\[
++  \int_a^\infty g(x,b)\,\dd x=\int_{a\vee b}^\infty\frac{2(2x-b)}{t}p_t(2x-b)\,\dd x=p_t\bigl(2(a\vee b)-b\bigr).
++\]
++由 Tonelli 定理，$\nu([a,\infty)\times C)=\int_Cp_t\bigl(2(a\vee b)-b\bigr)\,\dd b$，与第一步的结果相同。
+ \end{proof}
+ 
+ \begin{corollary}[首中时的分布]
+@@ -2757,12 +2762,12 @@
+ \end{corollary}
+ 
+ \begin{proof}
+-由\cref{prop:brownian-invariances}~(2)，$B_t\deq\sqrt t\,B_1$。对 $t>0$，由\cref{thm:reflection-principle} 证明的第一步及该定理，
++由于 $B_t\sim\Normal(0,t)$，有 $B_t\deq\sqrt t\,B_1$。对 $t\in(0,\infty)$，由\cref{thm:reflection-principle} 证明的第一步及该定理，
+ \[
+   \Prob(T_a\le t)=\Prob(S_t\ge a)=\Prob(\abs{B_t}\ge a)=\Prob(tB_1^2\ge a^2)=\Prob\Bigl(\frac{a^2}{B_1^2}\le t\Bigr),
+ \]
+ 最后一步用到 $B_1\ne0$ 几乎处处。$t=0$ 时两端都为 $0$（$T_a=0$ 当且仅当 $B_0=a$）。二者都是非负随机变量且分布函数相同，故同分布。
+-记 $\varphi$ 为标准高斯密度，则对 $t>0$，$F(t):=\Prob(a^2/B_1^2\le t)=2\int_{a/\sqrt t}^\infty\varphi(x)\,\dd x$ 连续可微，
++对 $t\in(0,\infty)$，$F(t):=\Prob(a^2/B_1^2\le t)=2\int_{a/\sqrt t}^\infty\varphi(x)\,\dd x$ 连续可微，
+ $F'(t)=2\varphi(a/\sqrt t)\cdot\frac a2t^{-3/2}=f(t)$，且 $F(0+)=0$，故 $F(t)=\int_0^tf(s)\,\dd s$。
+ \end{proof}
+ 
+@@ -2775,7 +2780,7 @@
+ 
+ \begin{definition}[任意初值的实布朗运动]
+ \label{def:brownian-motion-initial}
+-设 $Z$ 是实随机变量。若过程 $(X_t)_{t\ge0}$ 可以写成 $X_t=Z+B_t$，其中 $B$ 是从 $0$ 出发、与 $Z$ 独立的实布朗运动，
++设 $Z$ 是实随机变量。若过程 $(X_t)_{t\in[0,\infty)}$ 可以写成 $X_t=Z+B_t$，其中 $B$ 是从 $0$ 出发、与 $Z$ 独立的实布朗运动，
+ 则称 $X$ 是从 $Z$ 出发的实布朗运动。
+ \end{definition}
+ 
+@@ -2793,10 +2798,10 @@
+   \item 与 Wiener 测度的定义类似，$d$ 维 Wiener 测度定义为从 $0$ 出发的 $d$ 维布朗运动在 $C(\R_+,\R^d)$ 上的分布；
+     \cref{prop:canonical-brownian-motion} 的典范构造也适用于 $d$ 维布朗运动。
+   \item 前面的许多结论可以推广到任意初值的 $d$ 维布朗运动。特别地，\cref{prop:brownian-invariances} 中的不变性在作相应修改后仍成立，
+-    且对称性可推广为：若 $X$ 是 $d$ 维布朗运动，$\Phi$ 是 $\R^d$ 的等距变换，则 $(\Phi(X_t))_{t\ge0}$ 仍是 $d$ 维布朗运动。
++    且对称性可推广为：若 $X$ 是 $d$ 维布朗运动，$\Phi$ 是 $\R^d$ 的等距变换，则 $(\Phi(X_t))_{t\in[0,\infty)}$ 仍是 $d$ 维布朗运动。
+   \item Wiener 测度的构造与 Blumenthal 零一律都容易推广；强马尔可夫性也成立：仿照\cref{thm:strong-markov} 的证明可知，
+     若 $T$ 是（按\cref{def:stopping-time} 显然推广的意义下的）停时且 $\Prob(T<\infty)>0$，则在 $\Prob(\,\cdot\mid T<\infty)$ 下，
+-    $X^{(T)}_t:=X_{T+t}-X_T$（$t\ge0$）是从 $0$ 出发、与 $\F_T$ 独立的 $d$ 维布朗运动。
++    $X^{(T)}_t:=X_{T+t}-X_T$（$t\in[0,\infty)$）是从 $0$ 出发、与 $\F_T$ 独立的 $d$ 维布朗运动。
+ \end{enumerate}
+ \end{remark}
+ 
