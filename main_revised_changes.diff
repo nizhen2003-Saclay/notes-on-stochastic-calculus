@@ -1,5 +1,5 @@
 --- orig.tex	2026-10-20 14:23:17.352367241 +0000
-+++ main_revised.tex	2026-10-20 14:58:53.298454729 +0000
++++ main_revised.tex	2026-10-21 14:22:56.817534109 +0000
 @@ -177,6 +177,11 @@
  \Crefname{exercise}{练习}{练习}
  \Crefname{remark}{注记}{注记}
@@ -358,7 +358,16 @@
  \section{布朗运动样本路径的性质}
  \label{sec:brownian-path-properties}
  
-@@ -2295,16 +2293,16 @@
+@@ -2137,6 +2135,8 @@
+ \[
+   \F_t:=\F_t^B=\sigma(B_s:0\le s\le t).
+ \]
++给定 $t\in[0,\infty)$，对任意 $s\in[0,t]$ 和 $a\in\R$，考虑所有形如“布朗运动在时刻 $s$ 的位置不超过 $a$”的事件，
++$\F_t$ 恰为这些事件生成的事件域。
+ 当 $s\le t$ 时 $\F_s\subseteq\F_t$。再令
+ \[
+   \F_{0+}:=\bigcap_{s>0}\F_s.
+@@ -2295,16 +2295,16 @@
  固定 $A\in\F_{0+}$。
  
  \textbf{\boldmath 第一步：$\F_{0+}$ 与 $(B_{t_1},\ldots,B_{t_k})$ 独立。}
@@ -382,7 +391,7 @@
  $\Prob(\,\cdot\mid A)$ 下与在 $\Prob$ 下有相同的特征函数，由\cref{thm:characteristic-uniqueness}，二者分布相同，即
  $\Prob(A\cap\{Y\in C\})=\Prob(A)\Prob(Y\in C)$ 对一切 $C\in\B(\R^k)$ 成立；$\Prob(A)=0$ 时此式显然。
  
-@@ -2316,13 +2314,14 @@
+@@ -2316,13 +2316,14 @@
  $\sigma(B_t:t>0)=\sigma(B_t:t\ge0)\supseteq\F_1\supseteq\F_{0+}\ni A$。于是 $A$ 与自身独立，$\Prob(A)=\Prob(A)^2$，即 $\Prob(A)\in\{0,1\}$。
  \end{proof}
  
@@ -401,7 +410,7 @@
  \end{remark}
  
  \begin{proposition}[布朗运动在 $0$ 附近与无穷远处的振荡]
-@@ -2333,11 +2332,11 @@
+@@ -2333,11 +2334,11 @@
        \sup_{0\le s\le\varepsilon}B_s>0,\qquad\inf_{0\le s\le\varepsilon}B_s<0.
      \]
    \item 几乎处处，$\sup_{t\ge0}B_t=+\infty$，$\inf_{t\ge0}B_t=-\infty$。因此几乎处处，
@@ -416,7 +425,7 @@
  \end{enumerate}
  \end{proposition}
  
-@@ -2353,13 +2352,13 @@
+@@ -2353,17 +2354,14 @@
  \]
  其中不等号是因为对每个 $p$ 有 $\{B_{\varepsilon_p}>0\}\subseteq\{\sup_{0\le s\le\varepsilon_p}B_s>0\}$，而 $B_{\varepsilon_p}\sim\Normal(0,\varepsilon_p)$ 的分布关于 $0$ 对称且无原子，故 $\Prob(B_{\varepsilon_p}>0)=\frac12$。由\cref{thm:blumenthal}，$\Prob(A)=1$。
  在 $A$ 上，对任意 $\varepsilon>0$ 取 $\varepsilon_p\le\varepsilon$，即得 $\sup_{0\le s\le\varepsilon}B_s\ge\sup_{0\le s\le\varepsilon_p}B_s>0$。
@@ -424,16 +433,23 @@
 +由\cref{prop:brownian-invariances}~(1)，$-B$ 也是布朗运动，对它应用上述结论即得关于下确界的断言。
  
 -\textbf{(2)} 思路是：由 (1)，$\Prob(\sup_{0\le s\le1}B_s>\delta)\to1$（$\delta\downarrow0$），即在固定时间内越过一个很小的水平几乎必然发生；
-+\textbf{(2)} 思路是：由 (1)，$\Prob(\sup_{0\le s\le1}B_s>\delta)\to1$（$\delta\downarrow0$），即在固定时间内越过一个很小的水平的概率接近 $1$；
- 而尺度不变性把空间放大 $1/\lambda$ 倍、时间放大 $1/\lambda^2$ 倍后得到的仍是布朗运动，因此“在时间 $1$ 内越过水平 $\delta$”与
- “在时间 $1/\lambda^2$ 内越过水平 $\delta/\lambda$”概率相同。取 $\lambda:=\delta/M$，便把小水平 $\delta$ 变成任意给定的大水平 $M$。
- 
+-而尺度不变性把空间放大 $1/\lambda$ 倍、时间放大 $1/\lambda^2$ 倍后得到的仍是布朗运动，因此“在时间 $1$ 内越过水平 $\delta$”与
+-“在时间 $1/\lambda^2$ 内越过水平 $\delta/\lambda$”概率相同。取 $\lambda:=\delta/M$，便把小水平 $\delta$ 变成任意给定的大水平 $M$。
+-
 -具体地，固定 $M>0$ 及 $\delta>0$，令 $\lambda:=\delta/M$。由\cref{prop:brownian-invariances}，$B^\lambda_u=\lambda^{-1}B_{\lambda^2u}$
-+具体地，固定 $M>0$ 及 $\delta>0$，令 $\lambda:=\delta/M$。由\cref{prop:brownian-invariances}~(2)，$B^\lambda_u=\lambda^{-1}B_{\lambda^2u}$
- 定义的 $B^\lambda$ 是布朗运动，且 $B_s=\lambda B^\lambda_{s/\lambda^2}$。令 $s=\lambda^2u$，则 $s\in[0,1]$ 当且仅当 $u\in[0,M^2/\delta^2]$，
- 而 $B_s>\delta$ 当且仅当 $B^\lambda_u>\delta/\lambda=M$，故
+-定义的 $B^\lambda$ 是布朗运动，且 $B_s=\lambda B^\lambda_{s/\lambda^2}$。令 $s=\lambda^2u$，则 $s\in[0,1]$ 当且仅当 $u\in[0,M^2/\delta^2]$，
+-而 $B_s>\delta$ 当且仅当 $B^\lambda_u>\delta/\lambda=M$，故
++\textbf{(2)} 固定 $M>0$ 及 $\delta>0$，令 $\lambda:=\delta/M$。根据尺度不变性（\cref{prop:brownian-invariances}~(2)），
++$B^\lambda_u:=\lambda^{-1}B_{\lambda^2u}$ 定义的 $B^\lambda$ 是布朗运动。把 $s$ 换成 $\lambda^2u$，并在不等式两边同乘 $\lambda^{-1}$，得
  \[
-@@ -2384,7 +2383,7 @@
+-  \Bigl\{\sup_{0\le s\le1}B_s>\delta\Bigr\}=\Bigl\{\sup_{0\le u\le M^2/\delta^2}B^\lambda_u>M\Bigr\}.
++  \Prob\Bigl(\sup_{0\le s\le1}B_s>\delta\Bigr)
++  =\Prob\Bigl(\sup_{0\le\lambda^2u\le1}\lambda^{-1}B_{\lambda^2u}>\lambda^{-1}\delta\Bigr)
++  =\Prob\Bigl(\sup_{0\le u\le M^2/\delta^2}B^\lambda_u>M\Bigr).
+ \]
+ 集合 $\{w:\sup_{0\le u\le M^2/\delta^2}w(u)>M\}$ 属于 $\mathscr C$（\cref{rem:sup-measurability}），由\cref{thm:wiener-measure-uniqueness}，
+ 它在 $B^\lambda$ 与 $B$ 下的概率相同，故
+@@ -2384,7 +2382,7 @@
  \end{corollary}
  
  \begin{proof}
@@ -442,7 +458,7 @@
  \cref{prop:brownian-oscillation}~(1)，并对可数个 $q$ 去掉相应的零测集，得：几乎处处，对每个有理数 $q\ge0$ 及每个 $\varepsilon>0$，
  \[
    \sup_{q\le t\le q+\varepsilon}B_t>B_q,\qquad\inf_{q\le t\le q+\varepsilon}B_t<B_q.
-@@ -2432,16 +2431,8 @@
+@@ -2432,16 +2430,8 @@
  \end{corollary}
  
  \begin{proof}
@@ -461,7 +477,7 @@
  $S_n\Lpto{2}t$。$L^2$ 收敛蕴含依概率收敛（Markov 不等式），从而存在子列 $n_k$，使得事件
  \[
    \Omega_t:=\Bigl\{\omega\in\Omega:\lim_{k\to\infty}S_{n_k}(\omega)=t\Bigr\}
-@@ -2453,7 +2444,18 @@
+@@ -2453,7 +2443,18 @@
  \]
  样本路径在 $[0,t]$ 上一致连续，而分割的步长 $t2^{-n_k}\to0$，故括号内的最大值趋于 $0$。若 $B_\bullet(\omega)$ 在 $[0,t]$ 上的变差 $V$ 有限，
  则右端不超过 $V$ 乘以趋于 $0$ 的量，从而 $S_{n_k}(\omega)\to0$，与 $\omega\in\Omega_t$、$t>0$ 矛盾。
@@ -481,7 +497,7 @@
  \end{proof}
  
  因此，不能把积分 $\int_0^tf(s)\,\dd B_s$ 当作关于有限变差函数的通常（Stieltjes）积分的特例来逐条路径地定义；
-@@ -2463,22 +2465,21 @@
+@@ -2463,22 +2464,21 @@
  \label{sec:strong-markov}
  
  本节的目标是把简单马尔可夫性（\cref{prop:brownian-invariances}~(3)）推广到把确定时刻 $s$ 换成随机时刻 $T$ 的情形。
@@ -511,7 +527,7 @@
  \end{enumerate}
  \end{proposition}
  
-@@ -2486,22 +2487,23 @@
+@@ -2486,26 +2486,30 @@
  \textbf{(1)} 若 $T(\omega)<t$，则存在有理数 $q\in[T(\omega),t)$，故
  $\{T<t\}=\bigcup_{q\in[0,t)\cap\Q}\{T\le q\}$，而每个 $\{T\le q\}\in\F_q\subseteq\F_t$。
  
@@ -531,16 +547,25 @@
 +与\cref{rem:sup-measurability} 同理，右端的下确界可限制在 $[0,t]\cap\Q$ 上（它在 $[0,t]$ 中稠密），故该事件属于 $\F_t$。
  \end{proof}
  
- \begin{definition}[停时前的 $\sigma$ 代数]
+-\begin{definition}[停时前的 $\sigma$ 代数]
++\begin{definition}[截至停时的 $\sigma$ 代数]
  \label{def:stopping-time-sigma-algebra}
  设 $T$ 是停时。称
  \[
 -  \F_T:=\bigl\{A\in\F_\infty:A\cap\{T\le t\}\in\F_t,\ \forall\,t\ge0\bigr\}
-+  \F_T:=\bigl\{A\in\F_\infty:A\cap\{T\le t\}\in\F_t,\ \forall\,t\in[0,\infty)\bigr\}
++  \F_T:=\bigl\{A\in\F_\infty:\text{对每个}\ t\in[0,\infty)\ \text{都有}\ A\cap\{T\le t\}\in\F_t\bigr\}
  \]
- 为 $T$ 之前的过去的 $\sigma$ 代数。
+-为 $T$ 之前的过去的 $\sigma$ 代数。
++为截至停时 $T$ 的 $\sigma$ 代数。
  \end{definition}
-@@ -2529,10 +2531,10 @@
+ 
++直观来讲，对于 $\F_T$ 中的一个事件 $A$，无论选取哪个有限时刻 $t\in[0,\infty)$，把 $A$ 中那些“停止时刻不晚于 $t$”的样本单独取出来，
++则取出的这一组样本构成的事件仍然属于 $\F_t$。
++
+ 对停时 $T$，定义实随机变量
+ \[
+   \ind{\{T<\infty\}}B_T(\omega):=
+@@ -2529,10 +2533,10 @@
  \textbf{(1)} 显然 $\Omega\in\F_T$。若 $A\in\F_T$，则 $A^c\cap\{T\le t\}=\{T\le t\}\setminus(A\cap\{T\le t\})\in\F_t$；
  若 $A_n\in\F_T$，则 $(\bigcup_nA_n)\cap\{T\le t\}=\bigcup_n(A_n\cap\{T\le t\})\in\F_t$。
  
@@ -554,7 +579,7 @@
  （$0\in A$ 时考虑补集即可），则
  \[
    \bigl\{B_s\ind{\{s\le T\}}\in A\bigr\}\cap\{T\le t\}=
-@@ -2558,23 +2560,23 @@
+@@ -2558,23 +2562,23 @@
    $X_n(\omega)=B_{T_n(\omega)}(\omega)$，其中 $T_n:=2^{-n}\floor{2^nT}\in(T-2^{-n},T]$。于是 $T_n(\omega)\to T(\omega)$，
    由样本路径 $s\mapsto B_s(\omega)$ 的连续性，$X_n(\omega)\to B_{T(\omega)}(\omega)$。
  \end{itemize}
@@ -583,7 +608,7 @@
  对过程 $Z$ 记 $Z_{\bm t}:=(Z_{t_1},\ldots,Z_{t_p})$。
  
  \textbf{第一步：关键等式。} 我们证明：对每个 $A\in\F_T$，
-@@ -2582,7 +2584,7 @@
+@@ -2582,7 +2586,7 @@
    \label{eq:strong-markov-key}
    \E\bigl[\ind{A\cap\{T<\infty\}}F(B^{(T)}_{\bm t})\bigr]=\Prob(A\cap\{T<\infty\})\,\E\bigl[F(B_{\bm t})\bigr].
  \end{equation}
@@ -592,7 +617,7 @@
  在 $\{T<\infty\}$ 上 $T_n\downarrow T$，由样本路径的连续性，$B_{T_n+t_i}-B_{T_n}\to B_{T+t_i}-B_T$。又 $\abs{F}=1$，由控制收敛定理（它也保证求和与期望可交换），
  \[
    \E\bigl[\ind{A\cap\{T<\infty\}}F(B^{(T)}_{\bm t})\bigr]
-@@ -2605,7 +2607,7 @@
+@@ -2605,7 +2609,7 @@
  \textbf{\boldmath 第三步：与 $\F_T$ 独立。}
  设 $A\in\F_T$，$\Prob^*(A)>0$。由\cref{eq:strong-markov-key} 及第二步，$B^{(T)}_{\bm t}$ 在 $\Prob^*(\,\cdot\mid A)$ 下与在 $\Prob^*$ 下有相同的特征函数，
  故 $\Prob^*(A\cap\{B^{(T)}_{\bm t}\in C\})=\Prob^*(A)\Prob^*(B^{(T)}_{\bm t}\in C)$ 对一切 $C\in\B(\R^p)$ 成立；$\Prob^*(A)=0$ 时此式显然。
@@ -601,7 +626,7 @@
  \end{proof}
  
  \begin{remark}
-@@ -2619,7 +2621,7 @@
+@@ -2619,7 +2623,7 @@
  
  \begin{theorem}[反射原理]
  \label{thm:reflection-principle}
@@ -610,7 +635,7 @@
  \[
    \Prob(S_t\ge a,\ B_t\le b)=\Prob(B_t\ge2a-b).
  \]
-@@ -2637,15 +2639,16 @@
+@@ -2637,15 +2641,16 @@
  \]
  其中
  \[
@@ -630,7 +655,7 @@
  由\cref{lem:sample-path-map-measurable}，$B'$ 与 $-B'$ 都是 $C(\R_+,\R)$ 值随机元。对 $\Gamma\in\B([0,\infty])$ 及 $A\in\mathscr C$，
  由独立性及\cref{thm:wiener-measure-uniqueness}，
  \[
-@@ -2717,11 +2720,11 @@
+@@ -2717,11 +2722,11 @@
    \label{fig:reflection-principle}
  \end{figure}
  
@@ -644,7 +669,7 @@
  \begin{equation}
    \label{eq:max-joint-density}
    g(a,b)=\frac{2(2a-b)}{\sqrt{2\pi t^3}}\exp\!\left(-\frac{(2a-b)^2}{2t}\right)\ind{\{a>0,\ b<a\}}
-@@ -2732,20 +2735,22 @@
+@@ -2732,20 +2737,22 @@
  \begin{proof}
  记 $\mu$ 为 $(S_t,B_t)$ 的分布，$\nu$ 为以 $g$ 为密度的测度。集合 $[a,\infty)\times C$（$a\in\R$，$C\in\B(\R)$）构成生成 $\B(\R^2)$ 的 $\pi$ 系统，
  由 $\pi$--$\lambda$ 定理，只需证明 $\mu$ 与 $\nu$ 在这些集合上相等。由于 $S_t\ge0$ 几乎处处且 $g$ 在 $\{a\le0\}$ 上为零，可设 $a\ge0$。
@@ -681,7 +706,7 @@
  \end{proof}
  
  \begin{corollary}[首中时的分布]
-@@ -2757,12 +2762,12 @@
+@@ -2757,12 +2764,12 @@
  \end{corollary}
  
  \begin{proof}
@@ -696,7 +721,7 @@
  $F'(t)=2\varphi(a/\sqrt t)\cdot\frac a2t^{-3/2}=f(t)$，且 $F(0+)=0$，故 $F(t)=\int_0^tf(s)\,\dd s$。
  \end{proof}
  
-@@ -2775,7 +2780,7 @@
+@@ -2775,7 +2782,7 @@
  
  \begin{definition}[任意初值的实布朗运动]
  \label{def:brownian-motion-initial}
@@ -705,7 +730,7 @@
  则称 $X$ 是从 $Z$ 出发的实布朗运动。
  \end{definition}
  
-@@ -2793,10 +2798,10 @@
+@@ -2793,13 +2800,1277 @@
    \item 与 Wiener 测度的定义类似，$d$ 维 Wiener 测度定义为从 $0$ 出发的 $d$ 维布朗运动在 $C(\R_+,\R^d)$ 上的分布；
      \cref{prop:canonical-brownian-motion} 的典范构造也适用于 $d$ 维布朗运动。
    \item 前面的许多结论可以推广到任意初值的 $d$ 维布朗运动。特别地，\cref{prop:brownian-invariances} 中的不变性在作相应修改后仍成立，
@@ -715,6 +740,1283 @@
      若 $T$ 是（按\cref{def:stopping-time} 显然推广的意义下的）停时且 $\Prob(T<\infty)>0$，则在 $\Prob(\,\cdot\mid T<\infty)$ 下，
 -    $X^{(T)}_t:=X_{T+t}-X_T$（$t\ge0$）是从 $0$ 出发、与 $\F_T$ 独立的 $d$ 维布朗运动。
 +    $X^{(T)}_t:=X_{T+t}-X_T$（$t\in[0,\infty)$）是从 $0$ 出发、与 $\F_T$ 独立的 $d$ 维布朗运动。
++\end{enumerate}
++\end{remark}
++
++% ==================== 第三章 ====================
++\chapter{滤过与鞅}
++\label{chap:filtrations-martingales}
++
++\section{滤过与过程}
++\label{sec:filtrations-processes}
++
++本章始终固定概率空间 $(\Omega,\F,\Prob)$。本节引入后文反复使用的一些一般概念。
++
++\begin{definition}[滤过]
++\label{def:filtration}
++$(\Omega,\F,\Prob)$ 上的滤过是指以 $[0,\infty]$ 为指标的一族 $\F$ 的子 $\sigma$ 代数 $(\F_t)_{t\in[0,\infty]}$，
++满足：对任意 $0\le s\le t\le\infty$，$\F_s\subseteq\F_t$。此时也称 $(\Omega,\F,(\F_t),\Prob)$ 是带滤过的概率空间。
++\end{definition}
++
++于是对任意 $0\le s<t<\infty$，
++\[
++  \F_0\subseteq\F_s\subseteq\F_t\subseteq\F_\infty\subseteq\F.
++\]
++
++\begin{example}[典范滤过]
++\label{ex:canonical-filtration}
++设 $B$ 是布朗运动。\cref{sec:brownian-path-properties}与\cref{sec:strong-markov}使用的
++\[
++  \F_t=\sigma(B_s:s\in[0,t])\quad(t\in[0,\infty)),\qquad \F_\infty=\sigma(B_s:s\in[0,\infty))
++\]
++就是一个滤过。一般地，对以 $\R_+=[0,\infty)$ 为指标的任意随机过程 $X=(X_t)_{t\in[0,\infty)}$，称
++\[
++  \F^X_t:=\sigma(X_s:s\in[0,t])\quad(t\in[0,\infty)),\qquad \F^X_\infty:=\sigma(X_s:s\in[0,\infty))
++\]
++为 $X$ 的典范滤过。
++\end{example}
++
++\begin{definition}[右连续滤过]
++\label{def:right-continuous-filtration}
++设 $(\F_t)_{t\in[0,\infty]}$ 是滤过。对 $t\in[0,\infty)$ 令
++\[
++  \F_{t+}:=\bigcap_{s\in(t,\infty)}\F_s,
++\]
++并令 $\F_{\infty+}:=\F_\infty$。若对每个 $t\in[0,\infty)$ 都有 $\F_{t+}=\F_t$，则称滤过 $(\F_t)$ 右连续。
++\end{definition}
++
++\begin{proposition}
++\label{prop:right-continuous-regularization}
++设 $(\F_t)_{t\in[0,\infty]}$ 是滤过，则对每个 $t\in[0,\infty]$ 有 $\F_t\subseteq\F_{t+}$；
++$(\F_{t+})_{t\in[0,\infty]}$ 也是滤过，并且是右连续的。
++\end{proposition}
++
++\begin{proof}
++对 $t\in[0,\infty)$ 及任意 $s>t$，$\F_t\subseteq\F_s$，故 $\F_t\subseteq\F_{t+}$；$t=\infty$ 时两者相等。
++若 $0\le s<t<\infty$，取 $r\in(s,t)$，则 $\F_{s+}\subseteq\F_r\subseteq\F_t\subseteq\F_{t+}$；
++又 $\F_{t+}\subseteq\F_\infty=\F_{\infty+}$，故 $(\F_{t+})$ 是滤过。
++最后，对 $t\in[0,\infty)$，
++\[
++  \bigcap_{s\in(t,\infty)}\F_{s+}=\bigcap_{s\in(t,\infty)}\ \bigcap_{r\in(s,\infty)}\F_r=\bigcap_{r\in(t,\infty)}\F_r=\F_{t+},
++\]
++其中第二个等号成立，是因为 $r>t$ 当且仅当存在 $s\in(t,r)$。故 $(\F_{t+})$ 右连续。
++\end{proof}
++
++接下来处理零测集。记 $\mathcal N$ 为全体 $(\F_\infty,\Prob)$ 可略集组成的族：$A\in\mathcal N$ 当且仅当
++存在 $A'\in\F_\infty$ 使 $A\subseteq A'$ 且 $\Prob(A')=0$。可略集本身未必属于 $\F_\infty$；
++为使下文的 $\sigma$ 代数仍是 $\F$ 的子 $\sigma$ 代数，约定 $(\Omega,\F,\Prob)$ 是完备的，
++即 $\F$ 中零测集的子集都属于 $\F$（否则先把它换成其完备化），于是 $\mathcal N\subseteq\F$，且 $\mathcal N$ 中的集合概率为 $0$。
++显然，可略集的子集仍是可略集，可数个可略集的并仍是可略集。
++
++\begin{definition}[完备滤过]
++\label{def:complete-filtration}
++若 $\mathcal N\subseteq\F_0$，则称滤过 $(\F_t)$ 完备。
++\end{definition}
++
++\begin{remark}
++由于 $\F_0\subseteq\F_t$，完备滤过对每个 $t\in[0,\infty]$ 都满足 $\mathcal N\subseteq\F_t$。
++\end{remark}
++
++对 $\sigma$ 代数 $\G_1,\G_2$，记 $\G_1\vee\G_2:=\sigma(\G_1\cup\G_2)$ 为同时包含二者的最小 $\sigma$ 代数。
++
++\begin{lemma}[滤过的完备化]
++\label{lem:filtration-completion}
++设 $(\F_t)_{t\in[0,\infty]}$ 是滤过，对 $t\in[0,\infty]$ 令 $\F'_t:=\F_t\vee\sigma(\mathcal N)$。则：
++\begin{enumerate}[label=(\arabic*)]
++  \item $\F'_t=\{A\subseteq\Omega:\text{存在}\ A'\in\F_t\ \text{使}\ A\,\triangle\,A'\in\mathcal N\}$；
++  \item $(\F'_t)_{t\in[0,\infty]}$ 是完备滤过。
++\end{enumerate}
++\end{lemma}
++
++\begin{proof}
++\textbf{(1)} 记右端为 $\G_t$。若 $A\in\G_t$，取 $A'\in\F_t$ 使 $A\triangle A'\in\mathcal N$。由于对称差满足交换律与结合律，且 $A'\triangle A'=\varnothing$，
++\[
++  A'\triangle(A\triangle A')=(A'\triangle A')\triangle A=\varnothing\triangle A=A .
++\]
++其中 $A'\in\F_t\subseteq\F'_t$，$A\triangle A'\in\mathcal N\subseteq\sigma(\mathcal N)\subseteq\F'_t$，而 $\sigma$ 代数对对称差封闭，故 $A\in\F'_t$。反之，$\G_t$ 包含 $\F_t$（取 $A'=A$）与 $\mathcal N$（取 $A'=\varnothing$）；它对补运算封闭，因为
++$A^c\triangle A'^c=A\triangle A'$；它对可数并封闭，因为 $\bigl(\bigcup_nA_n\bigr)\triangle\bigl(\bigcup_nA'_n\bigr)\subseteq\bigcup_n(A_n\triangle A'_n)$，
++而右端是可略集。故 $\G_t$ 是包含 $\F_t\cup\mathcal N$ 的 $\sigma$ 代数，从而 $\F'_t\subseteq\G_t$。
++
++\textbf{(2)} 单调性由 $(\F_t)$ 的单调性得到。设 $N$ 是 $(\F'_\infty,\Prob)$ 可略集，即 $N\subseteq A$，$A\in\F'_\infty$，$\Prob(A)=0$。
++由 (1)，取 $A'\in\F_\infty$ 使 $A\triangle A'\in\mathcal N$，则 $\Prob(A')=\Prob(A)=0$，且 $N\subseteq A'\cup(A\triangle A')$ 是可略集，
++故 $N\in\mathcal N\subseteq\F'_0$。
++\end{proof}
++
++对随机过程 $X$ 的典范滤过作这样的完备化，所得滤过称为 $X$ 的完备典范滤过；后文会经常使用这一操作。
++
++\begin{remark}
++\label{rem:completed-canonical-filtration}
++\cref{chap:brownian-motion}使用的是布朗运动 $B$ 的典范滤过，那里的结论换成完备典范滤过后仍然成立，
++关键在于添加可略集不改变独立性。事实上，由\cref{lem:filtration-completion}~(1)，对 $A\in\F'_t$ 取 $A'\in\F_t$ 使
++$N:=A\triangle A'\in\mathcal N$，则对任意事件 $G$，$\abs{\ind{A\cap G}-\ind{A'\cap G}}\le\ind N$，故 $\Prob(A\cap G)=\Prob(A'\cap G)$。
++因此，若 $\F_t$ 与某个 $\sigma$ 代数 $\G$ 独立，则 $\F'_t$ 也与 $\G$ 独立。
++\end{remark}
++
++下面转向随机过程。本章的随机过程都以 $\R_+=[0,\infty)$ 为指标，$\B(\R_+)$ 表示 $\R_+$ 的 Borel $\sigma$ 代数，
++对 $t\in[0,\infty)$，$\B([0,t])$ 表示 $[0,t]$ 的 Borel $\sigma$ 代数。
++
++\begin{definition}[可测过程]
++\label{def:measurable-process}
++设 $(E,\mathcal E)$ 是可测空间。若映射
++\[
++  \Omega\times\R_+\to E,\qquad (\omega,t)\mapsto X_t(\omega)
++\]
++关于乘积 $\sigma$ 代数 $\F\otimes\B(\R_+)$ 可测，则称 $E$ 值过程 $X=(X_t)_{t\in[0,\infty)}$ 是可测过程。
++\end{definition}
++
++\begin{proposition}
++\label{prop:measurable-process-marginals}
++若 $X$ 是可测过程，则对每个 $t\in[0,\infty)$，$X_t$ 是 $\F$ 可测的。
++\end{proposition}
++
++\begin{proof}
++固定 $t\in[0,\infty)$，令 $\iota_t:\Omega\to\Omega\times\R_+$，$\iota_t(\omega):=(\omega,t)$。对可测矩形 $F\times\Gamma$（$F\in\F$，$\Gamma\in\B(\R_+)$），
++$\iota_t^{-1}(F\times\Gamma)$ 在 $t\in\Gamma$ 时等于 $F$，否则等于 $\varnothing$，都属于 $\F$。可测矩形生成 $\F\otimes\B(\R_+)$，而在生成元上可测即可测\cite[定理 1.3.1]{Durrett2019}，
++故 $\iota_t$ 是 $\F/\F\otimes\B(\R_+)$ 可测的。$X_t$ 是 $\iota_t$ 与可测映射 $(\omega,t)\mapsto X_t(\omega)$ 的复合，因而 $\F$ 可测。
++\end{proof}
++
++反过来一般不成立。但若 $E$ 是度量空间且样本路径右连续或左连续，则由每个 $X_t$ 都 $\F$ 可测可以推出 $X$ 是可测过程，见\cref{rem:right-continuous-measurable}。
++
++\textbf{本章余下部分固定 $(\Omega,\F,\Prob)$ 上的一个滤过 $(\F_t)_{t\in[0,\infty]}$}，下面引入的概念都依赖于这一滤过的选取。
++
++\begin{definition}[适应过程与循序可测过程]
++\label{def:adapted-progressive}
++设 $X=(X_t)_{t\in[0,\infty)}$ 是取值于可测空间 $(E,\mathcal E)$ 的过程。
++\begin{enumerate}[label=(\arabic*)]
++  \item 若对每个 $t\in[0,\infty)$，$X_t$ 是 $\F_t$ 可测的，则称 $X$ 是适应的。
++  \item 若对每个 $t\in[0,\infty)$，映射
++    \[
++      \Omega\times[0,t]\to E,\qquad (\omega,s)\mapsto X_s(\omega)
++    \]
++    关于 $\F_t\otimes\B([0,t])$ 可测，则称 $X$ 是循序可测的。
++\end{enumerate}
++\end{definition}
++
++\begin{lemma}
++\label{lem:measurable-progressive-basic}
++设 $X=(X_t)_{t\in[0,\infty)}$ 是取值于 $(E,\mathcal E)$ 的过程。
++\begin{enumerate}[label=(\arabic*)]
++  \item 对 $t\in[0,\infty)$ 及 $\F$ 的子 $\sigma$ 代数 $\G$，$\G\otimes\B([0,t])$ 中的集合都属于 $\F\otimes\B(\R_+)$。
++  \item $X$ 是可测过程，当且仅当对每个 $t\in[0,\infty)$，$(\omega,s)\mapsto X_s(\omega)$ 在 $\Omega\times[0,t]$ 上关于 $\F\otimes\B([0,t])$ 可测。
++  \item 循序可测过程既是适应的，也是可测的。
++\end{enumerate}
++\end{lemma}
++
++\begin{proof}
++\textbf{(1)} 令 $\mathcal K:=\{C\subseteq\Omega\times[0,t]:C\in\F\otimes\B(\R_+)\}$。由于 $\Omega\times[0,t]\in\F\otimes\B(\R_+)$，
++$\mathcal K$ 是 $\Omega\times[0,t]$ 上的 $\sigma$ 代数；它包含全体可测矩形 $G\times\Gamma$（$G\in\G\subseteq\F$，$\Gamma\in\B([0,t])\subseteq\B(\R_+)$），
++故包含它们生成的 $\G\otimes\B([0,t])$。
++
++\textbf{(2)} 必要性：包含映射 $\iota:\Omega\times[0,t]\to\Omega\times\R_+$ 把可测矩形 $F\times\Gamma$ 拉回为 $F\times(\Gamma\cap[0,t])$，
++故是 $\F\otimes\B([0,t])/\F\otimes\B(\R_+)$ 可测的\cite[定理 1.3.1]{Durrett2019}，而所论映射是 $(\omega,s)\mapsto X_s(\omega)$ 与 $\iota$ 的复合。
++充分性：对 $\Gamma\in\mathcal E$，
++\[
++  \{(\omega,s)\in\Omega\times\R_+:X_s(\omega)\in\Gamma\}=\bigcup_{n\ge1}\{(\omega,s)\in\Omega\times[0,n]:X_s(\omega)\in\Gamma\},
++\]
++右端每一项属于 $\F\otimes\B([0,n])$，由 (1) 属于 $\F\otimes\B(\R_+)$。
++
++\textbf{(3)} 设 $X$ 循序可测，$t\in[0,\infty)$。映射 $\omega\mapsto(\omega,t)$ 是 $\F_t/\F_t\otimes\B([0,t])$ 可测的（理由同\cref{def:measurable-process} 后的说明），
++$X_t$ 是它与 $(\omega,s)\mapsto X_s(\omega)$（$s\in[0,t]$）的复合，故 $X$ 适应。又 $\F_t\subseteq\F$，
++故 $\F_t\otimes\B([0,t])\subseteq\F\otimes\B([0,t])$，由 (2) 知 $X$ 可测。
++\end{proof}
++
++\begin{proposition}
++\label{prop:right-continuous-progressive}
++设 $(E,d)$ 是度量空间，装备 Borel $\sigma$ 代数 $\B(E)$，$X=(X_t)_{t\in[0,\infty)}$ 是 $E$ 值适应过程。
++若 $X$ 的样本路径都右连续（即对每个 $\omega\in\Omega$，$t\mapsto X_t(\omega)$ 右连续），则 $X$ 循序可测。
++把右连续换成左连续，结论仍成立。
++\end{proposition}
++
++\begin{proof}
++先设样本路径右连续。$t=0$ 时，$\Omega\times\{0\}$ 上的映射 $(\omega,0)\mapsto X_0(\omega)$ 的可测性就是 $X_0$ 的 $\F_0$ 可测性。
++固定 $t\in(0,\infty)$。对 $n\ge1$ 及 $s\in[0,t]$，令
++\[
++  X^n_s:=X_{kt/n},\quad s\in\Bigl[\frac{(k-1)t}{n},\frac{kt}{n}\Bigr),\ k\in\{1,\ldots,n\};\qquad X^n_t:=X_t,
++\]
++即在每个小区间上取右端点处的值（\cref{fig:right-continuous-step-approximation}）。对 $s\in[0,t)$，上式中的 $kt/n$ 落在 $(s,s+t/n]$ 内，
++由右连续性，对每个 $\omega\in\Omega$ 及 $s\in[0,t]$，
++\[
++  X_s(\omega)=\lim_{n\to\infty}X^n_s(\omega).
++\]
++另一方面，对任意 $A\in\B(E)$，
++\[
++  \{(\omega,s)\in\Omega\times[0,t]:X^n_s(\omega)\in A\}
++  =\bigl(\{X_t\in A\}\times\{t\}\bigr)\cup\bigcup_{k=1}^{n}\Bigl(\{X_{kt/n}\in A\}\times\Bigl[\frac{(k-1)t}{n},\frac{kt}{n}\Bigr)\Bigr).
++\]
++由于 $X$ 适应，$\{X_{kt/n}\in A\}\in\F_{kt/n}\subseteq\F_t$，故右端属于 $\F_t\otimes\B([0,t])$，
++即 $(\omega,s)\mapsto X^n_s(\omega)$ 在 $\Omega\times[0,t]$ 上关于 $\F_t\otimes\B([0,t])$ 可测。
++度量空间值可测映射的逐点极限仍可测（\cref{thm:kolmogorov-continuity} 证明中的脚注，那里的论证对任意可测空间都成立），
++故 $(\omega,s)\mapsto X_s(\omega)$ 在 $\Omega\times[0,t]$ 上也关于 $\F_t\otimes\B([0,t])$ 可测。$t$ 是任意的，故 $X$ 循序可测。
++
++左连续的情形只需改取左端点：令 $X^n_0:=X_0$，并在 $s\in\bigl((k-1)t/n,kt/n\bigr]$ 时令 $X^n_s:=X_{(k-1)t/n}$，其余论证相同。
++\end{proof}
++
++\begin{figure}[htbp]
++  \centering
++  \begin{tikzpicture}
++    \begin{axis}[
++        width=0.85\textwidth, height=0.5\textwidth,
++        xmin=0, xmax=1.05, ymin=-0.75, ymax=1.15,
++        axis lines=left, ytick=\empty,
++        xtick={0.0000,0.1667,0.3333,0.5000,0.6667,0.8333,1.0000},
++        xticklabels={$0$,$\frac{1t}{6}$,$\frac{2t}{6}$,$\frac{3t}{6}$,$\frac{4t}{6}$,$\frac{5t}{6}$,$t$},
++        clip=false]
++      \addplot[semithick, mark=none] table[row sep=\\]{
++        s y\\
++        0.0000 0.204\\0.0088 0.273\\0.0177 0.331\\0.0265 0.376\\0.0353 0.409\\0.0442 0.432\\0.0530 0.447\\0.0618 0.456\\0.0707 0.465\\0.0795 0.474\\0.0883 0.486\\0.0972 0.502\\0.1060 0.521\\0.1148 0.542\\0.1237 0.562\\0.1325 0.579\\0.1413 0.589\\0.1502 0.589\\0.1590 0.576\\0.1678 0.550\\0.1767 0.511\\0.1855 0.461\\0.1943 0.402\\0.2032 0.338\\0.2120 0.273\\0.2208 0.213\\0.2297 0.161\\0.2385 0.121\\0.2473 0.094\\0.2562 0.081\\0.2650 0.081\\0.2738 0.093\\0.2827 0.113\\0.2915 0.137\\0.3003 0.162\\0.3092 0.184\\0.3180 0.201\\0.3268 0.212\\0.3357 0.215\\0.3445 0.212\\0.3533 0.206\\0.3622 0.198\\0.3710 0.192\\0.3798 0.191\\0.3887 0.196\\0.3975 0.208\\0.4063 0.229\\0.4152 0.256\\0.4240 0.286\\0.4328 0.316\\0.4417 0.343\\0.4505 0.362\\0.4593 0.370\\0.4682 0.363\\0.4770 0.341\\0.4858 0.304\\0.4947 0.253\\0.5035 0.191\\0.5123 0.122\\0.5212 0.050\\0.5300 -0.021\\
++      };
++      \addplot[semithick, mark=none] table[row sep=\\]{
++        s y\\
++        0.5300 0.529\\0.5378 0.471\\0.5457 0.420\\0.5535 0.376\\0.5613 0.341\\0.5692 0.315\\0.5770 0.297\\0.5848 0.284\\0.5927 0.276\\0.6005 0.270\\0.6083 0.264\\0.6162 0.257\\0.6240 0.247\\0.6318 0.233\\0.6397 0.217\\0.6475 0.199\\0.6553 0.181\\0.6632 0.165\\0.6710 0.154\\0.6788 0.149\\0.6867 0.154\\0.6945 0.169\\0.7023 0.195\\0.7102 0.234\\0.7180 0.283\\0.7258 0.341\\0.7337 0.406\\0.7415 0.475\\0.7493 0.545\\0.7572 0.612\\0.7650 0.674\\0.7728 0.728\\0.7807 0.773\\0.7885 0.807\\0.7963 0.831\\0.8042 0.845\\0.8120 0.852\\0.8198 0.852\\0.8277 0.849\\0.8355 0.846\\0.8433 0.843\\0.8512 0.844\\0.8590 0.848\\0.8668 0.857\\0.8747 0.870\\0.8825 0.886\\0.8903 0.903\\0.8982 0.920\\0.9060 0.934\\0.9138 0.943\\0.9217 0.945\\0.9295 0.940\\0.9373 0.927\\0.9452 0.907\\0.9530 0.880\\0.9608 0.850\\0.9687 0.819\\0.9765 0.789\\0.9843 0.764\\0.9922 0.747\\1.0000 0.739\\
++      };
++      \draw[black, fill=white] (axis cs:0.53,-0.021) circle[radius=1.6pt];
++      \fill[black] (axis cs:0.53,0.529) circle[radius=1.6pt];
++      \draw[very thick, blue!70!black] (axis cs:0.0000,0.554) -- (axis cs:0.1667,0.554);
++      \fill[blue!70!black] (axis cs:0.0000,0.554) circle[radius=1.6pt];
++      \draw[blue!70!black, fill=white] (axis cs:0.1667,0.554) circle[radius=1.6pt];
++      \draw[densely dotted, gray] (axis cs:0.1667,-0.75) -- (axis cs:0.1667,0.554);
++      \draw[very thick, blue!70!black] (axis cs:0.1667,0.215) -- (axis cs:0.3333,0.215);
++      \fill[blue!70!black] (axis cs:0.1667,0.215) circle[radius=1.6pt];
++      \draw[blue!70!black, fill=white] (axis cs:0.3333,0.215) circle[radius=1.6pt];
++      \draw[densely dotted, gray] (axis cs:0.3333,-0.75) -- (axis cs:0.3333,0.215);
++      \draw[very thick, blue!70!black] (axis cs:0.3333,0.217) -- (axis cs:0.5000,0.217);
++      \fill[blue!70!black] (axis cs:0.3333,0.217) circle[radius=1.6pt];
++      \draw[blue!70!black, fill=white] (axis cs:0.5000,0.217) circle[radius=1.6pt];
++      \draw[densely dotted, gray] (axis cs:0.5000,-0.75) -- (axis cs:0.5000,0.217);
++      \draw[very thick, blue!70!black] (axis cs:0.5000,0.159) -- (axis cs:0.6667,0.159);
++      \fill[blue!70!black] (axis cs:0.5000,0.159) circle[radius=1.6pt];
++      \draw[blue!70!black, fill=white] (axis cs:0.6667,0.159) circle[radius=1.6pt];
++      \draw[densely dotted, gray] (axis cs:0.6667,-0.75) -- (axis cs:0.6667,0.159);
++      \draw[very thick, blue!70!black] (axis cs:0.6667,0.847) -- (axis cs:0.8333,0.847);
++      \fill[blue!70!black] (axis cs:0.6667,0.847) circle[radius=1.6pt];
++      \draw[blue!70!black, fill=white] (axis cs:0.8333,0.847) circle[radius=1.6pt];
++      \draw[densely dotted, gray] (axis cs:0.8333,-0.75) -- (axis cs:0.8333,0.847);
++      \draw[very thick, blue!70!black] (axis cs:0.8333,0.739) -- (axis cs:1.0000,0.739);
++      \fill[blue!70!black] (axis cs:0.8333,0.739) circle[radius=1.6pt];
++      \fill[blue!70!black] (axis cs:1.0000,0.739) circle[radius=1.6pt];
++      \draw[densely dotted, gray] (axis cs:1.0000,-0.75) -- (axis cs:1.0000,0.739);
++    \end{axis}
++  \end{tikzpicture}
++  \caption{右连续样本路径 $s\mapsto X_s(\omega)$（细线，在某点有跳跃）与 $n=6$ 时的阶梯逼近 $X^n_s(\omega)$（粗线）：
++    $X^n$ 在 $[(k-1)t/n,kt/n)$ 上取右端点处的值 $X_{kt/n}(\omega)$。实心点表示取到的值，空心点表示取不到的值；按定义 $X^n_t=X_t$。}
++  \label{fig:right-continuous-step-approximation}
++\end{figure}
++
++\begin{remark}
++\label{rem:right-continuous-measurable}
++上述证明只用到每个 $X_{kt/n}$ 关于 $\F_t$ 可测。若只假设每个 $X_t$ 都 $\F$ 可测，把证明中的 $\F_t$ 换成 $\F$，
++即得 $(\omega,s)\mapsto X_s(\omega)$ 在每个 $\Omega\times[0,t]$ 上关于 $\F\otimes\B([0,t])$ 可测，由\cref{lem:measurable-progressive-basic}~(2)，
++$X$ 是可测过程。因此样本路径右连续（或左连续）且每个 $X_t$ 都 $\F$ 可测的度量空间值过程是可测过程。
++\end{remark}
++
++循序可测性也可以用 $\Omega\times\R_+$ 上的一个 $\sigma$ 代数来刻画。
++
++\begin{definition}[循序 $\sigma$ 代数]
++\label{def:progressive-sigma-algebra}
++令 $\mathscr P$ 为满足下述条件的集合 $A\in\F\otimes\B(\R_+)$ 的全体：过程 $X_t(\omega):=\ind A(\omega,t)$ 是循序可测的。回顾\cref{def:adapted-progressive}，这是指：对每个 $t\in[0,\infty)$，映射 $\Omega\times[0,t]\to\R$，$(\omega,s)\mapsto\ind{A\cap(\Omega\times[0,t])}(\omega,s)$ 关于 $\F_t\otimes\B([0,t])$ 可测。
++称 $\mathscr P$ 为循序 $\sigma$ 代数。
++\end{definition}
++
++\begin{proposition}
++\label{prop:progressive-sigma-algebra}
++\begin{enumerate}[label=(\arabic*)]
++  \item 集合 $A\subseteq\Omega\times\R_+$ 属于 $\mathscr P$，当且仅当对每个 $t\in[0,\infty)$，$A\cap(\Omega\times[0,t])\in\F_t\otimes\B([0,t])$。
++  \item $\mathscr P$ 是 $\Omega\times\R_+$ 上的 $\sigma$ 代数。
++  \item 取值于 $(E,\mathcal E)$ 的过程 $X$ 循序可测，当且仅当 $(\omega,t)\mapsto X_t(\omega)$ 是 $\mathscr P/\mathcal E$ 可测的。
++\end{enumerate}
++\end{proposition}
++
++\begin{proof}
++\textbf{(1)} 固定 $t\in[0,\infty)$，记 $C_t:=A\cap(\Omega\times[0,t])$。映射
++\[
++  \Omega\times[0,t]\to\R,\qquad (\omega,s)\mapsto\ind A(\omega,s)
++\]
++就是 $\Omega\times[0,t]$ 上的示性函数 $\ind{C_t}$。
++而示性函数可测当且仅当对应的集合可测，故它关于 $\F_t\otimes\B([0,t])$ 可测，当且仅当 $C_t\in\F_t\otimes\B([0,t])$。于是 $X_t(\omega)=\ind A(\omega,t)$ 循序可测，当且仅当对每个 $t$ 有 $C_t\in\F_t\otimes\B([0,t])$。此外，若该条件对每个 $t$ 成立，则由\cref{lem:measurable-progressive-basic}~(1)，
++$A=\bigcup_{n\ge1}A\cap(\Omega\times[0,n])\in\F\otimes\B(\R_+)$，所以定义中的前提 $A\in\F\otimes\B(\R_+)$ 自动满足。
++
++\textbf{(2)} 由 (1) 验证。$\Omega\times\R_+$ 与 $\Omega\times[0,t]$ 之交是 $\Omega\times[0,t]$ 本身；
++$A^c\cap(\Omega\times[0,t])=(\Omega\times[0,t])\setminus\bigl(A\cap(\Omega\times[0,t])\bigr)$；
++$\bigl(\bigcup_nA_n\bigr)\cap(\Omega\times[0,t])=\bigcup_n\bigl(A_n\cap(\Omega\times[0,t])\bigr)$。
++右端都属于 $\F_t\otimes\B([0,t])$。
++
++\textbf{(3)} 对 $\Gamma\in\mathcal E$，记 $\{X\in\Gamma\}:=\{(\omega,t)\in\Omega\times\R_+:X_t(\omega)\in\Gamma\}$，则
++\[
++  \{(\omega,s)\in\Omega\times[0,t]:X_s(\omega)\in\Gamma\}=\{X\in\Gamma\}\cap(\Omega\times[0,t]).
++\]
++$X$ 循序可测，即对每个 $t$ 与每个 $\Gamma$，左端属于 $\F_t\otimes\B([0,t])$；由 (1)，这等价于对每个 $\Gamma$，$\{X\in\Gamma\}\in\mathscr P$。
++\end{proof}
++
++\section{停时及其 $\sigma$ 代数}
++\label{sec:stopping-times-general}
++
++本节把\cref{sec:strong-markov}中针对布朗运动引入的停时等概念推广到一般的滤过 $(\F_t)_{t\in[0,\infty]}$。下面的定义与\cref{def:stopping-time}、\cref{def:stopping-time-sigma-algebra}相同，只是把布朗运动的典范滤过换成了 $(\F_t)$。
++
++\begin{definition}[停时与截至停时的 $\sigma$ 代数]
++\label{def:stopping-time-general}
++取值于 $[0,\infty]$ 的随机变量 $T$ 称为滤过 $(\F_t)$ 的停时，如果对每个 $t\in[0,\infty)$，$\{T\le t\}\in\F_t$。此时称
++\[
++  \F_T:=\bigl\{A\in\F_\infty:\text{对每个}\ t\in[0,\infty)\ \text{都有}\ A\cap\{T\le t\}\in\F_t\bigr\}
++\]
++为截至停时 $T$ 的 $\sigma$ 代数。
++\end{definition}
++
++以下除非另作说明，“停时”都指滤过 $(\F_t)$ 的停时。
++
++\begin{proposition}
++\label{prop:stopping-time-general-basics}
++设 $T$ 是停时，则：
++\begin{enumerate}[label=(\arabic*)]
++  \item 对每个 $t\in(0,\infty)$，$\{T<t\}\in\F_t$；
++  \item $\{T=\infty\}\in\F_\infty$；
++  \item $\F_T$ 是 $\sigma$ 代数。
++\end{enumerate}
++\end{proposition}
++
++\begin{proof}
++\cref{prop:stopping-time-basics}~(1) 与\cref{prop:stopping-sigma-basics}~(1) 的证明只用到滤过的单调性，对一般滤过照样成立，这给出 (1) 与 (3)。
++对 (2)，$\{T=\infty\}=\bigl(\bigcup_{n\ge1}\{T\le n\}\bigr)^c$，而每个 $\{T\le n\}\in\F_n\subseteq\F_\infty$。
++\end{proof}
++
++由于 $\F_t\subseteq\F_{t+}$（\cref{prop:right-continuous-regularization}），$(\F_t)$ 的停时显然也是 $(\F_{t+})$ 的停时；反之一般不成立，
++直观的原因见\cref{fig:hitting-open-set}，一个具体的例子是\cref{prop:hitting-times-stopping}~(1) 中的首中时 $T_O$。
++$(\F_{t+})$ 停时可以只用 $(\F_t)$ 来刻画，关键是下面的引理。
++
++\begin{figure}[htbp]
++  \centering
++  \begin{tikzpicture}
++    \begin{axis}[
++        width=0.8\textwidth, height=0.45\textwidth,
++        xmin=0, xmax=1.05, ymin=-0.1, ymax=1.25,
++        axis lines=left, xtick=\empty, ytick=\empty,
++        clip=false]
++      \fill[gray!15] (axis cs:0,0.6) rectangle (axis cs:1.05,1.25);
++      \node[anchor=north east] at (axis cs:1.05,1.25) {$O=(a,\infty)$};
++      \draw[densely dashed, gray] (axis cs:0,0.6) -- (axis cs:1.05,0.6) node[right, black] {$a$};
++      \draw[densely dotted, gray] (axis cs:0.5,-0.1) -- (axis cs:0.5,1.2);
++      \node[below] at (axis cs:0.5,-0.1) {$\tau$};
++      \addplot[semithick, mark=none] table[row sep=\\]{
++        s y\\
++        0.0000 0.000\\0.0100 0.001\\0.0200 0.003\\0.0300 0.006\\0.0400 0.009\\0.0500 0.012\\0.0600 0.015\\0.0700 0.018\\0.0800 0.019\\0.0900 0.020\\0.1000 0.019\\0.1100 0.018\\0.1200 0.016\\0.1300 0.014\\0.1400 0.012\\0.1500 0.010\\0.1600 0.010\\0.1700 0.012\\0.1800 0.016\\0.1900 0.022\\0.2000 0.032\\0.2100 0.044\\0.2200 0.060\\0.2300 0.078\\0.2400 0.099\\0.2500 0.121\\0.2600 0.145\\0.2700 0.169\\0.2800 0.194\\0.2900 0.218\\0.3000 0.241\\0.3100 0.264\\0.3200 0.284\\0.3300 0.303\\0.3400 0.321\\0.3500 0.337\\0.3600 0.352\\0.3700 0.367\\0.3800 0.381\\0.3900 0.396\\0.4000 0.411\\0.4100 0.427\\0.4200 0.444\\0.4300 0.462\\0.4400 0.481\\0.4500 0.501\\0.4600 0.521\\0.4700 0.541\\0.4800 0.561\\0.4900 0.581\\0.5000 0.600\\
++      };
++      \addplot[semithick, blue!70!black, mark=none] table[row sep=\\]{
++        s y\\
++        0.5000 0.600\\0.5125 0.628\\0.5250 0.650\\0.5375 0.672\\0.5500 0.692\\0.5625 0.712\\0.5750 0.730\\0.5875 0.747\\0.6000 0.762\\0.6125 0.775\\0.6250 0.786\\0.6375 0.795\\0.6500 0.801\\0.6625 0.807\\0.6750 0.811\\0.6875 0.816\\0.7000 0.820\\0.7125 0.826\\0.7250 0.833\\0.7375 0.842\\0.7500 0.854\\0.7625 0.869\\0.7750 0.887\\0.7875 0.907\\0.8000 0.929\\0.8125 0.953\\0.8250 0.978\\0.8375 1.003\\0.8500 1.027\\0.8625 1.049\\0.8750 1.068\\0.8875 1.084\\0.9000 1.097\\0.9125 1.105\\0.9250 1.108\\0.9375 1.108\\0.9500 1.105\\0.9625 1.098\\0.9750 1.091\\0.9875 1.082\\1.0000 1.075\\
++      };
++      \addplot[semithick, red!70!black, densely dashed, mark=none] table[row sep=\\]{
++        s y\\
++        0.5000 0.600\\0.5125 0.572\\0.5250 0.550\\0.5375 0.529\\0.5500 0.509\\0.5625 0.489\\0.5750 0.470\\0.5875 0.453\\0.6000 0.436\\0.6125 0.421\\0.6250 0.408\\0.6375 0.396\\0.6500 0.386\\0.6625 0.378\\0.6750 0.371\\0.6875 0.366\\0.7000 0.361\\0.7125 0.357\\0.7250 0.353\\0.7375 0.348\\0.7500 0.343\\0.7625 0.336\\0.7750 0.328\\0.7875 0.317\\0.8000 0.304\\0.8125 0.289\\0.8250 0.272\\0.8375 0.252\\0.8500 0.230\\0.8625 0.208\\0.8750 0.184\\0.8875 0.159\\0.9000 0.136\\0.9125 0.113\\0.9250 0.091\\0.9375 0.072\\0.9500 0.055\\0.9625 0.041\\0.9750 0.031\\0.9875 0.024\\1.0000 0.021\\
++      };
++    \end{axis}
++  \end{tikzpicture}
++  \caption{两条样本路径在 $[0,\tau]$ 上重合，并在时刻 $\tau$ 首次到达开集 $O=(a,\infty)$ 的边界。
++    实线随即进入 $O$，故 $T_O=\tau$；虚线随即离开，故 $T_O>\tau$。
++    只看到时刻 $\tau$ 为止的路径无法区分两种情形，要“向后多看一点”才能判断，这正是 $T_O$ 一般只是 $(\F_{t+})$ 停时的原因。}
++  \label{fig:hitting-open-set}
++\end{figure}
++
++\begin{lemma}
++\label{lem:right-continuous-stopping-criterion}
++设 $T:\Omega\to[0,\infty]$ 是随机变量，$A\in\F_\infty$。则下面两条等价：
++\begin{enumerate}[label=(\alph*)]
++  \item 对每个 $t\in[0,\infty)$，$A\cap\{T\le t\}\in\F_{t+}$；
++  \item 对每个 $t\in(0,\infty)$，$A\cap\{T<t\}\in\F_t$。
++\end{enumerate}
++\end{lemma}
++
++\begin{proof}
++(a)$\Rightarrow$(b)：设 $t\in(0,\infty)$。若 $T(\omega)<t$，则存在有理数 $q\in[T(\omega),t)$，故
++\[
++  A\cap\{T<t\}=\bigcup_{q\in[0,t)\cap\Q}\bigl(A\cap\{T\le q\}\bigr),
++\]
++而对 $q<t$，$A\cap\{T\le q\}\in\F_{q+}\subseteq\F_t$。
++
++(b)$\Rightarrow$(a)：设 $t\in[0,\infty)$，$s\in(t,\infty)$。由于 $T(\omega)\le t$ 当且仅当对每个有理数 $q\in(t,s)$ 有 $T(\omega)<q$，
++\[
++  A\cap\{T\le t\}=\bigcap_{q\in(t,s)\cap\Q}\bigl(A\cap\{T<q\}\bigr)\in\F_s.
++\]
++$s\in(t,\infty)$ 是任意的，故 $A\cap\{T\le t\}\in\F_{t+}$。
++\end{proof}
++
++\begin{proposition}
++\label{prop:right-continuous-stopping-times}
++对 $t\in[0,\infty]$ 记 $\G_t:=\F_{t+}$。
++\begin{enumerate}[label=(\arabic*)]
++  \item 对取值于 $[0,\infty]$ 的随机变量 $T$，下列三条等价：$T$ 是 $(\G_t)$ 的停时；对每个 $t\in(0,\infty)$，$\{T<t\}\in\F_t$；
++    对每个 $t\in(0,\infty)$，$T\wedge t$ 是 $\F_t$ 可测的。
++  \item 设 $T$ 是 $(\G_t)$ 的停时，则
++    \[
++      \G_T=\bigl\{A\in\F_\infty:\text{对每个}\ t\in(0,\infty)\ \text{都有}\ A\cap\{T<t\}\in\F_t\bigr\}.
++    \]
++\end{enumerate}
++记 $\F_{T+}:=\G_T$。
++\end{proposition}
++
++\begin{proof}
++\textbf{(1)} 前两条的等价是\cref{lem:right-continuous-stopping-criterion} 取 $A=\Omega$ 的情形。对第三条，固定 $t\in(0,\infty)$。
++与\cref{prop:stopping-sigma-basics}~(2) 的证明同理，$T\wedge t$ 是 $\F_t$ 可测的，当且仅当对每个 $s\in[0,\infty)$ 有 $\{T\wedge t\le s\}\in\F_t$；
++而 $s\ge t$ 时 $\{T\wedge t\le s\}=\Omega$，$s<t$ 时 $\{T\wedge t\le s\}=\{T\le s\}$。故第三条等价于：
++\[
++  \text{对任意}\ 0\le s<t<\infty,\quad \{T\le s\}\in\F_t. \tag{$\ast$}
++\]
++若 $T$ 是 $(\G_t)$ 停时，则 $s<t$ 时 $\{T\le s\}\in\F_{s+}\subseteq\F_t$，即 $(\ast)$ 成立。反之若 $(\ast)$ 成立，则对 $t\in(0,\infty)$，
++$\{T<t\}=\bigcup_{n>1/t}\{T\le t-1/n\}\in\F_t$，即第二条成立。
++
++\textbf{(2)} 由于 $\G_\infty=\F_\infty$，这就是\cref{lem:right-continuous-stopping-criterion} 中 (a)$\Leftrightarrow$(b)。
++\end{proof}
++
++$(\F_t)$ 停时也是 $(\G_t)$ 停时，所以对 $(\F_t)$ 停时 $T$，$\F_{T+}$ 也有定义。
++
++为陈述下面的性质 (10)，约定：设 $\G$ 是 $\Omega$ 上的 $\sigma$ 代数，$D\in\G$，$Y$ 是只定义在 $D$ 上、取值于可测空间 $(E,\mathcal E)$ 的映射。
++若对每个 $\Gamma\in\mathcal E$ 都有 $\{\omega\in D:Y(\omega)\in\Gamma\}\in\G$，则称 $Y$ 是 $\G$ 可测的。
++
++\begin{proposition}[停时及其 $\sigma$ 代数的性质]
++\label{prop:stopping-time-properties}
++设 $S,T$ 是停时。
++\begin{enumerate}[label=(\arabic*)]
++  \item $\F_T\subseteq\F_{T+}$；若滤过 $(\F_t)$ 右连续，则 $\F_{T+}=\F_T$。
++  \item 若 $T\equiv t$ 为常数，$t\in[0,\infty]$，则 $\F_T=\F_t$，$\F_{T+}=\F_{t+}$。
++  \item $T$ 是 $\F_T$ 可测的。
++  \item 设 $A\in\F_\infty$，令 $T^A:=T$ 于 $A$ 上，$T^A:=\infty$ 于 $A^c$ 上。则 $A\in\F_T$ 当且仅当 $T^A$ 是停时。
++  \item 若 $S\le T$，则 $\F_S\subseteq\F_T$，$\F_{S+}\subseteq\F_{T+}$。
++  \item $S\wedge T$ 与 $S\vee T$ 都是停时，$\F_{S\wedge T}=\F_S\cap\F_T$，且 $\{S\le T\}\in\F_{S\wedge T}$，$\{S=T\}\in\F_{S\wedge T}$。
++  \item 若 $(S_n)_{n\ge1}$ 是单调递增的停时列，则 $S:=\lim_{n\to\infty}S_n$ 是停时。
++  \item 若 $(S_n)_{n\ge1}$ 是单调递减的停时列，则 $S:=\lim_{n\to\infty}S_n$ 是 $(\F_{t+})$ 的停时，且 $\F_{S+}=\bigcap_n\F_{S_n+}$。
++  \item 若 $(S_n)_{n\ge1}$ 是单调递减的停时列，并且是平稳的，即对每个 $\omega$ 存在整数 $N(\omega)$，使 $n\ge N(\omega)$ 时
++    $S_n(\omega)=S(\omega)$，其中 $S:=\lim_{n\to\infty}S_n$，则 $S$ 是停时，且 $\F_S=\bigcap_n\F_{S_n}$。
++  \item 定义在 $\{T<\infty\}$ 上、取值于 $(E,\mathcal E)$ 的映射 $Y$ 是 $\F_T$ 可测的，当且仅当对每个 $t\in[0,\infty)$，
++    $Y$ 在 $\{T\le t\}$ 上的限制是 $\F_t$ 可测的。
++\end{enumerate}
++\end{proposition}
++
++注意 $\{T<\infty\}$ 与 $\{T\le t\}$ 分别属于 $\F_T$ 与 $\F_t$（前者因为 $\{T<\infty\}\cap\{T\le t\}=\{T\le t\}$），所以 (10) 中的可测性在上述约定下有意义。
++
++\begin{proof}
++\textbf{(1)} 若 $A\in\F_T$，则 $A\cap\{T\le t\}\in\F_t\subseteq\F_{t+}$，故 $A\in\F_{T+}$。若 $(\F_t)$ 右连续，则 $(\F_{t+})$ 就是 $(\F_t)$，两者相同。
++
++\textbf{(2)} 对 $A\in\F_\infty$，$A\cap\{t\le s\}$ 在 $s\ge t$ 时为 $A$，在 $s<t$ 时为 $\varnothing$。故 $t<\infty$ 时，$A\in\F_T$ 当且仅当
++$A\in\F_s$ 对每个 $s\in[t,\infty)$ 成立，即 $A\in\F_t$；$t=\infty$ 时条件总成立，$\F_T=\F_\infty$。对 $(\F_{t+})$ 同理得 $\F_{T+}=\F_{t+}$。
++
++\textbf{(3)} 与\cref{prop:stopping-sigma-basics}~(2) 的证明相同。
++
++\textbf{(4)} 对 $t\in[0,\infty)$，$\{T^A\le t\}=A\cap\{T\le t\}$。由 $\F_T$ 的定义即得。
++
++\textbf{(5)} 设 $A\in\F_S$。由于 $S\le T$，$\{T\le t\}\subseteq\{S\le t\}$，故
++$A\cap\{T\le t\}=\bigl(A\cap\{S\le t\}\bigr)\cap\{T\le t\}\in\F_t$，即 $A\in\F_T$。$S,T$ 也是 $(\F_{t+})$ 停时，
++对 $(\F_{t+})$ 应用同一结论即得 $\F_{S+}\subseteq\F_{T+}$。
++
++\textbf{(6)} 由
++\[
++  \{S\wedge T\le t\}=\{S\le t\}\cup\{T\le t\},\qquad \{S\vee T\le t\}=\{S\le t\}\cap\{T\le t\},
++\]
++$S\wedge T$ 与 $S\vee T$ 是停时。由 (5)，$\F_{S\wedge T}\subseteq\F_S\cap\F_T$。反之，若 $A\in\F_S\cap\F_T$，则
++\[
++  A\cap\{S\wedge T\le t\}=\bigl(A\cap\{S\le t\}\bigr)\cup\bigl(A\cap\{T\le t\}\bigr)\in\F_t,
++\]
++故 $A\in\F_{S\wedge T}$。再看 $\{S\le T\}$，它属于 $\F_\infty$。对 $t\in[0,\infty)$，
++\begin{align*}
++  \{S\le T\}\cap\{T\le t\}&=\{S\le t\}\cap\{T\le t\}\cap\{S\wedge t\le T\wedge t\},\\
++  \{S\le T\}\cap\{S\le t\}&=\{S\wedge t\le T\wedge t\}\cap\{S\le t\}.
++\end{align*}
++（第一式：在 $\{T\le t\}$ 上 $T\wedge t=T$，且 $S\le T$ 蕴含 $S\le t$；第二式：在 $\{S\le t\}$ 上 $S\wedge t=S$，且 $S\le T$ 当且仅当 $S\le T\wedge t$。）
++由\cref{prop:right-continuous-stopping-times}~(1)，$S\wedge t$ 与 $T\wedge t$ 都 $\F_t$ 可测，故两式右端都属于 $\F_t$。
++于是 $\{S\le T\}\in\F_T\cap\F_S=\F_{S\wedge T}$。最后 $\{S=T\}=\{S\le T\}\cap\{T\le S\}\in\F_{S\wedge T}$。
++
++\textbf{(7)} $S_n\uparrow S$，故 $\{S\le t\}=\bigcap_n\{S_n\le t\}\in\F_t$。
++
++\textbf{(8)} $S_n\downarrow S$，故 $\{S<t\}=\bigcup_n\{S_n<t\}\in\F_t$，由\cref{prop:right-continuous-stopping-times}~(1)，$S$ 是 $(\F_{t+})$ 停时。
++由 (5)（对 $(\F_{t+})$ 停时 $S\le S_n$），$\F_{S+}\subseteq\F_{S_n+}$ 对每个 $n$ 成立。反之，若 $A\in\bigcap_n\F_{S_n+}$，则由
++\cref{prop:right-continuous-stopping-times}~(2)，
++\[
++  A\cap\{S<t\}=\bigcup_n\bigl(A\cap\{S_n<t\}\bigr)\in\F_t,
++\]
++再由\cref{prop:right-continuous-stopping-times}~(2) 得 $A\in\F_{S+}$。
++
++\textbf{(9)} 由平稳性，$S(\omega)\le t$ 当且仅当存在 $n$ 使 $S_n(\omega)\le t$（必要性取 $n\ge N(\omega)$，充分性因 $S\le S_n$），故
++$\{S\le t\}=\bigcup_n\{S_n\le t\}\in\F_t$。由 (5)，$\F_S\subseteq\bigcap_n\F_{S_n}$；反之若 $A\in\bigcap_n\F_{S_n}$，则同理
++$A\cap\{S\le t\}=\bigcup_n\bigl(A\cap\{S_n\le t\}\bigr)\in\F_t$，故 $A\in\F_S$。
++
++\textbf{(10)} 对 $\Gamma\in\mathcal E$，$Y$ 在 $\{T\le t\}$ 上的限制的原像是 $\{Y\in\Gamma\}\cap\{T\le t\}$。若 $Y$ 是 $\F_T$ 可测的，
++则 $\{Y\in\Gamma\}\in\F_T$，故 $\{Y\in\Gamma\}\cap\{T\le t\}\in\F_t$。反之，若对每个 $t$ 都有 $\{Y\in\Gamma\}\cap\{T\le t\}\in\F_t$，
++则由于 $Y$ 只定义在 $\{T<\infty\}$ 上，
++\[
++  \{Y\in\Gamma\}=\bigcup_{n\ge1}\bigl(\{Y\in\Gamma\}\cap\{T\le n\}\bigr)\in\F_\infty,
++\]
++再由假设与 $\F_T$ 的定义，$\{Y\in\Gamma\}\in\F_T$。
++\end{proof}
++
++下面的定理说明，循序可测过程在停时 $T$ 处的取值关于截至停时 $T$ 的 $\sigma$ 代数 $\F_T$ 可测。
++
++\begin{theorem}
++\label{thm:progressive-at-stopping-time}
++设 $X=(X_t)_{t\in[0,\infty)}$ 是取值于 $(E,\mathcal E)$ 的循序可测过程，$T$ 是停时。则定义在 $\{T<\infty\}$ 上的映射
++$\omega\mapsto X_T(\omega):=X_{T(\omega)}(\omega)$ 是 $\F_T$ 可测的。
++\end{theorem}
++
++\begin{proof}
++由\cref{prop:stopping-time-properties}~(10)，只需证明：对每个 $t\in[0,\infty)$，$X_T$ 在 $\{T\le t\}$ 上的限制是 $\F_t$ 可测的。
++在 $\{T\le t\}$ 上 $T=T\wedge t$，故这一限制是下面两个映射的复合：
++\[
++  \{T\le t\}\to\Omega\times[0,t],\quad \omega\mapsto(\omega,T(\omega)\wedge t);\qquad
++  \Omega\times[0,t]\to E,\quad (\omega,s)\mapsto X_s(\omega).
++\]
++第二个映射关于 $\F_t\otimes\B([0,t])$ 可测，这就是循序可测的定义。对第一个映射，可测矩形 $F\times\Gamma$（$F\in\F_t$，$\Gamma\in\B([0,t])$）的原像是
++$F\cap\{T\wedge t\in\Gamma\}\cap\{T\le t\}$。由\cref{prop:right-continuous-stopping-times}~(1)，$T\wedge t$ 是 $\F_t$ 可测的，故原像属于 $\F_t$。
++而在生成元上可测即可测\cite[定理 1.3.1]{Durrett2019}，所以第一个映射关于 $\F_t$ 与 $\F_t\otimes\B([0,t])$ 可测，复合映射是 $\F_t$ 可测的。
++\end{proof}
++
++\begin{remark}
++\label{rem:brownian-at-stopping-time}
++布朗运动 $B$ 关于其典范滤过适应且样本路径连续，由\cref{prop:right-continuous-progressive}，它是循序可测的。
++于是\cref{thm:progressive-at-stopping-time} 给出 $B_T$ 在 $\{T<\infty\}$ 上 $\F_T$ 可测，从而重新得到\cref{prop:stopping-sigma-basics}~(3)。
++\end{remark}
++
++\begin{proposition}
++\label{prop:stopping-time-dyadic-approximation}
++设 $T$ 是停时，$S$ 是取值于 $[0,\infty]$ 的 $\F_T$ 可测随机变量，且 $S\ge T$。则 $S$ 是停时。特别地，若 $T$ 是停时，则
++\[
++  T_n:=\sum_{k=0}^{\infty}\frac{k+1}{2^n}\ind{\{k2^{-n}<T\le(k+1)2^{-n}\}}+\infty\cdot\ind{\{T=\infty\}},\qquad n=0,1,2,\ldots
++\]
++是单调递减趋于 $T$ 的停时列。
++\end{proposition}
++
++\begin{proof}
++对 $t\in[0,\infty)$，由 $S\ge T$ 得 $\{S\le t\}=\{S\le t\}\cap\{T\le t\}$，而 $\{S\le t\}\in\F_T$，故它属于 $\F_t$。
++
++对第二个结论，在 $\{T<\infty\}$ 上 $T_n=2^{-n}\lceil2^nT\rceil$（$T=0$ 时各示性函数均为 $0$，$T_n=0$），在 $\{T=\infty\}$ 上 $T_n=\infty$。
++于是 $T\le T_n<T+2^{-n}$；又 $\lceil2^{n+1}T\rceil\le2\lceil2^nT\rceil$，故 $T_{n+1}\le T_n$，从而 $T_n\downarrow T$。
++$T_n$ 是 $T$ 的 Borel 函数，由\cref{prop:stopping-time-properties}~(3) 是 $\F_T$ 可测的，再由第一个结论，$T_n$ 是停时。
++\end{proof}
++
++下面的命题是构造与随机过程相联系的停时的主要工具。约定 $\inf\varnothing:=\infty$。
++
++\begin{proposition}[首中时]
++\label{prop:hitting-times-stopping}
++设 $X=(X_t)_{t\in[0,\infty)}$ 是取值于度量空间 $(E,d)$ 的适应过程。
++\begin{enumerate}[label=(\arabic*)]
++  \item 若 $X$ 的样本路径右连续，$O\subseteq E$ 是开集，则 $T_O:=\inf\{t\in[0,\infty):X_t\in O\}$ 是 $(\F_{t+})$ 的停时。
++  \item 若 $X$ 的样本路径连续，$F\subseteq E$ 是闭集，则 $T_F:=\inf\{t\in[0,\infty):X_t\in F\}$ 是 $(\F_t)$ 的停时。
++\end{enumerate}
++\end{proposition}
++
++\begin{proof}
++\textbf{(1)} 设 $t\in(0,\infty)$。若 $T_O(\omega)<t$，则存在 $s<t$ 使 $X_s(\omega)\in O$；由右连续性与 $O$ 是开集，存在 $\delta>0$ 使
++$X_r(\omega)\in O$ 对 $r\in[s,s+\delta)$ 成立，这一区间中有小于 $t$ 的有理数。反之若某个有理数 $s<t$ 使 $X_s(\omega)\in O$，则 $T_O(\omega)\le s<t$。故
++\[
++  \{T_O<t\}=\bigcup_{s\in[0,t)\cap\Q}\{X_s\in O\}\in\F_t,
++\]
++特别地 $T_O$ 是随机变量（$\{T_O\le t\}=\bigcap_{q\in(t,t+1)\cap\Q}\{T_O<q\}$），由\cref{prop:right-continuous-stopping-times}~(1)，$T_O$ 是 $(\F_{t+})$ 停时。
++
++\textbf{(2)} 与\cref{prop:stopping-time-basics}~(3) 的证明相同（那里是 $X=B$，$F=\{a\}$ 的情形）：$\{s\in[0,\infty):X_s(\omega)\in F\}$ 是闭集，
++非空时包含其下确界；又 $s\mapsto d(X_s(\omega),F)$ 连续，在紧集 $[0,t]$ 上取到最小值，而 $d(x,F)=0$ 当且仅当 $x\in F$。由此，对 $t\in[0,\infty)$，
++\[
++  \{T_F\le t\}=\Bigl\{\inf_{0\le s\le t}d(X_s,F)=0\Bigr\}=\Bigl\{\inf_{s\in[0,t]\cap\Q}d(X_s,F)=0\Bigr\}\in\F_t,
++\]
++其中第二个等号用到 $[0,t]\cap\Q$ 在 $[0,t]$ 中稠密及连续性；每个 $d(X_s,F)$（$s\le t$）是 $\F_t$ 可测的，因为 $x\mapsto d(x,F)$ 连续。
++\end{proof}
++
++\section{连续时间鞅与上鞅}
++\label{sec:continuous-martingales}
++
++仍固定带滤过的概率空间 $(\Omega,\F,(\F_t),\Prob)$。本章余下部分的过程都取实值。下面的定义是离散时间鞅的定义\cite[\S4.2]{Durrett2019}在连续时间下的直接类比。
++
++\begin{definition}[鞅、上鞅与下鞅]
++\label{def:martingale}
++设 $X=(X_t)_{t\in[0,\infty)}$ 是实值适应过程，且对每个 $t\in[0,\infty)$，$X_t\in L^1$。若对任意 $0\le s<t<\infty$，
++\begin{enumerate}[label=(\arabic*)]
++  \item $\Econd{X_t}{\F_s}=X_s$，则称 $X$ 是鞅；
++  \item $\Econd{X_t}{\F_s}\le X_s$，则称 $X$ 是上鞅；
++  \item $\Econd{X_t}{\F_s}\ge X_s$，则称 $X$ 是下鞅。
++\end{enumerate}
++\end{definition}
++
++$X$ 是下鞅当且仅当 $-X$ 是上鞅，所以下文有些结论只对上鞅陈述，下鞅的相应结论随之成立。对条件期望的不等式两边取期望，可知对 $0\le s\le t<\infty$，
++鞅满足 $\E[X_s]=\E[X_t]$，上鞅满足 $\E[X_s]\ge\E[X_t]$，下鞅满足 $\E[X_s]\le\E[X_t]$。
++
++构造鞅的一个简单办法是取 $Z\in L^1$，令 $X_t:=\Econd{Z}{\F_t}$，由条件期望的塔性质\cite[定理 4.1.13]{Durrett2019}，$X$ 是鞅。但并非所有鞅都具有这种形式。下面给出一类重要的例子。
++
++\begin{definition}[独立增量]
++\label{def:independent-increments}
++称取值于 $\R$ 或 $\R^d$ 的过程 $Z=(Z_t)_{t\in[0,\infty)}$ 关于滤过 $(\F_t)$ 有独立增量，如果 $Z$ 适应，并且对任意 $0\le s<t<\infty$，
++$Z_t-Z_s$ 与 $\F_s$ 独立。
++\end{definition}
++
++例如，由简单马尔可夫性（\cref{prop:brownian-invariances}~(3)），布朗运动关于其典范滤过有独立增量。
++
++\begin{proposition}
++\label{prop:independent-increments-martingales}
++设实值过程 $Z$ 关于 $(\F_t)$ 有独立增量。
++\begin{enumerate}[label=(\arabic*)]
++  \item 若对每个 $t$ 有 $Z_t\in L^1$，则 $\widetilde Z_t:=Z_t-\E[Z_t]$ 是鞅。
++  \item 若对每个 $t$ 有 $Z_t\in L^2$，则 $Y_t:=\widetilde Z_t^2-\E[\widetilde Z_t^2]$ 是鞅。
++  \item 若对某个 $\theta\in\R$，对每个 $t$ 有 $\E[e^{\theta Z_t}]<\infty$，则 $X_t:=e^{\theta Z_t}/\E[e^{\theta Z_t}]$ 是鞅。
++\end{enumerate}
++\end{proposition}
++
++\begin{proof}
++三个过程显然适应且可积。固定 $0\le s<t<\infty$。下面反复用到：若可积随机变量 $V$ 与 $\F_s$ 独立，则 $\Econd{V}{\F_s}=\E[V]$\cite[例 4.1.4，第 208 页]{Durrett2019}；
++若 $U$ 是 $\F_s$ 可测的且 $UV$、$V$ 可积，则 $\Econd{UV}{\F_s}=U\Econd{V}{\F_s}$\cite[定理 4.1.14，第 212 页]{Durrett2019}。
++
++\textbf{(1)} $\widetilde Z_t-\widetilde Z_s$ 与 $\F_s$ 独立且均值为 $0$，故 $\Econd{\widetilde Z_t}{\F_s}=\widetilde Z_s+\E[\widetilde Z_t-\widetilde Z_s]=\widetilde Z_s$。
++
++\textbf{(2)} 记 $\Delta:=\widetilde Z_t-\widetilde Z_s$，它与 $\F_s$ 独立，$\E[\Delta]=0$，$\Delta\in L^2$。由 $\widetilde Z_t^2=\widetilde Z_s^2+2\widetilde Z_s\Delta+\Delta^2$，
++\[
++  \Econd{\widetilde Z_t^2}{\F_s}=\widetilde Z_s^2+2\widetilde Z_s\E[\Delta]+\E[\Delta^2]=\widetilde Z_s^2+\E[\Delta^2].
++\]
++对上式取期望得 $\E[\Delta^2]=\E[\widetilde Z_t^2]-\E[\widetilde Z_s^2]$，代回即得 $\Econd{Y_t}{\F_s}=Y_s$。
++
++\textbf{(3)} 由独立性，$\E[e^{\theta Z_t}]=\E[e^{\theta Z_s}]\,\E[e^{\theta(Z_t-Z_s)}]$（非负随机变量的乘积公式），而左端有限、$\E[e^{\theta Z_s}]>0$，
++故 $\E[e^{\theta(Z_t-Z_s)}]<\infty$。于是
++\[
++  \Econd{X_t}{\F_s}=\frac{e^{\theta Z_s}\,\E[e^{\theta(Z_t-Z_s)}]}{\E[e^{\theta Z_s}]\,\E[e^{\theta(Z_t-Z_s)}]}=\frac{e^{\theta Z_s}}{\E[e^{\theta Z_s}]}=X_s.\qedhere
++\]
++\end{proof}
++
++布朗运动是最重要的特例。
++
++\begin{definition}[$(\F_t)$ 布朗运动]
++\label{def:filtration-brownian-motion}
++若实值过程 $B=(B_t)_{t\in[0,\infty)}$ 是布朗运动，并且关于 $(\F_t)$ 有独立增量，则称 $B$ 是 $(\F_t)$ 布朗运动。
++类似地，若 $\R^d$ 值过程 $B$ 是 $d$ 维布朗运动，并且关于 $(\F_t)$ 有独立增量，则称 $B$ 是 $d$ 维 $(\F_t)$ 布朗运动。
++\end{definition}
++
++若 $B$ 是（$d$ 维）布朗运动，$(\F^B_t)$ 是它的典范滤过或完备典范滤过，则 $B$ 是（$d$ 维）$(\F^B_t)$ 布朗运动：
++典范滤过的情形就是简单马尔可夫性（\cref{prop:brownian-invariances}~(3)，$d$ 维情形见\cref{rem:brownian-d-extensions}~(3)），
++完备化后独立性不变（\cref{rem:completed-canonical-filtration}）。
++
++\begin{example}[布朗运动的鞅]
++\label{ex:brownian-martingales}
++设 $B$ 是从 $0$ 出发的 $(\F_t)$ 布朗运动，$\theta\in\R$。由 $B_t\sim\Normal(0,t)$，$\E[B_t^2]=t$，$\E[e^{\theta B_t}]=e^{\theta^2t/2}$，
++于是由\cref{prop:independent-increments-martingales}，
++\[
++  B_t,\qquad B_t^2-t,\qquad e^{\theta B_t-\theta^2t/2}
++\]
++都是样本路径连续的鞅。$e^{\theta B_t-\theta^2t/2}$ 称为布朗运动的指数鞅。若 $B$ 从 $a\in\R$ 出发，结论不变：此时对 $B_t-a$ 应用上述结论，
++并注意 $B_t^2-t=\bigl((B_t-a)^2-t\bigr)+2a(B_t-a)+a^2$，$e^{\theta B_t-\theta^2t/2}=e^{\theta a}e^{\theta(B_t-a)-\theta^2t/2}$。
++\end{example}
++
++\begin{example}[Wiener 积分]
++\label{ex:wiener-integral-martingales}
++设 $B$ 是布朗运动，$G$ 是生成它的高斯白噪声，$f\in L^2(\R_+)$，令 $Z_t:=\int_0^tf(r)\,\dd B_r$（\cref{def:wiener-integral}）。
++记 $H_t:=\Span\{B_r:r\in[0,t]\}$，$\G_t:=\sigma(H_t)$（按\cref{def:sigma-algebra-generated-by-sets} 的约定，它是 $B$ 的典范滤过添加 $\F$ 的零测集所得）。
++$Z_t$ 是 $H_t$ 中元素（阶梯函数的 Wiener 积分）的 $L^2$ 极限，故是 $\G_t$ 可测的；对 $s<t$，$Z_t-Z_s=G(f\ind{(s,t]})$ 与 $H_s$ 中的每个元素都正交
++（\cref{prop:gaussian-white-noise-covariance}），由\cref{thm:gaussian-subspaces-orthogonality-independence}，它与 $\G_s$ 独立。
++因此 $Z$ 关于 $(\G_t)$ 有独立增量。由 $Z_t\sim\Normal\bigl(0,\int_0^tf(r)^2\dd r\bigr)$（\cref{prop:wiener-integral-additivity-law}）及\cref{prop:independent-increments-martingales}，
++\[
++  \int_0^tf(r)\,\dd B_r,\qquad \Bigl(\int_0^tf(r)\,\dd B_r\Bigr)^2-\int_0^tf(r)^2\,\dd r,\qquad
++  \exp\Bigl(\theta\int_0^tf(r)\,\dd B_r-\frac{\theta^2}{2}\int_0^tf(r)^2\,\dd r\Bigr)
++\]
++都是关于 $(\G_t)$ 的鞅。可以证明这些鞅有样本路径连续的修正；只需对第一个证明，这将由后文（原书第 5 章）更一般的结果得到。
++\end{example}
++
++\begin{example}[Poisson 过程]
++\label{ex:poisson-martingales}
++设 $N$ 是参数为 $\lambda>0$ 的 Poisson 过程，$(\F_t)$ 是它的典范滤过。众所周知 $N$ 有独立增量，且 $N_t$ 服从参数为 $\lambda t$ 的 Poisson 分布，
++$\E[N_t]=\Var(N_t)=\lambda t$，$\E[e^{\theta N_t}]=\exp\bigl(\lambda t(e^\theta-1)\bigr)$。由\cref{prop:independent-increments-martingales}，
++\[
++  N_t-\lambda t,\qquad (N_t-\lambda t)^2-\lambda t,\qquad \exp\bigl(\theta N_t-\lambda t(e^\theta-1)\bigr)
++\]
++都是鞅。与前面的例子不同，这些鞅没有样本路径连续的修正。
++\end{example}
++
++\begin{proposition}
++\label{prop:convex-function-submartingale}
++设 $X$ 是适应过程，$f:\R\to\R_+$ 是凸函数，且对每个 $t$ 有 $\E[f(X_t)]<\infty$。
++\begin{enumerate}[label=(\arabic*)]
++  \item 若 $X$ 是鞅，则 $(f(X_t))_{t\in[0,\infty)}$ 是下鞅。
++  \item 若 $X$ 是下鞅且 $f$ 单调不减，则 $(f(X_t))_{t\in[0,\infty)}$ 是下鞅。
++\end{enumerate}
++\end{proposition}
++
++\begin{proof}
++凸函数连续，故 $f(X_t)$ 适应。对 $s<t$，由条件 Jensen 不等式\cite[定理 4.1.10]{Durrett2019}，
++\[
++  \Econd{f(X_t)}{\F_s}\ge f\bigl(\Econd{X_t}{\F_s}\bigr)\ge f(X_s),
++\]
++其中第二个不等式在 (1) 中是等号，在 (2) 中用到 $\Econd{X_t}{\F_s}\ge X_s$ 与 $f$ 单调不减。
++\end{proof}
++
++\begin{corollary}
++\label{cor:martingale-abs-power}
++若 $X$ 是鞅，$p\in[1,\infty)$，且对每个 $t$ 有 $\E[\abs{X_t}^p]<\infty$，则 $(\abs{X_t}^p)$ 是下鞅；特别地 $(\abs{X_t})$ 是下鞅。
++若 $X$ 是下鞅，则 $X^+_t:=X_t\vee0$ 是下鞅。
++\end{corollary}
++
++\begin{proof}
++第一个结论：$f(x)=\abs x^p$ 是取值于 $\R_+$ 的凸函数，由假设 $\E[f(X_t)]<\infty$，用\cref{prop:convex-function-submartingale}~(1) 即得。
++
++第二个结论：$f(x)=x\vee0$ 是两个线性函数 $x$ 与 $0$ 的最大值，因而是取值于 $\R_+$ 的凸函数，且单调不减。
++下鞅的定义要求 $\E[\abs{X_t}]<\infty$，而 $0\le f(X_t)\le\abs{X_t}$，故 $\E[f(X_t)]<\infty$。于是由\cref{prop:convex-function-submartingale}~(2)，$(X^+_t)$ 是下鞅。
++\end{proof}
++
++\begin{remark}
++\label{rem:martingale-lp-norm-monotone}
++对任意鞅 $X$ 与 $p\in[1,\infty)$，$t\mapsto\E[\abs{X_t}^p]\in[0,\infty]$ 单调不减。事实上，设 $s<t$，若 $\E[\abs{X_t}^p]=\infty$ 则无需证明；
++否则由条件 Jensen 不等式，$\Econd{\abs{X_t}^p}{\F_s}\ge\abs{X_s}^p$，取期望即得 $\E[\abs{X_s}^p]\le\E[\abs{X_t}^p]$。
++\end{remark}
++
++\begin{proposition}
++\label{prop:submartingale-l1-bounded}
++设 $X$ 是下鞅或上鞅，则对每个 $t\in(0,\infty)$，$\sup_{s\in[0,t]}\E[\abs{X_s}]<\infty$。
++\end{proposition}
++
++\begin{proof}
++必要时以 $-X$ 代替 $X$，可设 $X$ 是下鞅。由\cref{cor:martingale-abs-power}，$X^+$ 是下鞅，故对 $s\in[0,t]$，$\E[X_s^+]\le\E[X_t^+]$；
++又 $\E[X_s]\ge\E[X_0]$。由 $\abs x=2x^+-x$，
++\[
++  \sup_{s\in[0,t]}\E[\abs{X_s}]\le2\E[X_t^+]-\E[X_0]<\infty.\qedhere
++\]
++\end{proof}
++
++下面的命题在研究平方可积鞅时非常有用。
++
++\begin{proposition}[平方可积鞅的增量]
++\label{prop:square-integrable-martingale-increments}
++设 $M$ 是平方可积鞅，即对每个 $t$ 有 $M_t\in L^2$。设 $0\le s<t<\infty$，$s=t_0<t_1<\cdots<t_p=t$ 是 $[s,t]$ 的分割。则
++\[
++  \Econd{\sum_{i=1}^{p}(M_{t_i}-M_{t_{i-1}})^2}{\F_s}=\Econd{M_t^2-M_s^2}{\F_s}=\Econd{(M_t-M_s)^2}{\F_s}.
++\]
++特别地，
++\[
++  \E\Bigl[\sum_{i=1}^{p}(M_{t_i}-M_{t_{i-1}})^2\Bigr]=\E[M_t^2-M_s^2]=\E[(M_t-M_s)^2].
++\]
++\end{proposition}
++
++平方可积鞅在不同时段的增量像相互垂直的向量，因此总增量平方的条件期望，等于各段增量平方的条件期望之和。
++
++\begin{proof}
++对任意 $0\le u<v<\infty$，由 $M_u$ 是 $\F_u$ 可测的及 $\Econd{M_v}{\F_u}=M_u$，
++\[
++  \Econd{(M_v-M_u)^2}{\F_u}=\Econd{M_v^2}{\F_u}-2M_u\Econd{M_v}{\F_u}+M_u^2=\Econd{M_v^2-M_u^2}{\F_u}.
++\]
++取 $(u,v)=(s,t)$ 得第二个等号。取 $(u,v)=(t_{i-1},t_i)$，两边再对 $\F_s\subseteq\F_{t_{i-1}}$ 取条件期望（塔性质），得
++$\Econd{(M_{t_i}-M_{t_{i-1}})^2}{\F_s}=\Econd{M_{t_i}^2-M_{t_{i-1}}^2}{\F_s}$；对 $i$ 求和，右端裂项相消为 $\Econd{M_t^2-M_s^2}{\F_s}$。
++取期望即得最后一式。
++\end{proof}
++
++接下来研究鞅与上鞅样本路径的正则性。先把离散时间的经典不等式推广到连续时间。所用的离散时间结果见\cite[附录 A2]{LeGall2016}，
++下鞅形式的陈述与证明见\cite[\S4.2、\S4.4]{Durrett2019}。
++
++\begin{proposition}
++\label{prop:continuous-maximal-inequalities}
++\begin{enumerate}[label=(\arabic*)]
++  \item （极大不等式）设 $X$ 是样本路径右连续的上鞅，则对任意 $t\in(0,\infty)$ 与 $\lambda\in(0,\infty)$，
++    \[
++      \lambda\,\Prob\Bigl(\sup_{s\in[0,t]}\abs{X_s}>\lambda\Bigr)\le\E[\abs{X_0}]+2\E[\abs{X_t}].
++    \]
++  \item （$L^p$ 中的 Doob 不等式）设 $X$ 是样本路径右连续的鞅，则对任意 $t\in(0,\infty)$ 与 $p\in(1,\infty)$，
++    \[
++      \E\Bigl[\sup_{s\in[0,t]}\abs{X_s}^p\Bigr]\le\Bigl(\frac{p}{p-1}\Bigr)^p\E[\abs{X_t}^p].
++    \]
  \end{enumerate}
++\end{proposition}
++
++(2) 只在 $\E[\abs{X_t}^p]<\infty$ 时才有内容。
++
++\begin{proof}
++\textbf{(1)} 固定 $t$。取 $\R_+$ 的可数稠密子集 $D$，使 $0,t\in D$。$D\cap[0,t]$ 可以写成一列单调递增的有限集 $D_m$ 之并，
++其中 $D_m=\{t^m_0,t^m_1,\ldots,t^m_m\}$，$0=t^m_0<t^m_1<\cdots<t^m_m=t$。对固定的 $m$，$Y_n:=X_{t^m_{n\wedge m}}$ 是关于离散滤过
++$\G_n:=\F_{t^m_{n\wedge m}}$ 的上鞅，由离散时间的极大不等式\cite[附录 A2]{LeGall2016}，
++\[
++  \lambda\,\Prob\Bigl(\sup_{s\in D_m}\abs{X_s}>\lambda\Bigr)\le\E[\abs{X_0}]+2\E[\abs{X_t}].
++\]
++$m\uparrow\infty$ 时事件 $\{\sup_{s\in D_m}\abs{X_s}>\lambda\}$ 单调递增，其并为 $\{\sup_{s\in D\cap[0,t]}\abs{X_s}>\lambda\}$，
++由概率的连续性，上式对 $D\cap[0,t]$ 代替 $D_m$ 也成立。最后，由样本路径的右连续性与 $t\in D$，
++\begin{equation}
++  \label{eq:sup-dense-equals-sup}
++  \sup_{s\in D\cap[0,t]}\abs{X_s}=\sup_{s\in[0,t]}\abs{X_s}:
++\end{equation}
++对 $s\in[0,t)$，取 $s_k\in D\cap(s,t]$ 使 $s_k\downarrow s$，则 $\abs{X_{s_k}}\to\abs{X_s}$；$s=t$ 时 $t\in D$。由此得 (1)。
++
++\textbf{(2)} 同样的做法，改用离散鞅的 $L^p$ Doob 不等式\cite[附录 A2]{LeGall2016}，对每个 $m$ 得
++\[
++  \E\Bigl[\sup_{s\in D_m}\abs{X_s}^p\Bigr]\le\Bigl(\frac{p}{p-1}\Bigr)^p\E[\abs{X_t}^p].
++\]
++令 $m\to\infty$，由单调收敛定理及\cref{eq:sup-dense-equals-sup} 即得 (2)。
++\end{proof}
++
++\begin{remark}
++\label{rem:maximal-inequality-without-regularity}
++若不假设上鞅 $X$ 的样本路径右连续，上面的证明（不用最后一步）仍给出：对 $\R_+$ 的任意可数稠密子集 $D$ 及 $t\in(0,\infty)$，
++\[
++  \Prob\Bigl(\sup_{s\in D\cap[0,t]}\abs{X_s}>\lambda\Bigr)\le\frac1\lambda\bigl(\E[\abs{X_0}]+2\E[\abs{X_t}]\bigr)
++\]
++（必要时把 $0$ 与 $t$ 添入 $D$，这只会让左端变大）。令 $\lambda\to\infty$，特别地有 $\sup_{s\in D\cap[0,t]}\abs{X_s}<\infty$ 几乎处处。
  \end{remark}
  
++为研究样本路径的正则性，引入上穿次数。
++
++\begin{definition}[上穿次数]
++\label{def:upcrossing-number}
++设 $I\subseteq\R_+$，$f:I\to\R$，$a<b$。若存在 $I$ 中的元素 $s_1<t_1<s_2<t_2<\cdots<s_k<t_k$，使对每个 $i\in\{1,\ldots,k\}$ 有
++$f(s_i)\le a$、$f(t_i)\ge b$，就说 $f$ 沿 $[a,b]$ 在 $I$ 上至少上穿 $k$ 次。令 $M^f_{ab}(I)$ 为这样的 $k\ge1$ 中的最大者，
++称为 $f$ 沿 $[a,b]$ 的上穿次数；若对 $k=1$ 也不存在这样的元素，令 $M^f_{ab}(I):=0$；若对每个 $k\ge1$ 都存在，令 $M^f_{ab}(I):=\infty$（\cref{fig:upcrossings}）。
++\end{definition}
++
++\begin{figure}[htbp]
++  \centering
++  \begin{tikzpicture}
++    \begin{axis}[
++        width=0.85\textwidth, height=0.45\textwidth,
++        xmin=0, xmax=1.05, ymin=-0.05, ymax=1.05,
++        axis lines=left, xtick=\empty, ytick=\empty,
++        clip=false]
++      \draw[densely dashed, gray] (axis cs:0,0.3) -- (axis cs:1.05,0.3) node[right, black] {$a$};
++      \draw[densely dashed, gray] (axis cs:0,0.7) -- (axis cs:1.05,0.7) node[right, black] {$b$};
++      \draw[very thick] (axis cs:0.05,-0.05) -- (axis cs:0.97,-0.05);
++      \draw[thick] (axis cs:0.05,-0.075) -- (axis cs:0.05,-0.025);
++      \draw[thick] (axis cs:0.97,-0.075) -- (axis cs:0.97,-0.025);
++      \node[below] at (axis cs:0.97,-0.05) {$I$};
++      \addplot[semithick, mark=none, restrict x to domain=0.05:0.97] table[row sep=\\]{
++        s y\\
++        0.0000 0.598\\0.0100 0.676\\0.0200 0.749\\0.0300 0.813\\0.0400 0.866\\0.0500 0.905\\0.0600 0.931\\0.0700 0.941\\0.0800 0.937\\0.0900 0.919\\0.1000 0.889\\0.1100 0.849\\0.1200 0.801\\0.1300 0.747\\0.1400 0.689\\0.1500 0.630\\0.1600 0.572\\0.1700 0.516\\0.1800 0.463\\0.1900 0.414\\0.2000 0.369\\0.2100 0.329\\0.2200 0.294\\0.2300 0.263\\0.2400 0.237\\0.2500 0.215\\0.2600 0.198\\0.2700 0.186\\0.2800 0.180\\0.2900 0.180\\0.3000 0.187\\0.3100 0.202\\0.3200 0.226\\0.3300 0.258\\0.3400 0.298\\0.3500 0.347\\0.3600 0.402\\0.3700 0.461\\0.3800 0.524\\0.3900 0.588\\0.4000 0.650\\0.4100 0.706\\0.4200 0.756\\0.4300 0.796\\0.4400 0.825\\0.4500 0.840\\0.4600 0.843\\0.4700 0.831\\0.4800 0.807\\0.4900 0.772\\0.5000 0.727\\0.5100 0.676\\0.5200 0.620\\0.5300 0.562\\0.5400 0.506\\0.5500 0.452\\0.5600 0.405\\0.5700 0.364\\0.5800 0.331\\0.5900 0.307\\0.6000 0.291\\0.6100 0.282\\0.6200 0.281\\0.6300 0.286\\0.6400 0.297\\0.6500 0.311\\0.6600 0.328\\0.6700 0.347\\0.6800 0.369\\0.6900 0.392\\0.7000 0.417\\0.7100 0.444\\0.7200 0.473\\0.7300 0.503\\0.7400 0.535\\0.7500 0.569\\0.7600 0.604\\0.7700 0.639\\0.7800 0.672\\0.7900 0.702\\0.8000 0.728\\0.8100 0.747\\0.8200 0.758\\0.8300 0.760\\0.8400 0.752\\0.8500 0.733\\0.8600 0.702\\0.8700 0.662\\0.8800 0.613\\0.8900 0.557\\0.9000 0.496\\0.9100 0.433\\0.9200 0.371\\0.9300 0.313\\0.9400 0.262\\0.9500 0.220\\0.9600 0.188\\0.9700 0.169\\0.9800 0.163\\0.9900 0.169\\1.0000 0.188\\
++      };
++      \fill (axis cs:0.2200,0.294) circle[radius=1.6pt];
++      \draw[densely dotted] (axis cs:0.2200,0.294) -- (axis cs:0.2200,-0.05) node[below] {$s_1$};
++      \fill (axis cs:0.4100,0.706) circle[radius=1.6pt];
++      \draw[densely dotted] (axis cs:0.4100,0.706) -- (axis cs:0.4100,-0.05) node[below] {$t_1$};
++      \fill (axis cs:0.5950,0.298) circle[radius=1.6pt];
++      \draw[densely dotted] (axis cs:0.5950,0.298) -- (axis cs:0.5950,-0.05) node[below] {$s_2$};
++      \fill (axis cs:0.7900,0.702) circle[radius=1.6pt];
++      \draw[densely dotted] (axis cs:0.7900,0.702) -- (axis cs:0.7900,-0.05) node[below] {$t_2$};
++    \end{axis}
++  \end{tikzpicture}
++  \caption{沿 $[a,b]$ 的上穿：$s_1<t_1<s_2<t_2$ 都属于区间 $I$，$f(s_i)\le a$，$f(t_i)\ge b$。图中的函数 $f:I\to\R$ 沿 $[a,b]$ 在 $I$ 上上穿 $2$ 次，即 $M^f_{ab}(I)=2$。}
++  \label{fig:upcrossings}
++\end{figure}
++
++上穿次数是研究函数正则性的方便工具。下文中，$\lim_{s\downarrow\downarrow t}f(s)$ 表示 $\lim_{s\downarrow t,\,s>t}f(s)$，
++$\lim_{s\uparrow\uparrow t}f(s)$ 表示 $\lim_{s\uparrow t,\,s<t}f(s)$。若函数 $g:\R_+\to\R$ 右连续，且在每个 $t\in(0,\infty)$ 处有左极限，
++则称 $g$ 是 càdlàg 的（法语 continue à droite avec des limites à gauche 的缩写）。
++
++\begin{lemma}
++\label{lem:upcrossing-cadlag}
++设 $D$ 是 $\R_+$ 的可数稠密子集，$f:D\to\R$。设对每个 $T\in D$：
++\begin{enumerate}[label=(\arabic*)]
++  \item $f$ 在 $D\cap[0,T]$ 上有界；
++  \item 对任意有理数 $a<b$，$M^f_{ab}(D\cap[0,T])<\infty$。
++\end{enumerate}
++则对每个 $t\in[0,\infty)$，右极限 $f(t+):=\lim_{s\downarrow\downarrow t,\,s\in D}f(s)$ 存在；对每个 $t\in(0,\infty)$，
++左极限 $f(t-):=\lim_{s\uparrow\uparrow t,\,s\in D}f(s)$ 存在。此外，$g(t):=f(t+)$ 定义的 $g:\R_+\to\R$ 是 càdlàg 的。
++\end{lemma}
++
++注意 $f(t+)$ 与 $f(t-)$ 对每个实数 $t$ 都有定义，而不只对 $t\in D$。这是一个纯分析的引理，原书略去了证明，证明可参见\cite[第 II 章 §2]{RevuzYor1999}。
++
++\begin{theorem}
++\label{thm:supermartingale-limits}
++设 $X$ 是上鞅，$D$ 是 $\R_+$ 的可数稠密子集。
++\begin{enumerate}[label=(\arabic*)]
++  \item 对几乎每个 $\omega\in\Omega$，$s\mapsto X_s(\omega)$ 在 $D$ 上的限制在每个 $t\in[0,\infty)$ 处有右极限
++    \begin{equation}
++      \label{eq:supermartingale-right-limit}
++      X_{t+}(\omega):=\lim_{s\downarrow\downarrow t,\,s\in D}X_s(\omega),
++    \end{equation}
++    在每个 $t\in(0,\infty)$ 处有左极限 $X_{t-}(\omega):=\lim_{s\uparrow\uparrow t,\,s\in D}X_s(\omega)$。
++  \item 对每个 $t\in[0,\infty)$，$X_{t+}\in L^1$，且
++    \[
++      X_t\ge\Econd{X_{t+}}{\F_t},
++    \]
++    若 $t\mapsto\E[X_t]$ 右连续（例如 $X$ 是鞅），则等号成立。过程 $(X_{t+})_{t\in[0,\infty)}$ 是关于滤过 $(\F_{t+})$ 的上鞅；若 $X$ 是鞅，它是鞅。
++\end{enumerate}
++\end{theorem}
++
++(2) 的后半部分要求 $X_{t+}(\omega)$ 对每个 $\omega$ 都有定义，而不只在一个零测集之外有定义。证明中将看到，在\cref{eq:supermartingale-right-limit} 的极限不存在时令 $X_{t+}(\omega):=0$ 即可。
++
++\begin{proof}
++\textbf{(1)} 把 $0$ 添入 $D$ 不影响结论（右极限与左极限都不涉及单点 $0$ 的取值），故可设 $0\in D$。固定 $T\in D$。由\cref{rem:maximal-inequality-without-regularity}，
++$\sup_{s\in D\cap[0,T]}\abs{X_s}<\infty$ 几乎处处。与\cref{prop:continuous-maximal-inequalities} 的证明一样，取单调递增、并为 $D\cap[0,T]$、且都含 $0$ 与 $T$ 的有限集列 $(D_m)$。
++由离散上鞅的上穿不等式\cite[附录 A2]{LeGall2016}，对任意 $a<b$ 与 $m\ge1$，
++\[
++  \E\bigl[M^X_{ab}(D_m)\bigr]\le\frac{1}{b-a}\E\bigl[(X_T-a)^-\bigr].
++\]
++$D\cap[0,T]$ 中的任一有限递增列都含于某个 $D_m$，故 $M^X_{ab}(D_m)\uparrow M^X_{ab}(D\cap[0,T])$。由单调收敛定理，
++\[
++  \E\bigl[M^X_{ab}(D\cap[0,T])\bigr]\le\frac{1}{b-a}\E\bigl[(X_T-a)^-\bigr]<\infty,
++\]
++故 $M^X_{ab}(D\cap[0,T])<\infty$ 几乎处处。令
++\begin{equation}
++  \label{eq:supermartingale-null-set}
++  N:=\bigcup_{T\in D}\Bigl(\Bigl\{\sup_{s\in D\cap[0,T]}\abs{X_s}=\infty\Bigr\}\cup\bigcup_{a,b\in\Q,\,a<b}\bigl\{M^X_{ab}(D\cap[0,T])=\infty\bigr\}\Bigr).
++\end{equation}
++这是可数个零测集之并，故 $\Prob(N)=0$。对 $\omega\notin N$，$D\ni t\mapsto X_t(\omega)$ 满足\cref{lem:upcrossing-cadlag} 的全部条件，由该引理即得 (1)。
++
++\textbf{(2)} 对每个 $\omega\in\Omega$，若\cref{eq:supermartingale-right-limit} 中的极限存在，令 $X_{t+}(\omega)$ 为该极限，否则令 $X_{t+}(\omega):=0$。
++对每个 $k\ge1$，右极限是否存在以及它的值只依赖于 $X_s$（$s\in D\cap(t,t+1/k)$），它们都 $\F_{t+1/k}$ 可测，故 $X_{t+}$ 是 $\F_{t+1/k}$ 可测的；
++$k$ 是任意的，故 $X_{t+}$ 是 $\F_{t+}$ 可测的。
++
++固定 $t\in[0,\infty)$，取 $D$ 中严格递减趋于 $t$ 的序列 $(t_n)_{n\ge0}$。由构造，在 $N^c$ 上 $X_{t+}=\lim_nX_{t_n}$。对整数 $k\le0$ 令 $Y_k:=X_{t_{-k}}$，
++则 $(Y_k)_{k\le0}$ 是关于离散滤过 $\mathcal H_k:=\F_{t_{-k}}$ 的反向上鞅。由\cref{prop:submartingale-l1-bounded}，$\sup_{k\le0}\E[\abs{Y_k}]\le\sup_{s\in[0,t_0]}\E[\abs{X_s}]<\infty$，
++由反向上鞅的收敛定理\cite[附录 A2]{LeGall2016}，$X_{t_n}$ 在 $L^1$ 中收敛到 $X_{t+}$，特别地 $X_{t+}\in L^1$。
++
++条件期望是 $L^1$ 压缩\cite[定理 4.1.11]{Durrett2019}，故 $\Econd{X_{t_n}}{\F_t}\to\Econd{X_{t+}}{\F_t}$ 于 $L^1$，从而沿某个子列几乎处处收敛\cite[定理 2.3.2]{Durrett2019}。
++在 $X_t\ge\Econd{X_{t_n}}{\F_t}$ 中沿该子列取极限，得 $X_t\ge\Econd{X_{t+}}{\F_t}$。这里 $L^1$ 收敛是关键：仅有 $X_{t_n}\to X_{t+}$ 几乎处处，不足以把极限移到条件期望里面。
++又由 $L^1$ 收敛，$\E[X_{t+}]=\lim_n\E[X_{t_n}]$。若 $s\mapsto\E[X_s]$ 右连续，则 $\E[X_t]=\E[X_{t+}]=\E\bigl[\Econd{X_{t+}}{\F_t}\bigr]$，
++于是非负随机变量 $X_t-\Econd{X_{t+}}{\F_t}$ 的期望为 $0$，故 $X_t=\Econd{X_{t+}}{\F_t}$ 几乎处处。
++
++最后，$(X_{t+})$ 关于 $(\F_{t+})$ 适应且可积。设 $s<t$，取 $D$ 中严格递减趋于 $s$ 的序列 $(s_n)$，可设 $s_n<t$，从而 $s_n<t_n$。
++与上面同理，$X_{s_n}\to X_{s+}$ 于 $L^1$。若 $A\in\F_{s+}$，则对每个 $n$ 有 $A\in\F_{s_n}$，由上鞅性质 $\E[X_{s_n}\ind A]\ge\E[X_{t_n}\ind A]$，故
++\[
++  \E[X_{s+}\ind A]=\lim_{n\to\infty}\E[X_{s_n}\ind A]\ge\lim_{n\to\infty}\E[X_{t_n}\ind A]=\E[X_{t+}\ind A]=\E\bigl[\Econd{X_{t+}}{\F_{s+}}\ind A\bigr].
++\]
++这对每个 $A\in\F_{s+}$ 成立，而 $X_{s+}$ 与 $\Econd{X_{t+}}{\F_{s+}}$ 都 $\F_{s+}$ 可测，取 $A:=\{X_{s+}<\Econd{X_{t+}}{\F_{s+}}\}$ 即知
++$X_{s+}\ge\Econd{X_{t+}}{\F_{s+}}$ 几乎处处。若 $X$ 是鞅，上面的不等式都可换成等式。
++\end{proof}
++
++\begin{theorem}[càdlàg 修正]
++\label{thm:supermartingale-cadlag-modification}
++设滤过 $(\F_t)$ 右连续且完备，$X$ 是上鞅，且 $t\mapsto\E[X_t]$ 右连续。则 $X$ 有一个样本路径 càdlàg 的修正，它也是 $(\F_t)$ 上鞅。
++\end{theorem}
++
++\begin{proof}
++取\cref{thm:supermartingale-limits} 中的可数稠密子集 $D$ 及零测集 $N$（\cref{eq:supermartingale-null-set}）。对 $t\in[0,\infty)$ 令
++\[
++  Y_t(\omega):=
++  \begin{cases}
++    X_{t+}(\omega), & \omega\notin N,\\
++    0, & \omega\in N.
++  \end{cases}
++\]
++对 $\omega\notin N$，$t\mapsto Y_t(\omega)$ 就是\cref{lem:upcrossing-cadlag} 中的 $g$，故是 càdlàg 的；对 $\omega\in N$ 它恒为 $0$。
++
++$X_{t+}$ 是 $\F_{t+}$ 可测的，由右连续性即 $\F_t$ 可测。$N$ 是可数个 $\F_\infty$ 中零测集之并，故 $N\in\mathcal N\subseteq\F_0$（滤过完备），
++从而 $Y_t=X_{t+}\ind{N^c}$ 是 $\F_t$ 可测的。由\cref{thm:supermartingale-limits}~(2) 及 $X_{t+}$ 的 $\F_t$ 可测性，对每个 $t$，
++\[
++  X_t=\Econd{X_{t+}}{\F_t}=X_{t+}=Y_t\quad\text{几乎处处},
++\]
++故 $Y$ 是 $X$ 的修正。$Y$ 适应且可积；对 $0\le s<t$，由于 $Y_t=X_t$、$Y_s=X_s$ 几乎处处，$\Econd{Y_t}{\F_s}=\Econd{X_t}{\F_s}\le X_s=Y_s$ 几乎处处，所以 $Y$ 是上鞅。
++\end{proof}
++
++\begin{remark}
++\label{rem:cadlag-modification-assumptions}
++\begin{enumerate}[label=(\arabic*)]
++  \item 滤过右连续的假设不能去掉。取 $\Omega=\{-1,1\}$，$\Prob(\{1\})=\Prob(\{-1\})=1/2$，$\varepsilon(\omega):=\omega$；
++    令 $X_t:=0$（$t\in[0,1]$），$X_t:=\varepsilon$（$t>1$）。$X$ 关于其典范滤过 $(\F^X_t)$ 是鞅：$t\le1$ 时 $\F^X_t$ 平凡，$t>1$ 时 $\F^X_t=\sigma(\varepsilon)$，
++    而 $\E[\varepsilon]=0$。该滤过是完备的，因为非空集合的概率都不为 $0$，可略集只有 $\varnothing$。同样因此，$X$ 的修正只能是 $X$ 本身，而 $X$ 在 $t=1$ 处不右连续。
++    这与\cref{thm:supermartingale-cadlag-modification} 不矛盾，因为 $\F^X_{1+}=\sigma(\varepsilon)\ne\F^X_1$，滤过不右连续。
++  \item $t\mapsto\E[X_t]$ 右连续的假设也不能去掉。取单调不增的确定函数 $f$，令 $X_t:=f(t)$，它是上鞅。若 $Y$ 是 $X$ 的样本路径右连续的修正，
++    取可数稠密子集 $D$ 与 $t$，在满测度集 $\{Y_s=f(s),\ \forall s\in D\cup\{t\}\}$ 上，$f(t)=Y_t=\lim_{s\downarrow\downarrow t,\,s\in D}Y_s=\lim_{s\downarrow\downarrow t,\,s\in D}f(s)$，
++    所以 $f$ 必须右连续。
++\end{enumerate}
++\end{remark}
++
++\section{可选停止定理}
++\label{sec:optional-stopping}
++
++先给出上鞅的一个收敛定理。称过程 $X$ 在 $L^1$ 中有界，是指 $\sup_{t\in[0,\infty)}\E[\abs{X_t}]<\infty$。
++
++\begin{theorem}[上鞅收敛定理]
++\label{thm:supermartingale-convergence}
++设 $X$ 是样本路径右连续的上鞅，且在 $L^1$ 中有界。则存在随机变量 $X_\infty\in L^1$，使 $\lim_{t\to\infty}X_t=X_\infty$ 几乎处处。
++\end{theorem}
++
++\begin{proof}
++取 $\R_+$ 的可数稠密子集 $D$。由\cref{thm:supermartingale-limits} 的证明，对每个 $T\in D$ 与 $a<b$，
++\[
++  \E\bigl[M^X_{ab}(D\cap[0,T])\bigr]\le\frac{1}{b-a}\E\bigl[(X_T-a)^-\bigr]\le\frac{1}{b-a}\Bigl(\sup_{t\in[0,\infty)}\E[\abs{X_t}]+\abs a\Bigr).
++\]
++$D$ 中的任一有限递增列都含于某个 $D\cap[0,T]$，故 $T\uparrow\infty$（$T\in D$）时 $M^X_{ab}(D\cap[0,T])\uparrow M^X_{ab}(D)$。由单调收敛定理，
++$\E[M^X_{ab}(D)]<\infty$，于是几乎处处，对所有有理数 $a<b$ 有 $M^X_{ab}(D)<\infty$。在这一事件上，极限
++\begin{equation}
++  \label{eq:supermartingale-limit-along-d}
++  X_\infty:=\lim_{D\ni t\to\infty}X_t
++\end{equation}
++在 $[-\infty,\infty]$ 中存在：否则 $\liminf<\limsup$，取有理数 $a<b$ 位于二者之间，就得到无穷多次上穿。由 Fatou 引理，
++$\E[\abs{X_\infty}]\le\liminf_{D\ni t\to\infty}\E[\abs{X_t}]<\infty$，故 $X_\infty$ 几乎处处有限，且 $X_\infty\in L^1$。
++
++最后用右连续性去掉\cref{eq:supermartingale-limit-along-d} 中 $t\in D$ 的限制：对任意 $t$，$X_t=\lim_{s\downarrow\downarrow t,\,s\in D}X_s$，
++故 $\abs{X_t-X_\infty}\le\sup_{s\in D,\,s>t}\abs{X_s-X_\infty}$，而右端在 $t\to\infty$ 时趋于 $0$。
++\end{proof}
++
++在\cref{thm:supermartingale-convergence} 的条件下，$X_t$ 未必在 $L^1$ 中收敛到 $X_\infty$。下面的定理对鞅给出 $L^1$ 收敛的充要条件。
++
++\begin{definition}[闭鞅]
++\label{def:closed-martingale}
++若存在随机变量 $Z\in L^1$，使对每个 $t\in[0,\infty)$ 有 $X_t=\Econd{Z}{\F_t}$，则称鞅 $X$ 是闭的。
++\end{definition}
++
++\begin{theorem}
++\label{thm:closed-martingale-equivalence}
++设 $X$ 是样本路径右连续的鞅，则下列三条等价：
++\begin{enumerate}[label=(\arabic*)]
++  \item $X$ 是闭鞅；
++  \item $(X_t)_{t\in[0,\infty)}$ 一致可积；
++  \item $t\to\infty$ 时 $X_t$ 几乎处处且在 $L^1$ 中收敛。
++\end{enumerate}
++此时，记 $X_\infty\in L^1$ 为 $X_t$ 的几乎处处极限，则对每个 $t\in[0,\infty)$ 有 $X_t=\Econd{X_\infty}{\F_t}$。
++\end{theorem}
++
++\begin{proof}
++(1)$\Rightarrow$(2)：对 $Z\in L^1$，$\{\Econd{Z}{\G}:\G\ \text{是}\ \F\ \text{的子}\ \sigma\ \text{代数}\}$ 一致可积\cite[定理 4.6.1]{Durrett2019}。
++
++(2)$\Rightarrow$(3)：一致可积族在 $L^1$ 中有界，由\cref{thm:supermartingale-convergence}，$X_t$ 几乎处处收敛到某个 $X_\infty$；
++几乎处处收敛加上一致可积给出 $L^1$ 收敛\cite[定理 4.6.3]{Durrett2019}。
++
++(3)$\Rightarrow$(1)：固定 $s$，对 $t>s$ 有 $X_s=\Econd{X_t}{\F_s}$。条件期望是 $L^1$ 压缩\cite[定理 4.1.11]{Durrett2019}，令 $t\to\infty$ 得
++$X_s=\Econd{X_\infty}{\F_s}$，即 $X$ 由 $X_\infty$ 闭。这同时证明了最后的断言。
++\end{proof}
++
++下面借助离散时间鞅与上鞅的可选停止定理\cite[附录 A2]{LeGall2016}（亦见\cite[\S4.8]{Durrett2019}），在连续时间中建立类似的结论。
++
++设 $X$ 是样本路径右连续的鞅或上鞅，且 $t\to\infty$ 时 $X_t$ 几乎处处收敛。取 $X_\infty:=\limsup_{n\to\infty}X_n$（$n$ 取整数），
++它几乎处处等于该极限，且是 $\F_\infty$ 可测的。对任意停时 $T$，令
++\[
++  X_T(\omega):=\ind{\{T(\omega)<\infty\}}X_{T(\omega)}(\omega)+\ind{\{T(\omega)=\infty\}}X_\infty(\omega).
++\]
++\cref{thm:progressive-at-stopping-time} 中的 $X_T$ 只定义在 $\{T<\infty\}$ 上，这里把它延拓到了整个 $\Omega$。
++
++\begin{lemma}
++\label{lem:stopped-value-measurable}
++在上述记号下，$X_T$ 是 $\F_T$ 可测的。
++\end{lemma}
++
++\begin{proof}
++$X$ 适应且样本路径右连续，由\cref{prop:right-continuous-progressive} 循序可测，再由\cref{thm:progressive-at-stopping-time}，
++对 $\Gamma\in\B(\R)$ 有 $\{T<\infty,\ X_T\in\Gamma\}\in\F_T$。又 $\{T=\infty,\ X_\infty\in\Gamma\}\in\F_\infty$
++（\cref{prop:stopping-time-general-basics}~(2)），且它与每个 $\{T\le t\}$ 的交为空集，故属于 $\F_T$。两者之并即 $\{X_T\in\Gamma\}$。
++\end{proof}
++
++\begin{theorem}[鞅的可选停止定理]
++\label{thm:optional-stopping-martingale}
++设 $X$ 是样本路径右连续的一致可积鞅，$S\le T$ 是两个停时。则 $X_S,X_T\in L^1$，且
++\[
++  X_S=\Econd{X_T}{\F_S}.
++\]
++特别地，对任意停时 $S$，$X_S=\Econd{X_\infty}{\F_S}$，且 $\E[X_S]=\E[X_\infty]=\E[X_0]$。
++\end{theorem}
++
++\begin{proof}
++由\cref{thm:closed-martingale-equivalence}，$X_t\to X_\infty$ 几乎处处且在 $L^1$ 中，且 $X_t=\Econd{X_\infty}{\F_t}$，所以 $X_T$ 有定义。
++
++\textbf{第一步：离散化。}按\cref{prop:stopping-time-dyadic-approximation}，对 $n\ge0$ 令 $T_n:=2^{-n}\lceil2^nT\rceil$、$S_n:=2^{-n}\lceil2^nS\rceil$
++（在 $\{T=\infty\}$、$\{S=\infty\}$ 上取 $\infty$），它们是分别递减趋于 $T$ 与 $S$ 的停时，且由 $S\le T$ 得 $S_n\le T_n$。
++固定 $n$，考虑离散滤过 $\Hcal^{(n)}_k:=\F_{k2^{-n}}$（$k\in\N$），$\Hcal^{(n)}_\infty:=\F_\infty$，以及 $Y^{(n)}_k:=X_{k2^{-n}}$，$Y^{(n)}_\infty:=X_\infty$。
++$Y^{(n)}$ 是由 $X_\infty$ 闭的离散鞅，因而一致可积；$2^nS_n$ 与 $2^nT_n$ 是取值于 $\N\cup\{\infty\}$ 的 $(\Hcal^{(n)}_k)$ 停时，
++因为 $\{2^nT_n\le k\}=\{T_n\le k2^{-n}\}\in\F_{k2^{-n}}$。由一致可积离散鞅的可选停止定理\cite[附录 A2]{LeGall2016}，
++$Y^{(n)}_{2^nS_n},Y^{(n)}_{2^nT_n}\in L^1$，且
++\[
++  X_{S_n}=Y^{(n)}_{2^nS_n}=\Econd{Y^{(n)}_{2^nT_n}}{\Hcal^{(n)}_{2^nS_n}}=\Econd{X_{T_n}}{\F_{S_n}}.
++\]
++最后一步用到 $\Hcal^{(n)}_{2^nS_n}=\F_{S_n}$：由于 $S_n$ 只取 $2^{-n}\N\cup\{\infty\}$ 中的值，对 $t\in[0,\infty)$ 及 $k:=\lfloor2^nt\rfloor$，
++$\{S_n\le t\}=\{2^nS_n\le k\}$，而 $\F_{k2^{-n}}\subseteq\F_t$；反之取 $t=k2^{-n}$。因此对 $A\in\F_\infty$，
++“对每个 $k$ 有 $A\cap\{2^nS_n\le k\}\in\Hcal^{(n)}_k$”与“对每个 $t$ 有 $A\cap\{S_n\le t\}\in\F_t$”等价。
++
++\textbf{第二步：取极限。}设 $A\in\F_S$。由 $S\le S_n$ 及\cref{prop:stopping-time-properties}~(5)，$A\in\F_{S_n}$，故
++\[
++  \E[\ind AX_{S_n}]=\E[\ind AX_{T_n}].
++\]
++由样本路径的右连续性，在 $\{S<\infty\}$ 上 $X_{S_n}\to X_S$；在 $\{S=\infty\}$ 上 $X_{S_n}=X_\infty=X_S$。对 $T$ 同理。这些收敛也在 $L^1$ 中成立：
++在第一步中取 $T=\infty$，得 $X_{S_n}=\Econd{X_\infty}{\F_{S_n}}$，故 $(X_{S_n})_n$ 一致可积\cite[定理 4.6.1]{Durrett2019}，
++几乎处处收敛加一致可积给出 $L^1$ 收敛\cite[定理 4.6.3]{Durrett2019}；$(X_{T_n})_n$ 同理。于是 $X_S,X_T\in L^1$，且令 $n\to\infty$ 得
++$\E[\ind AX_S]=\E[\ind AX_T]$。这对每个 $A\in\F_S$ 成立，而 $X_S$ 是 $\F_S$ 可测的（\cref{lem:stopped-value-measurable}），故 $X_S=\Econd{X_T}{\F_S}$。
++
++取 $T=\infty$ 得 $X_S=\Econd{X_\infty}{\F_S}$；取期望得 $\E[X_S]=\E[X_\infty]$，再取 $S=0$ 得 $\E[X_0]=\E[X_\infty]$。
++\end{proof}
++
++下面是\cref{thm:optional-stopping-martingale} 的两个推论。
++
++\begin{corollary}
++\label{cor:optional-stopping-bounded}
++设 $X$ 是样本路径右连续的鞅，$S\le T$ 是两个有界停时。则 $X_S,X_T\in L^1$，且 $X_S=\Econd{X_T}{\F_S}$。
++\end{corollary}
++
++\begin{proof}
++取 $a\in[0,\infty)$ 使 $S\le T\le a$。过程 $(X_{t\wedge a})_{t\in[0,\infty)}$ 是由 $X_a$ 闭的鞅：$t\le a$ 时 $X_{t\wedge a}=X_t=\Econd{X_a}{\F_t}$，
++$t>a$ 时 $X_{t\wedge a}=X_a=\Econd{X_a}{\F_t}$。由\cref{thm:closed-martingale-equivalence}，它是一致可积的，且样本路径右连续，其极限为 $X_a$。
++对它应用\cref{thm:optional-stopping-martingale} 即可，因为 $S,T\le a$ 时 $(X_{\cdot\wedge a})_S=X_S$，$(X_{\cdot\wedge a})_T=X_T$。
++\end{proof}
++
++第二个推论说明，鞅（或一致可积鞅）在任意停时处停止后仍是鞅（或一致可积鞅）。这一结论在后面几章中起重要作用。
++
++\begin{corollary}[停止鞅]
++\label{cor:stopped-martingale}
++设 $X$ 是样本路径右连续的鞅，$T$ 是停时。
++\begin{enumerate}[label=(\arabic*)]
++  \item 过程 $(X_{t\wedge T})_{t\in[0,\infty)}$ 是鞅。
++  \item 若 $X$ 还是一致可积的，则 $(X_{t\wedge T})_{t\in[0,\infty)}$ 是一致可积鞅，且对每个 $t\in[0,\infty)$，
++    \begin{equation}
++      \label{eq:stopped-martingale-closed}
++      X_{t\wedge T}=\Econd{X_T}{\F_t}.
++    \end{equation}
++\end{enumerate}
++\end{corollary}
++
++\begin{proof}
++\textbf{(2)} 由\cref{prop:stopping-time-properties}~(6)，$t\wedge T$ 是停时。由\cref{thm:optional-stopping-martingale}，$X_{t\wedge T},X_T\in L^1$，且
++$X_{t\wedge T}=\Econd{X_T}{\F_{t\wedge T}}$；又 $X_{t\wedge T}$ 是 $\F_{t\wedge T}$ 可测的，而 $\F_{t\wedge T}\subseteq\F_t$（\cref{prop:stopping-time-properties}~(2)(5)），
++故它是 $\F_t$ 可测的。于是只需证明：对每个 $A\in\F_t$，$\E[\ind AX_T]=\E[\ind AX_{t\wedge T}]$。固定 $A\in\F_t$。在 $\{T\le t\}$ 上 $X_T=X_{t\wedge T}$，故
++\begin{equation}
++  \label{eq:stopped-martingale-before}
++  \E[\ind{A\cap\{T\le t\}}X_T]=\E[\ind{A\cap\{T\le t\}}X_{t\wedge T}].
++\end{equation}
++另一方面，$A\cap\{T>t\}\in\F_t$；它也属于 $\F_T$，因为对 $s\in[0,\infty)$，$A\cap\{T>t\}\cap\{T\le s\}$ 在 $s\le t$ 时为空集，在 $s>t$ 时属于 $\F_s$。
++由\cref{prop:stopping-time-properties}~(6)，$A\cap\{T>t\}\in\F_t\cap\F_T=\F_{t\wedge T}$，于是由 $X_{t\wedge T}=\Econd{X_T}{\F_{t\wedge T}}$，
++\[
++  \E[\ind{A\cap\{T>t\}}X_T]=\E[\ind{A\cap\{T>t\}}X_{t\wedge T}].
++\]
++与\cref{eq:stopped-martingale-before} 相加即得\cref{eq:stopped-martingale-closed}。因此 $(X_{t\wedge T})$ 是由 $X_T$ 闭的鞅，由\cref{thm:closed-martingale-equivalence} 一致可积。
++
++\textbf{(1)} 固定 $a\in[0,\infty)$。\cref{cor:optional-stopping-bounded} 的证明表明 $(X_{t\wedge a})$ 是样本路径右连续的一致可积鞅，对它应用 (2)：
++对每个 $t$，$X_{t\wedge a\wedge T}=\Econd{X_{a\wedge T}}{\F_t}$。于是对 $0\le s<t\le a$，由塔性质，
++$\Econd{X_{t\wedge T}}{\F_s}=\Econd{X_{a\wedge T}}{\F_s}=X_{s\wedge T}$。$a$ 是任意的，故 $(X_{t\wedge T})$ 是鞅。
++\end{proof}
++
++\paragraph{应用}
++可选停止定理首先是显式计算概率分布的有力工具。下面给出几个重要而典型的例子。设 $B$ 是从 $0$ 出发的实布朗运动，
++由\cref{ex:brownian-martingales}，它关于其典范滤过是样本路径连续的鞅。对 $a\in\R$，$T_a:=\inf\{t\in[0,\infty):B_t=a\}$ 是首中时，
++它是停时（\cref{prop:stopping-time-basics}~(3)），且 $T_a<\infty$ 几乎处处（\cref{prop:brownian-oscillation}~(2)）。
++
++\begin{example}[离开区间的位置]
++\label{ex:exit-point-interval}
++对 $a<0<b$，
++\[
++  \Prob(T_a<T_b)=\frac{b}{b-a},\qquad \Prob(T_b<T_a)=\frac{-a}{b-a}.
++\]
++令 $T:=T_a\wedge T_b$，$M_t:=B_{t\wedge T}$（\cref{fig:exit-interval}）。由\cref{cor:stopped-martingale}~(1)，$M$ 是鞅。由路径连续与 $B_0=0$，
++$t<T$ 时 $B_t\in(a,b)$，而 $B_T\in\{a,b\}$，故 $\abs{M_t}\le b\vee\abs a$，$M$ 一致可积。又 $T<\infty$ 几乎处处，故 $M_\infty=B_T$。
++由\cref{thm:optional-stopping-martingale}，
++\[
++  0=\E[M_0]=\E[M_\infty]=\E[B_T]=b\,\Prob(T_b<T_a)+a\,\Prob(T_a<T_b).
++\]
++由于 $B_{T_a}=a\ne b=B_{T_b}$，几乎处处 $T_a\ne T_b$，故 $\Prob(T_b<T_a)+\Prob(T_a<T_b)=1$，联立即得。上面的论证表明，把布朗运动换成从 $0$ 出发、
++样本路径连续的任意鞅，只要已知它几乎处处离开 $(a,b)$，结论仍成立。
++\end{example}
++
++\begin{figure}[htbp]
++  \centering
++  \begin{tikzpicture}
++    \begin{axis}[
++        width=0.8\textwidth, height=0.45\textwidth,
++        xmin=0, xmax=0.894, ymin=-0.7, ymax=1.0,
++        axis lines=middle, xtick=\empty, ytick=\empty,
++        clip=false]
++      \draw[densely dashed, gray] (axis cs:0,0.8) -- (axis cs:0.894,0.8) node[right, black] {$b$};
++      \draw[densely dashed, gray] (axis cs:0,-0.5) -- (axis cs:0.894,-0.5) node[right, black] {$a$};
++      \draw[densely dotted, gray] (axis cs:0.7770,-0.7) -- (axis cs:0.7770,0.8);
++      \node[below] at (axis cs:0.7770,-0.7) {$T=T_a\wedge T_b$};
++      \addplot[thin, mark=none] table[row sep=\\]{
++        s y\\
++        0.0000 0.000\\0.0040 -0.078\\0.0080 -0.104\\0.0120 -0.105\\0.0160 -0.105\\0.0200 -0.113\\0.0240 -0.056\\0.0280 -0.079\\0.0320 -0.043\\0.0360 0.005\\0.0400 0.029\\0.0440 0.052\\0.0480 0.031\\0.0520 -0.020\\0.0560 -0.068\\0.0600 -0.158\\0.0640 -0.200\\0.0680 -0.167\\0.0720 -0.255\\0.0760 -0.305\\0.0800 -0.313\\0.0840 -0.253\\0.0880 -0.313\\0.0920 -0.274\\0.0960 -0.206\\0.1000 -0.255\\0.1040 -0.152\\0.1080 -0.214\\0.1120 -0.113\\0.1160 -0.075\\0.1200 -0.076\\0.1240 0.001\\0.1280 0.048\\0.1320 -0.026\\0.1360 0.016\\0.1400 0.096\\0.1440 0.133\\0.1480 0.213\\0.1520 0.135\\0.1560 0.133\\0.1600 0.142\\0.1640 0.202\\0.1680 0.190\\0.1720 0.072\\0.1760 0.086\\0.1800 0.066\\0.1840 0.108\\0.1880 0.229\\0.1920 0.173\\0.1960 0.095\\0.2000 0.062\\0.2040 0.185\\0.2080 0.172\\0.2120 0.076\\0.2160 0.135\\0.2200 0.180\\0.2240 0.120\\0.2280 0.051\\0.2320 -0.031\\0.2360 0.010\\0.2400 0.002\\0.2440 0.023\\0.2480 0.043\\0.2520 0.146\\0.2560 0.171\\0.2600 0.109\\0.2640 0.104\\0.2680 0.029\\0.2720 -0.059\\0.2760 -0.136\\0.2800 -0.052\\0.2840 -0.117\\0.2880 -0.084\\0.2920 -0.119\\0.2960 -0.086\\0.3000 -0.107\\0.3040 -0.091\\0.3080 -0.100\\0.3120 -0.109\\0.3160 -0.095\\0.3200 -0.115\\0.3240 -0.027\\0.3280 -0.041\\0.3320 0.045\\0.3360 0.055\\0.3400 0.009\\0.3440 -0.025\\0.3480 -0.007\\0.3520 0.022\\0.3560 0.018\\0.3600 0.034\\0.3640 0.142\\0.3680 0.112\\0.3720 0.146\\0.3760 0.234\\0.3800 0.273\\0.3840 0.299\\0.3880 0.267\\0.3920 0.298\\0.3960 0.246\\0.4000 0.334\\0.4040 0.341\\0.4080 0.369\\0.4120 0.311\\0.4160 0.295\\0.4200 0.304\\0.4240 0.342\\0.4280 0.272\\0.4320 0.157\\0.4360 0.178\\0.4400 0.221\\0.4440 0.221\\0.4480 0.329\\0.4520 0.376\\0.4560 0.423\\0.4600 0.258\\0.4640 0.192\\0.4680 0.163\\0.4720 0.149\\0.4760 0.190\\0.4800 0.230\\0.4840 0.182\\0.4880 0.178\\0.4920 0.328\\0.4960 0.307\\0.5000 0.356\\0.5040 0.444\\0.5080 0.378\\0.5120 0.388\\0.5160 0.417\\0.5200 0.430\\0.5240 0.423\\0.5280 0.361\\0.5320 0.414\\0.5360 0.455\\0.5400 0.489\\0.5440 0.579\\0.5480 0.502\\0.5520 0.468\\0.5560 0.478\\0.5600 0.570\\0.5640 0.658\\0.5680 0.714\\0.5720 0.664\\0.5760 0.615\\0.5800 0.547\\0.5840 0.653\\0.5880 0.657\\0.5920 0.564\\0.5960 0.569\\0.6000 0.561\\0.6040 0.581\\0.6080 0.519\\0.6120 0.539\\0.6160 0.575\\0.6200 0.626\\0.6240 0.615\\0.6280 0.596\\0.6320 0.719\\0.6360 0.762\\0.6400 0.678\\0.6440 0.696\\0.6480 0.664\\0.6520 0.657\\0.6560 0.602\\0.6600 0.557\\0.6640 0.439\\0.6680 0.469\\0.6720 0.489\\0.6760 0.371\\0.6800 0.445\\0.6840 0.390\\0.6880 0.419\\0.6920 0.416\\0.6960 0.475\\0.7000 0.531\\0.7040 0.426\\0.7080 0.426\\0.7120 0.449\\0.7160 0.489\\0.7200 0.488\\0.7240 0.514\\0.7280 0.616\\0.7320 0.619\\0.7360 0.716\\0.7400 0.753\\0.7440 0.700\\0.7480 0.662\\0.7520 0.779\\0.7560 0.715\\0.7600 0.662\\0.7640 0.598\\0.7680 0.531\\0.7720 0.639\\0.7760 0.744\\0.7770 0.800\\
++      };
++      \fill (axis cs:0.7770,0.8) circle[radius=1.6pt];
++    \end{axis}
++  \end{tikzpicture}
++  \caption{从 $0$ 出发的布朗运动在时刻 $T=T_a\wedge T_b$ 离开区间 $(a,b)$（图中先到达 $b$）。停止后的过程 $B_{t\wedge T}$ 取值于 $[a,b]$，因而一致可积。}
++  \label{fig:exit-interval}
++\end{figure}
++
++\begin{example}[离开区间的时间的期望]
++\label{ex:exit-time-mean}
++对 $a>0$，令 $U_a:=\inf\{t\in[0,\infty):\abs{B_t}=a\}$，则 $\E[U_a]=a^2$。
++
++$U_a$ 是闭集 $\{-a,a\}$ 的首中时，由\cref{prop:hitting-times-stopping}~(2) 是停时，且 $U_a\le T_a<\infty$ 几乎处处。
++$M_t:=B_t^2-t$ 是鞅（\cref{ex:brownian-martingales}），由\cref{cor:stopped-martingale}~(1)，$M_{t\wedge U_a}$ 也是鞅，故 $\E[M_{t\wedge U_a}]=\E[M_0]=0$，即
++$\E[B_{t\wedge U_a}^2]=\E[t\wedge U_a]$。令 $t\to\infty$：由单调收敛定理，右端趋于 $\E[U_a]$；由 $B_{t\wedge U_a}^2\le a^2$ 及控制收敛定理，左端趋于
++$\E[B_{U_a}^2]=a^2$。注意 $\E[U_a]<\infty$，而 $\E[T_a]=\infty$（\cref{rem:hitting-time-infinite-mean}）。
++\end{example}
++
++\begin{example}[首中时的 Laplace 变换]
++\label{ex:hitting-time-laplace}
++对 $a>0$ 与 $\lambda>0$，
++\begin{equation}
++  \label{eq:hitting-time-laplace}
++  \E[e^{-\lambda T_a}]=e^{-a\sqrt{2\lambda}}.
++\end{equation}
++对 $\theta\in\R$，指数鞅 $N^\theta_t:=\exp(\theta B_t-\theta^2t/2)$ 是鞅（\cref{ex:brownian-martingales}）。设 $\theta>0$。由\cref{cor:stopped-martingale}~(1)，
++$N^\theta_{t\wedge T_a}$ 是鞅；由于 $t\le T_a$ 时 $B_t\le a$，有 $0<N^\theta_{t\wedge T_a}\le e^{\theta a}$，故它一致可积。$T_a<\infty$ 几乎处处，
++故它在 $t\to\infty$ 时的极限为 $N^\theta_{T_a}=e^{\theta a-\theta^2T_a/2}$。对这个一致可积鞅应用\cref{thm:optional-stopping-martingale}（取 $S=0$ 与 $S=\infty$ 比较期望），
++\[
++  e^{\theta a}\,\E\bigl[e^{-\theta^2T_a/2}\bigr]=\E[N^\theta_{T_a}]=\E[N^\theta_0]=1.
++\]
++取 $\theta=\sqrt{2\lambda}$ 即得\cref{eq:hitting-time-laplace}。这一公式也可以由 $T_a$ 的密度（\cref{cor:hitting-time-law}）直接算出。
++
++作为对照，对 $\theta<0$ 重复上面的推理会得到 $\E[e^{-\theta^2T_a/2}]=e^{-\theta a}>1$，这是荒谬的。原因在于 $\theta<0$ 时停止鞅 $N^\theta_{t\wedge T_a}$ 不一致可积。
++应用\cref{thm:optional-stopping-martingale} 时必须验证一致可积性，大多数情况下是验证（停止后的）鞅有界。
++\end{example}
++
++\begin{example}[离开区间的时间的 Laplace 变换]
++\label{ex:exit-time-laplace}
++沿用\cref{ex:exit-time-mean} 的记号，对 $a>0$ 与 $\lambda>0$，
++\[
++  \E[e^{-\lambda U_a}]=\frac{1}{\cosh(a\sqrt{2\lambda})}.
++\]
++首先，$U_a$ 与 $B_{U_a}$ 独立。事实上，由对称性（\cref{prop:brownian-invariances}~(1)），$-B$ 也是布朗运动，而 $U_a$ 对 $B$ 与 $-B$ 相同、$B_{U_a}$ 变为 $-B_{U_a}$；
++由于 $(U_a,B_{U_a})$ 是路径的可测函数，其分布只依赖于 Wiener 测度（\cref{thm:wiener-measure-uniqueness}），故 $(U_a,B_{U_a})$ 与 $(U_a,-B_{U_a})$ 同分布。
++又 $B_{U_a}\in\{a,-a\}$ 几乎处处，于是对任意有界 Borel 函数 $h$，
++\[
++  \E\bigl[\ind{\{B_{U_a}=a\}}h(U_a)\bigr]=\E\bigl[\ind{\{B_{U_a}=-a\}}h(U_a)\bigr]=\frac12\E[h(U_a)],
++\]
++这正是独立性。然后与\cref{ex:hitting-time-laplace} 同样论证：取 $\theta>0$，$0<N^\theta_{t\wedge U_a}\le e^{\theta a}$，故 $\E[N^\theta_{U_a}]=\E[N^\theta_0]=1$，即
++\[
++  1=\E\bigl[e^{\theta B_{U_a}}e^{-\theta^2U_a/2}\bigr]=\frac{e^{\theta a}+e^{-\theta a}}{2}\,\E\bigl[e^{-\theta^2U_a/2}\bigr]=\cosh(\theta a)\,\E\bigl[e^{-\theta^2U_a/2}\bigr].
++\]
++取 $\theta=\sqrt{2\lambda}$ 即得。更一般的公式见原书习题 3.27。
++\end{example}
++
++最后给出非负上鞅的可选停止定理，它在后面对马尔可夫过程的应用中有用。设 $Z$ 是样本路径右连续的非负上鞅，则 $\E[\abs{Z_t}]=\E[Z_t]\le\E[Z_0]$，
++故 $Z$ 在 $L^1$ 中有界，由\cref{thm:supermartingale-convergence}，$Z_t$ 几乎处处收敛到某个 $Z_\infty\in L^1$。于是如前所述，对任意停时 $T$（有限或否），$Z_T$ 都有定义。
++
++\begin{theorem}[非负上鞅的可选停止定理]
++\label{thm:optional-stopping-nonnegative-supermartingale}
++设 $Z$ 是样本路径右连续的非负上鞅，$U\le V$ 是两个停时。则 $Z_U,Z_V\in L^1$，且
++\[
++  Z_U\ge\Econd{Z_V}{\F_U}.
++\]
++\end{theorem}
++
++\begin{remark}
++\label{rem:optional-stopping-nonnegative-supermartingale}
++由此得 $\E[Z_U]\ge\E[Z_V]$。由于在 $\{U=\infty\}$ 上 $Z_U=Z_V=Z_\infty$，两边减去 $\E[\ind{\{U=\infty\}}Z_\infty]$，再由 $\{V<\infty\}\subseteq\{U<\infty\}$ 及 $Z\ge0$，
++\[
++  \E[\ind{\{U<\infty\}}Z_U]\ge\E[\ind{\{U<\infty\}}Z_V]\ge\E[\ind{\{V<\infty\}}Z_V].
++\]
++\end{remark}
++
++\begin{proof}
++\textbf{第一步：$U,V$ 有界的情形。}设整数 $p\ge1$ 使 $U\le p$、$V\le p$，下证 $\E[Z_U]\ge\E[Z_V]$。对 $n\ge0$，令 $U_n:=2^{-n}\lceil2^nU\rceil$、$V_n:=2^{-n}\lceil2^nV\rceil$。
++由\cref{prop:stopping-time-dyadic-approximation}，它们是不超过 $p$、分别递减趋于 $U$ 与 $V$ 的停时，且 $U_n\le V_n$。由右连续性，$Z_{U_n}\to Z_U$，$Z_{V_n}\to Z_V$ 几乎处处。
++
++$U_{n+1}\le U_n$ 都取值于 $2^{-(n+1)}\N$，对离散滤过 $(\F_{k2^{-(n+1)}})_{k\ge0}$ 与有界停时应用离散上鞅的可选停止定理\cite[附录 A2]{LeGall2016}，
++并与\cref{thm:optional-stopping-martingale} 的第一步一样把离散的停时 $\sigma$ 代数等同于 $\F_{U_{n+1}}$，得
++\[
++  Z_{U_{n+1}}\ge\Econd{Z_{U_n}}{\F_{U_{n+1}}}.
++\]
++因此对整数 $n\le0$，$Y_n:=Z_{U_{-n}}$ 是关于 $\Hcal_n:=\F_{U_{-n}}$ 的反向上鞅。再由离散可选停止定理（$0\le U_n$），$\E[Z_{U_n}]\le\E[Z_0]$，故 $(Y_n)_{n\le0}$ 在 $L^1$ 中有界，
++由反向上鞅的收敛定理\cite[附录 A2]{LeGall2016}，它在 $L^1$ 中收敛。所以 $Z_{U_n}\to Z_U$ 也在 $L^1$ 中成立，同理 $Z_{V_n}\to Z_V$ 于 $L^1$。
++由 $U_n\le V_n$ 及离散可选停止定理，$\E[Z_{U_n}]\ge\E[Z_{V_n}]$，令 $n\to\infty$ 得 $\E[Z_U]\ge\E[Z_V]$。
++
++\textbf{第二步：一般情形。}对停时 $0\le U\wedge p$ 应用第一步，得 $\E[Z_{U\wedge p}]\le\E[Z_0]$。$p\to\infty$ 时 $Z_{U\wedge p}\to Z_U$ 几乎处处
++（在 $\{U<\infty\}$ 上最终相等，在 $\{U=\infty\}$ 上 $Z_p\to Z_\infty$），由 Fatou 引理，$\E[Z_U]\le\E[Z_0]<\infty$；同理 $\E[Z_V]<\infty$。
++
++固定 $A\in\F_U$，由\cref{prop:stopping-time-properties}~(5) 也有 $A\in\F_V$。按\cref{prop:stopping-time-properties}~(4)，$U^A$ 与 $V^A$ 是停时，且 $U^A\le V^A$。
++对 $U^A\wedge p\le V^A\wedge p$ 应用第一步：
++\[
++  \E[Z_{U^A\wedge p}]\ge\E[Z_{V^A\wedge p}].
++\]
++在 $A^c$ 上两边的停时都等于 $p$；在 $A\cap\{U>p\}$ 上，由 $V\ge U>p$，两边的停时也都等于 $p$。去掉这两部分（它们的期望有限且相同），得
++\[
++  \E[Z_U\ind{A\cap\{U\le p\}}]\ge\E[Z_{V\wedge p}\ind{A\cap\{U\le p\}}].
++\]
++令 $p\to\infty$：左端由单调收敛定理趋于 $\E[Z_U\ind{A\cap\{U<\infty\}}]$；右端的被积函数几乎处处趋于 $Z_V\ind{A\cap\{U<\infty\}}$，由 Fatou 引理，
++\[
++  \E[Z_U\ind{A\cap\{U<\infty\}}]\ge\E[Z_V\ind{A\cap\{U<\infty\}}].
++\]
++在 $A\cap\{U=\infty\}$ 上 $Z_U=Z_V=Z_\infty$，把相应的等式加上去，得
++\[
++  \E[Z_U\ind A]\ge\E[Z_V\ind A]=\E\bigl[\Econd{Z_V}{\F_U}\ind A\bigr].
++\]
++这对每个 $A\in\F_U$ 成立，而 $Z_U$ 是 $\F_U$ 可测的（\cref{lem:stopped-value-measurable}），取 $A:=\{Z_U<\Econd{Z_V}{\F_U}\}$ 即得结论。
++\end{proof}
++
+ % ==================== 参考文献 ====================
+ \begin{thebibliography}{9}
+ 
+@@ -2819,6 +4090,9 @@
+ David Nualart, Eulalia Nualart. \emph{Introduction to Malliavin Calculus}. Cambridge University Press, 2018.
+ （\href{https://assets.cambridge.org/97811076/11986/excerpt/9781107611986_excerpt.pdf}{出版社官方节选}）
+ 
++\bibitem{RevuzYor1999}
++Daniel Revuz, Marc Yor. \emph{Continuous Martingales and Brownian Motion}. 3rd ed. Springer, 1999.
++
+ \bibitem{Tao2010}
+ Terence Tao. \emph{An Epsilon of Room, I: Real Analysis}. AMS, 2010.
+ （\href{https://terrytao.wordpress.com/wp-content/uploads/2012/12/gsm-117-tao3-epsilon1.pdf}{作者授权 PDF}）
